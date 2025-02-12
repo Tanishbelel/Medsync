@@ -2,7 +2,7 @@
 {% block start %}
 <div class="container mt-5">
     <div class="welcome-banner mb-5">
-        <h2 class="fw-bold mb-2">Shopping Cart</h2>
+        <h2 class="fw-bold mb-2">Checkout</h2>
         <p class="text-muted fs-5">Welcome, {{request.user}}</p>
     </div>
 
@@ -10,7 +10,7 @@
         <div class="col-lg-8">
             <div class="card shadow-lg border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="fw-bold mb-4">Cart Items ({{ cart_items|length }})</h4>
+                    <h4 class="fw-bold mb-4">Tickets ({{ cart_items|length }})</h4>
                     
                     {% for item in cart_items %}
                     <div class="cart-item mb-4 pb-4 border-bottom" id="cart-item-{{ item.id }}">
@@ -54,7 +54,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                             </svg>
-                            Continue Shopping
+                            Continue Booking
                         </a>
                     </div>
                 </div>
@@ -92,6 +92,16 @@
                                     <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                                 </svg>
                                 Proceed to Checkout
+                            </button>
+                        </a>
+                        <a href="/split-payment" class="text-decoration-none">
+                            <button class="btn btn-success btn-lg w-100" id="checkout-button" 
+                                    onclick="processOrder();">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-credit-card me-2" viewBox="0 0 16 16">
+                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                                    <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                                </svg>
+                                Split Payment
                             </button>
                         </a>
                     </div>

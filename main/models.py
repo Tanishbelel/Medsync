@@ -54,3 +54,30 @@ class CartItem(models.Model):
     
     def __str__(self):
         return f"{self.product_name} - {self.user.username}'s cart"
+    
+class Event(models.Model):
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('published', 'Published'),
+        ('cancelled', 'Cancelled')
+    ]
+    
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    date = models.DateTimeField()
+    location = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_tickets = models.PositiveIntegerField()
+    available_tickets = models.PositiveIntegerField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    image = models.ImageField(upload_to='events/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+        
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.available_tickets = self.total_tickets
+        super().save(*args, **kwargs)

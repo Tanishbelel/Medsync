@@ -25,8 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Print',
-    'main'  # Your main app
-    # Add any other apps you have
+    'main',
 ]
 
 MIDDLEWARE = [
@@ -84,3 +83,7 @@ DATABASES = {
 }
 DATABASES["default"] = dj_database_url.parse("postgresql://print_m1s7_user:OV1a3H34vn5cgL2niroMrojhCZYwGVZj@dpg-cu5u9b0gph6c73c1o3o0-a.oregon-postgres.render.com/print_m1s7")
 #
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]

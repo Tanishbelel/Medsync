@@ -44,6 +44,12 @@ urlpatterns = [
     path('admin/order-details/<int:order_id>/', get_order_details, name='get_order_details'),
     path('admin/update-order-status/', update_order_status, name='update_order_status'),
     path('admin/order/<int:order_id>/', order_detail_view, name='order_detail'),
+    path('split-payment/', split_payment, name='split_payment'),
+    path('smart-navigation/<int:order_id>/', smart_navigation, name='smart_navigation'),
+    path('admin/dashboard/vendor/dashboard/', vendor_dashboard, name='vendor_dashboard'),
+    path('vendor/create-event/', create_event, name='create_event'),
+    path('vendor/register/', vendor_registration, name='vendor_registration'),
+    path('buy_vibies/', buy_vibies, name='buy_vibies'),
     
    
     
@@ -54,3 +60,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

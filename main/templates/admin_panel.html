@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Print Shop</title>
+    <title>Admin Dashboard - VibeTix</title>
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -191,6 +191,7 @@
         .btn-primary:hover {
             opacity: 0.9;
         }
+
         .action-group {
             display: flex;
             align-items: center;
@@ -200,6 +201,17 @@
         .status-checkbox {
             margin: 0;
             cursor: pointer;
+        }
+
+        /* Added styles for the stats card with button */
+        .stat-card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-info {
+            flex: 1;
         }
     </style>
 </head>
@@ -213,8 +225,13 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-title">Total Orders</div>
-                    <div class="stat-value">{{ total_orders }}</div>
+                    <div class="stat-card-content">
+                        <div class="stat-info">
+                            <div class="stat-title">Total Orders</div>
+                            <div class="stat-value">{{ total_orders }}</div>
+                        </div>
+                        <a href= "vendor/dashboard/"><button class="btn btn-primary">Manager</button></a>
+                    </div>
                 </div>
             </div>
 
@@ -224,7 +241,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Order ID</th>
+                            <th>Ticket ID</th>
                             <th>Customer</th>
                             <th>Products</th>
                             <th>Total</th>

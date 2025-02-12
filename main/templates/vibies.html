@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Buy Vibies - VibeTix{% endblock %}
+
+{% block start %}
+<div class="container token-purchase-page py-5">
+    <h1 class="text-center mb-5 display-4 fw-bold text-gradient">Purchase Vibies</h1>
+
+    <div class="row g-4">
+        <!-- Predefined Packages -->
+        <div class="col-md-4">
+            <div class="card token-card h-100 border-0 shadow-lg">
+                <div class="card-header bg-soft-blue text-dark text-center py-3">
+                    <h4 class="mb-0 text-uppercase">Starter Pack</h4>
+                </div>
+                <div class="card-body text-center position-relative">
+                    <div class="token-circle bg-soft-blue text-dark">
+                        <span>50</span>
+                        <small>Vibies</small>
+                    </div>
+                    <h3 class="mt-4 mb-3 text-primary">₹25</h3>
+                    <button class="btn btn-outline-primary btn-lg w-100 mt-3" data-tokens="50">Buy Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card token-card h-100 border-0 shadow-lg">
+                <div class="card-header bg-soft-green text-dark text-center py-3">
+                    <h4 class="mb-0 text-uppercase">Pro Pack</h4>
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">Most Popular</span>
+                </div>
+                <div class="card-body text-center position-relative">
+                    <div class="token-circle bg-soft-green text-dark">
+                        <span>200</span>
+                        <small>Vibies</small>
+                    </div>
+                    <h3 class="mt-4 mb-3 text-success">
+                        ₹95 <small class="text-muted"><del>₹100</del></small>
+                    </h3>
+                    <button class="btn btn-outline-success btn-lg w-100 mt-3" data-tokens="200">Buy Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card token-card h-100 border-0 shadow-lg">
+                <div class="card-header bg-soft-orange text-dark text-center py-3">
+                    <h4 class="mb-0 text-uppercase">Ultimate Pack</h4>
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">Best Value</span>
+                </div>
+                <div class="card-body text-center position-relative">
+                    <div class="token-circle bg-soft-orange text-dark">
+                        <span>500</span>
+                        <small>Vibies</small>
+                    </div>
+                    <h3 class="mt-4 mb-3 text-warning">
+                        ₹200 <small class="text-muted"><del>₹250</del></small>
+                    </h3>
+                    <button class="btn btn-outline-warning btn-lg w-100 mt-3" data-tokens="500">Buy Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Token Purchase -->
+        <div class="col-12 mt-4">
+            <div class="card bg-light border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4 text-center">Custom Token Purchase</h4>
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group token-input-group">
+                                <button class="btn btn-outline-secondary custom-minus" type="button">-</button>
+                                <input type="number" 
+                                       class="form-control text-center custom-input" 
+                                       value="100" 
+                                       min="10" 
+                                       max="1000">
+                                <button class="btn btn-outline-secondary custom-plus" type="button">+</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h5 id="total-price" class="mb-0 text-primary">Price: ₹50</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary w-100" id="custom-token-buy">Buy Custom Vibies</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container token-purchase-page py-5">
+    <h1 class="text-center mb-5 display-4 fw-bold text-gradient">Featured Content</h1>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card event-card h-100 border-0 shadow-lg">
+                <div class="card-header bg-soft-blue text-dark text-center py-3">
+                    <h4 class="mb-0 text-uppercase">DataScience Webinar @GET ANALYTICS</h4>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-3">DataScience Workshop</h2>
+                    <h3 class="mb-3 text-muted">-By prof Narayan Murthy</h3>
+                    <button class="btn btn-outline-primary w-100" data-tokens="50">Register Now to get 10 Vibies</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card event-card h-100 border-0 shadow-lg">
+                <div class="card-header bg-soft-green text-dark text-center py-3">
+                    <h4 class="mb-0 text-uppercase">Hackathon @GET ANALYTICS</h4>
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">Most Popular</span>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-3">24 hours Hackathon</h2>
+                    <h3 class="mb-3">₹95 <small class="text-muted"><del>₹100</del></small></h3>
+                    <button class="btn btn-outline-success w-100" data-tokens="200">Enroll Now for 20 Vibies</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --soft-blue: #e6f2ff;
+    --soft-green: #e6f7f0;
+    --soft-orange: #fff2e6;
+}
+
+.bg-soft-blue { background-color: var(--soft-blue) !important; }
+.bg-soft-green { background-color: var(--soft-green) !important; }
+.bg-soft-orange { background-color: var(--soft-orange) !important; }
+
+.text-gradient {
+    background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.token-purchase-page .token-card {
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.token-purchase-page .token-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.1) !important;
+}
+
+.token-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.token-circle span {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.token-circle small {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.event-card {
+    transition: all 0.3s ease;
+}
+
+.event-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tokenInput = document.querySelector('.custom-input');
+        const tokenMinus = document.querySelector('.custom-minus');
+        const tokenPlus = document.querySelector('.custom-plus');
+        const totalPriceEl = document.getElementById('total-price');
+        const customTokenBuy = document.getElementById('custom-token-buy');
+    
+        // Pricing calculation function
+        function calculatePrice(tokens) {
+            if (tokens <= 50) return (tokens * 0.50).toFixed(2);
+            if (tokens <= 200) return (tokens * 0.50).toFixed(2);
+            if (tokens <= 500) return (tokens * 0.50).toFixed(2);
+            return (tokens * 0.35).toFixed(2);
+        }
+    
+        // Confirmation purchase function
+        function confirmPurchase(tokens, price, source) {
+            const confirmMessage = Are you sure you want to buy ${tokens} tokens?;
+            if (confirm(confirmMessage)) {
+                fetch('/purchase-tokens/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ 
+                        tokens: tokens, 
+                        price: price, 
+                        source: source 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(Successfully purchased ${tokens} tokens!);
+                    } else {
+                        alert('Purchase failed. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Tokens have been successfully added to your account.');
+                });
+            }
+        }
+    
+        // Plus/Minus button logic
+        tokenMinus.addEventListener('click', () => {
+            let currentValue = parseInt(tokenInput.value);
+            if (currentValue > 10) {
+                tokenInput.value = currentValue - 10;
+                totalPriceEl.textContent = Price: ₹${calculatePrice(tokenInput.value)};
+            }
+        });
+    
+        tokenPlus.addEventListener('click', () => {
+            let currentValue = parseInt(tokenInput.value);
+            if (currentValue < 1000) {
+                tokenInput.value = currentValue + 10;
+                totalPriceEl.textContent = Price: ₹${calculatePrice(tokenInput.value)};
+            }
+        });
+    
+        // Custom token purchase
+        customTokenBuy.addEventListener('click', () => {
+            const tokens = parseInt(tokenInput.value);
+            const price = calculatePrice(tokens);
+            confirmPurchase(tokens, price, 'custom');
+        });
+    
+        // Predefined package purchases
+        const buyButtons = document.querySelectorAll('[data-tokens]');
+        buyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const tokens = this.dataset.tokens;
+                const price = calculatePrice(tokens);
+                confirmPurchase(tokens, price, this.closest('.card').querySelector('.card-header h4').textContent);
+            });
+        });
+    
+        // Token input event
+        tokenInput.addEventListener('input', () => {
+            let value = parseInt(tokenInput.value);
+            if (isNaN(value)) value = 10;
+            value = Math.min(Math.max(value, 10), 1000);
+            tokenInput.value = value;
+            totalPriceEl.textContent = Price: ₹${calculatePrice(value)};
+        });
+    
+        // Initial price display
+        totalPriceEl.textContent = Price: ₹${calculatePrice(100)};
+    
+        // Cookie retrieval function
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+    </script>
+{% endblock %}

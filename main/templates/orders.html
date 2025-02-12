@@ -1,27 +1,36 @@
 {% extends "base.html" %}
 {% block start %}
+{% load static %}
 <div class="container mt-5">
-    <h2 class="fw-bold mb-4">My Orders</h2>
-
+    <h2 class="fw-bold mb-4">My Tickets</h2>
+    
     <!-- Debug Information -->
     {% if error %}
     <div class="alert alert-danger">
         Error: {{ error }}
     </div>
     {% endif %}
-
     
     {% if orders %}
         {% for order in orders %}
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title mb-0">Order #{{ order.order_number }}</h5>
-                    <span class="badge bg-{{ order.status|lower }}">
-                        {{ order.status }}
-                    </span>
+                    <h5 class="card-title mb-0">Ticket #{{ order.order_number }}</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-{{ order.status|lower }} me-2">
+                            {{ order.status }}
+                        </span>
+                        <!-- Add QR Code Button -->
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#qrModal{{ order.order_number }}">
+                            Show QR
+                        </button>
+                        <a href="{% url 'smart_navigation' order.id %}" class="btn btn-outline-success btn-sm">
+                            Smart Navigation
+                        </a>
+                    </div>
                 </div>
-
+                
                 <div class="table-responsive">
                     <table class="table table-borderless">
                         <thead class="table-light">
@@ -58,9 +67,24 @@
                         </tfoot>
                     </table>
                 </div>
-
+                
                 <div class="text-muted">
-                    <small>Ordered on: {{ order.created_at|date:"F d, Y" }}</small>
+                    <small>Booked on: {{ order.created_at|date:"F d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code Modal for each order -->
+        <div class="modal fade" id="qrModal{{ order.order_number }}" tabindex="-1" aria-labelledby="qrModalLabel{{ order.order_number }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrModalLabel{{ order.order_number }}">QR Code for Ticket #{{ order.order_number }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="{% static 'images/qr.png' %}" alt="QR Code" class="img-fluid">
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,7 +92,7 @@
     {% else %}
         <div class="alert alert-info">
             <p>You don't have any orders yet.</p>
-            <a href="{% url 'main' %}" class="btn btn-primary mt-3">Continue Shopping</a>
+            <a href="{% url 'main' %}" class="btn btn-primary mt-3">Continue Booking</a>
         </div>
     {% endif %}
 </div>

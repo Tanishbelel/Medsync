@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block start %}
+<div class="container mt-5">
+    <div class="welcome-banner mb-5">
+        <h2 class="fw-bold mb-2">Split Payment</h2>
+        <p class="text-muted fs-5">Welcome, {{request.user}}</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">Split Tickets Payment</h4>
+                    
+                    {% for item in cart_items %}
+                    <div class="cart-item mb-4 pb-4 border-bottom" id="split-item-{{ item.id }}">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="currentColor" class="bi bi-book text-primary opacity-75" viewBox="0 0 16 16">
+                                    <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-2">{{ item.product_name }}</h5>
+                                <p class="text-muted mb-0">Unit Price: ₹{{ item.price }}</p>
+                                <p class="text-muted mb-0">Quantity: {{ item.quantity }}</p>
+                                <p class="fw-bold text-primary mb-0">Total: ₹{{ item.get_total }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Split Payment Section -->
+                        <div class="split-payment-section">
+                            <h6 class="fw-bold mb-3">Split Payment for {{ item.quantity }} tickets</h6>
+                            <div class="split-members" id="members-{{ item.id }}">
+                                <!-- Initial member row -->
+                                <div class="member-row mb-3">
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control member-name" placeholder="Member Name">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" class="form-control split-tickets" 
+                                                   placeholder="Tickets" min="1" max="{{ item.quantity }}"
+                                                   data-price="{{ item.price }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control share-amount" placeholder="Amount" readonly>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a href="https://razorpay.me/@PRINT" class="btn btn-primary w-100 pay-button" disabled>Pay</a>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button class="btn btn-danger btn-sm remove-member w-100">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm add-member" data-item-id="{{ item.id }}">
+                                <i class="bi bi-plus-circle me-2"></i>Add Member
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">Payment Summary</h4>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fs-5">Total Amount</span>
+                        <span class="fw-bold fs-5">₹{{ total }}</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fs-5">Split Amount</span>
+                        <span class="fw-bold fs-5" id="total-split">₹0.00</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fs-5">Remaining Amount</span>
+                        <span class="fw-bold fs-5" id="remaining-amount">₹{{ total }}</span>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="alert alert-info">
+                        <small>
+                            <ul class="mb-0">
+                                <li>Each member can pay their share individually</li>
+                                <li>Keep payment screenshots for verification</li>
+                                <li>Total split amount must equal total cart value</li>
+                            </ul>
+                        </small>
+                    </div>
+                    
+                    <button id="complete-split-btn" class="btn btn-success w-100 mt-3">
+                        Complete Split Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Add new member row
+    $('.add-member').click(function() {
+        const itemId = $(this).data('item-id');
+        const maxTickets = $(this).closest('.cart-item').find('.split-tickets').attr('max');
+        const itemPrice = $(this).closest('.cart-item').find('.split-tickets').data('price');
+        
+        const memberRow = `
+            <div class="member-row mb-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control member-name" placeholder="Member Name">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control split-tickets" 
+                               placeholder="Tickets" 
+                               min="1" 
+                               max="${maxTickets}"
+                               data-price="${itemPrice}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control share-amount" placeholder="Amount" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="https://razorpay.me/@PRINT" class="btn btn-primary w-100 pay-button" disabled>Pay</a>
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-danger btn-sm remove-member w-100">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        $(`#members-${itemId}`).append(memberRow);
+    });
+
+    // Remove member row
+    $(document).on('click', '.remove-member', function() {
+        $(this).closest('.member-row').remove();
+        updateTotalSplit();
+    });
+
+    // Calculate share amount when split tickets change
+    $(document).on('input', '.split-tickets, .member-name', function() {
+        const container = $(this).closest('.cart-item');
+        const row = $(this).closest('.member-row');
+        const maxTickets = parseInt(container.find('.split-tickets').attr('max'));
+        const ticketPrice = parseFloat(row.find('.split-tickets').data('price'));
+        const tickets = parseInt(row.find('.split-tickets').val()) || 0;
+        const memberName = row.find('.member-name').val();
+
+        // Validate ticket input
+        if (tickets > maxTickets) {
+            row.find('.split-tickets').val(maxTickets);
+        }
+
+        // Calculate share amount
+        const shareAmount = tickets * ticketPrice;
+        row.find('.share-amount').val('₹' + shareAmount.toFixed(2));
+
+        // Enable/disable pay button
+        const payButton = row.find('.pay-button');
+        if (memberName && tickets > 0) {
+            payButton.prop('disabled', false);
+            payButton.attr('href', `https://razorpay.me/@PRINT?amount=${shareAmount.toFixed(2)}`);
+        } else {
+            payButton.prop('disabled', true);
+        }
+
+        updateTotalSplit();
+    });
+
+    function updateTotalSplit() {
+        let totalSplit = 0;
+        let totalTickets = 0;
+
+        // Calculate total split across all items
+        $('.cart-item').each(function() {
+            let itemTotalSplit = 0;
+            let itemTotalTickets = 0;
+
+            // Sum tickets and split amounts for this item
+            $(this).find('.split-tickets').each(function() {
+                const tickets = parseInt($(this).val()) || 0;
+                const shareAmount = parseFloat($(this).closest('.row').find('.share-amount').val().replace('₹', '')) || 0;
+                
+                itemTotalSplit += shareAmount;
+                itemTotalTickets += tickets;
+            });
+
+            // Validate item total tickets
+            const maxTickets = parseInt($(this).find('.split-tickets').attr('max'));
+            if (itemTotalTickets > maxTickets) {
+                // Reset if over-allocated
+                $(this).find('.split-tickets').val('');
+                $(this).find('.share-amount').val('');
+                itemTotalSplit = 0;
+                itemTotalTickets = 0;
+            }
+
+            totalSplit += itemTotalSplit;
+            totalTickets += itemTotalTickets;
+        });
+
+        // Calculate total and remaining
+        const totalAmount = parseFloat('{{ total }}');
+        const remainingAmount = totalAmount - totalSplit;
+
+        // Update display
+        $('#total-split').text('₹' + totalSplit.toFixed(2));
+        $('#remaining-amount').text('₹' + remainingAmount.toFixed(2));
+    }
+
+    // Validate complete split payment
+    $('#complete-split-btn').click(function() {
+        const totalAmount = parseFloat('{{ total }}');
+        const totalSplit = parseFloat($('#total-split').text().replace('₹', ''));
+
+        if (Math.abs(totalAmount - totalSplit) > 0.01) {
+            alert('Please split the entire amount before proceeding');
+            return false;
+        }
+        return true;
+    });
+});
+</script>
+{% endblock %}
