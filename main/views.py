@@ -608,3 +608,7 @@ def create_event(request):
 @login_required
 def buy_vibies(request):
     return render(request,'vibies.html')
+@login_required
+def select_seats(request, event_id):
+    event = Event.objects.get(id=event_id)
+    return render(request, 'select_seats.html', {'event': event})

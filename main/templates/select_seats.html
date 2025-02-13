@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block start %}
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <h4 class="fw-bold">Select Your Seats</h4>
+        <p class="text-muted">Choose from available seats below</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <!-- Price Categories -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="seat-indicators d-flex gap-3">
+                        <span class="d-flex align-items-center">
+                            <div class="seat-box bg-success me-2"></div> Selected
+                        </span>
+                        <span class="d-flex align-items-center">
+                            <div class="seat-box bg-secondary me-2"></div> Sold
+                        </span>
+                        <span class="d-flex align-items-center">
+                            <div class="seat-box border border-warning bg-white me-2"></div> Bestseller
+                        </span>
+                        <span class="d-flex align-items-center">
+                            <div class="seat-box border border-success bg-white me-2"></div> Available
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen Area -->
+            <div class="text-center mb-5">
+                <div class="screen-area mx-auto mb-2"></div>
+                <small class="text-muted">EYES THIS WAY</small>
+            </div>
+
+            <!-- Seating Layout -->
+            <div class="seating-layout">
+                <!-- Platinum Section -->
+                <h5 class="mb-3">Platinum - ₹{{event.price}}</h5>
+                <div class="row mb-4">
+                    <div class="col text-center">
+                        {% for row in "ABC" %}
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="row-label me-3">{{ row }}</span>
+                            <div class="d-flex gap-2">
+                                {% for seat in "12345678" %}
+                                <button class="seat-btn available" data-row="{{ row }}" data-seat="{{ seat }}" data-section="platinum" data-price="4999">{{ seat }}</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Premium Section -->
+                <h5 class="mb-3">Premium - ₹{{event.price}}</h5>
+                <div class="row mb-4">
+                    <div class="col text-center">
+                        {% for row in "DEF" %}
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="row-label me-3">{{ row }}</span>
+                            <div class="d-flex gap-2">
+                                {% for seat in "12345678910111213141516" %}
+                                <button class="seat-btn {% if seat in '89' %}bestseller{% else %}available{% endif %}" 
+                                        data-row="{{ row }}" 
+                                        data-seat="{{ seat }}"
+                                        data-section="premium"
+                                        data-price="3999">{{ seat }}</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Executive and Normal sections remain the same -->
+                
+                <!-- Selected Seats Summary -->
+                <div class="selected-seats-summary mt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Selected Seats: <span id="selected-seats-list">None</span></h6>
+                            <p class="mb-0">Total Amount: ₹<span id="total-amount">0</span></p>
+                        </div>
+                        <a href ="/main/"><button class="btn btn-primary add-to-cart" disabled>
+                            Proceed
+                        </button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .screen-area {
+        background: linear-gradient(to bottom, #666, #999);
+        height: 10px;
+        width: 80%;
+        border-radius: 50%;
+        margin-bottom: 30px;
+    }
+    
+    .seat-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+    
+    .seat-btn.available {
+        border-color: #198754;
+    }
+    
+    .seat-btn.selected {
+        background-color: #198754;
+        color: white;
+        border-color: #198754;
+    }
+    
+    .seat-btn.sold {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .seat-btn.bestseller {
+        border-color: #ffc107;
+    }
+    
+    .seat-box {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+    
+    .row-label {
+        width: 20px;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let selectedSeats = [];
+        let totalAmount = 0;
+    
+        // Seat selection functionality
+        document.querySelectorAll('.seat-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.classList.contains('sold')) return;
+                
+                const row = this.dataset.row;
+                const seat = this.dataset.seat;
+                const section = this.dataset.section;
+                const price = {{event.price}}; // Use event price from Django context
+                const seatId = `${row}${seat}`;
+                
+                if (this.classList.contains('selected')) {
+                    // Deselect seat
+                    this.classList.remove('selected');
+                    selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+                    totalAmount -= price;
+                } else {
+                    // Select seat
+                    this.classList.add('selected');
+                    selectedSeats.push({
+                        id: seatId,
+                        row: row,
+                        seat: seat,
+                        section: section,
+                        price: price
+                    });
+                    totalAmount += price;
+                }
+                
+                // Update summary
+                updateSummary();
+            });
+        });
+    
+        // Update summary display
+        function updateSummary() {
+            const seatsList = selectedSeats.length > 0 
+                ? selectedSeats.map(s => `${s.row}${s.seat}`).join(', ')
+                : 'None';
+                
+            document.getElementById('selected-seats-list').textContent = seatsList;
+            document.getElementById('total-amount').textContent = totalAmount;
+            
+            // Enable/disable proceed button
+            const proceedButton = document.querySelector('.add-to-cart');
+            proceedButton.disabled = selectedSeats.length === 0;
+        }
+    
+        // Proceed button click handler
+        document.querySelector('.add-to-cart').addEventListener('click', function(e) {
+            if (selectedSeats.length === 0) {
+                e.preventDefault();
+                return;
+            }
+    
+            // Store selected seats in localStorage before proceeding
+            localStorage.setItem('selectedSeats', JSON.stringify({
+                seats: selectedSeats,
+                totalAmount: totalAmount,
+                eventId: '{{event.id}}' // Assuming you have event.id in context
+            }));
+    
+            // Navigation will happen through the anchor tag
+            // No need to prevent default here as we want the navigation to occur
+        });
+    });
+    </script>
+{% endblock %}

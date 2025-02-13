@@ -50,6 +50,8 @@ urlpatterns = [
     path('vendor/create-event/', create_event, name='create_event'),
     path('vendor/register/', vendor_registration, name='vendor_registration'),
     path('buy_vibies/', buy_vibies, name='buy_vibies'),
+    path('select-seats/<int:event_id>/', select_seats, name='select_seats'),
+    
     
    
     
