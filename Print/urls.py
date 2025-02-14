@@ -53,6 +53,7 @@ urlpatterns = [
     path('select-seats/<int:event_id>/', select_seats, name='select_seats'),
     
     
+    
    
     
     

@@ -39,7 +39,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h5 class="card-title mb-0 fw-bold">Taylor Swift - The Eras Tour</h5>
+                        <h5 class="card-title mb-0 fw-bold text-white">Taylor Swift - The Eras Tour</h5>
                         <p class="text-danger mb-0"><small>Filling Fast! Only 50 tickets left</small></p>
                     </div>
                 </div>
@@ -53,12 +53,12 @@
             <div class="mb-4">
                 <div class="mb-3">
                     <h6 class="text-muted mb-2">Event Details</h6>
-                    <p class="card-text">Experience the phenomenal Eras Tour live at Madison Square Garden. Don't miss this once-in-a-lifetime concert event!</p>
+                    <p class="card-text text-white">Experience the phenomenal Eras Tour live at Madison Square Garden. Don't miss this once-in-a-lifetime concert event!</p>
                 </div>
 
                 <div class="mb-4">
                     <h6 class="text-muted mb-2">Flash Sale Benefits</h6>
-                    <ul class="list-unstyled">
+                    <ul class="list-unstyled text-white">
                         <li class="mb-2">
                             <i class="bi bi-lightning-fill text-warning me-2"></i>
                             40% Off Regular Price
@@ -95,42 +95,41 @@
     </div>
 
     <div class="row g-4">
-    {% for event in events %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
+        {% for event in events %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 rounded-3 shadow-sm hover-shadow-lg transition-shadow">
                 {% if event.image %}
-                    <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ event.name }}</h5>
-                    <p class="card-text">{{ event.description|truncatewords:20 }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
+                <div class="card-img-wrapper position-relative">
+                    <img src="{{ event.image.url }}" class="card-img-top rounded-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-img-overlay d-flex align-items-start justify-content-end">
                         <span class="badge {% if event.status == 'published' %}bg-success{% else %}bg-warning{% endif %}">
                             {{ event.status }}
                         </span>
-                        <span>₹{{ event.price }}</span>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <small class="text-muted">Available tickets: {{ event.available_tickets }}/{{ event.total_tickets }}</small>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold mb-3 text-muted">{{ event.name }}</h5>
+                    <p class="card-text flex-grow-1 text-white">{{ event.description|truncatewords:20 }}</p>
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h5 mb-0 text-white">₹{{ event.price }}</span>
+                            <small class="text-muted">{{ event.available_tickets }}/{{ event.total_tickets }} tickets left</small>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="/select-seats/{{event.id}}/" class="btn btn-outline-primary">Select Seats</a>
+                            <button class="btn btn-glow add-to-cart" data-product-name="{{event.name}}" data-price="{{event.price}}">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <a href = "/select-seats/{{event.id}}/" ><button class="btn btn-success w-50 py-2 mb-2"
-                        data-product-name="{{event.name}}"
-                        data-price="{{event.price}}">
-                    Select Seats
-                </button></a>
-            <button class="btn btn-primary w-100 py-2 add-to-cart"
-                        data-product-name="{{event.name}}"
-                        data-price="{{event.price}}">
-                    Book Now 
-                </button>
         </div>
-
         {% empty %}
         <div class="col-12">
-            <div class="alert alert-info">
-                No events created yet. Click "Create New Event" to get started!
+            <div class="alert alert-info bg-primary bg-opacity-10 text-primary border-0">
+                No events yet.
             </div>
         </div>
         {% endfor %}
@@ -225,5 +224,10 @@ $('#searchInput').on('input', function() {
 .transition-shadow {
     transition: all 0.3s ease;
 }
+.card {
+    background: var(--dark-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 </style>
 {% endblock %}

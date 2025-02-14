@@ -22,6 +22,9 @@
                             {{ order.status }}
                         </span>
                         <!-- Add QR Code Button -->
+                        <a href = "http://127.0.0.1:5000/" <button type="button" class="btn btn-outline-primary btn-sm">
+                            Chat/Share
+                        </button></a>
                         <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#qrModal{{ order.order_number }}">
                             Show QR
                         </button>
@@ -79,7 +82,7 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="qrModalLabel{{ order.order_number }}">QR Code for Ticket #{{ order.order_number }}</h5>
+                        <h5 class="modal-title text-dark" id="qrModalLabel{{ order.order_number }}">QR Code for Ticket #{{ order.order_number }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">

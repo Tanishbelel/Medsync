@@ -612,3 +612,4 @@ def buy_vibies(request):
 def select_seats(request, event_id):
     event = Event.objects.get(id=event_id)
     return render(request, 'select_seats.html', {'event': event})
+
