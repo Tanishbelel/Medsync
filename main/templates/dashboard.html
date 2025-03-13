@@ -1,11 +1,10 @@
-{% extends "base.html" %}
-{% block start %}
+{% extends "base.html" %} 
+{% block start %} 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Event Dashboard</h2>
-        <a href="{% url 'create_event' %}" class="btn btn-primary">Create New Event</a>
+        <h2>Dashboard</h2>
+        <a href="{% url 'create_event' %}" class="btn btn-primary">Create New Item</a>
     </div>
-
     <div class="row">
         {% for event in events %}
         <div class="col-md-6 col-lg-4">
@@ -26,20 +25,18 @@
                     <div class="mt-auto">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="h5 mb-0">₹{{ event.price }}</span>
-                            <small class="text-muted">{{ event.available_tickets }}/{{ event.total_tickets }} tickets left</small>
                         </div>
                         <div class="d-grid gap-2">
-                           
+                            <a href="{% url 'delete_event' event.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete Item</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
-
         <div class="col-12">
             <div class="alert alert-info">
-                No events created yet. Click "Create New Event" to get started!
+                No Items yet. Click "Create New Item" to get started!
             </div>
         </div>
         {% endfor %}

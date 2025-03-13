@@ -10,7 +10,7 @@
         <div class="col-lg-8">
             <div class="card shadow-lg border-0 rounded-3 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="fw-bold mb-4">Tickets ({{ cart_items|length }})</h4>
+                    <h4 class="fw-bold mb-4">Items ({{ cart_items|length }})</h4>
                     
                     {% for item in cart_items %}
                     <div class="cart-item mb-4 pb-4 border-bottom" id="cart-item-{{ item.id }}">
@@ -71,37 +71,22 @@
                         <span class="fw-bold fs-5">₹<span id="subtotal">{{ subtotal }}</span></span>
                     </div>
                     
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted fs-5">Platform fee (2%)</span>
-                        <span class="fw-bold fs-5">₹<span id="tax">{{ tax }}</span></span>
-                    </div>
                     
                     <hr class="my-4">
                     
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold fs-4">Total</span>
-                        <span class="fw-bold text-primary fs-4">₹<span id="total">{{ total }}</span></span>
+                        <span class="fw-bold text-primary fs-4">₹<span id="total">{{ subtotal }}</span></span>
                     </div>
 
                     <div class="d-grid gap-3">
                         <a href="https://razorpay.me/@PRINT?amount=EPec5evqGoRk2C8icWNJlQ%3D%3D" class="text-decoration-none">
                             <button class="btn btn-primary btn-lg w-100" id="checkout-button" 
-                                    onclick="processOrder(); alert('1. Once the payment is made, please keep a screenshot of the transaction as proof until your order is delivered.\n2. Payments are non-refundable, and orders cannot be canceled once the payment is completed.\n3. If the quality of any page/item is not satisfactory at the time of delivery and you inform us immediately, we will replace your order.\n ')">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-credit-card me-2" viewBox="0 0 16 16">
+                                   
                                     <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
                                     <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                                 </svg>
                                 Proceed to Checkout
-                            </button>
-                        </a>
-                        <a href="/split-payment" class="text-decoration-none">
-                            <button class="btn btn-success btn-lg w-100" id="checkout-button" 
-                                    >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-credit-card me-2" viewBox="0 0 16 16">
-                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
-                                    <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
-                                </svg>
-                                Split Payment
                             </button>
                         </a>
                     </div>

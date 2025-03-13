@@ -16,21 +16,12 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title mb-0">Ticket #{{ order.order_number }}</h5>
+                    <h5 class="card-title mb-0">Order #{{ order.order_number }}</h5>
                     <div class="d-flex align-items-center">
                         <span class="badge bg-{{ order.status|lower }} me-2">
                             {{ order.status }}
                         </span>
                         <!-- Add QR Code Button -->
-                        <a href = "http://127.0.0.1:5000/" <button type="button" class="btn btn-outline-primary btn-sm">
-                            Chat/Share
-                        </button></a>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#qrModal{{ order.order_number }}">
-                            Show QR
-                        </button>
-                        <a href="{% url 'smart_navigation' order.id %}" class="btn btn-outline-success btn-sm">
-                            Smart Navigation
-                        </a>
                     </div>
                 </div>
                 
@@ -60,37 +51,21 @@
                                 <td>₹{{ order.subtotal }}</td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-end"><strong>Platform Fee (2%):</strong></td>
-                                <td>₹{{ order.platform_fee }}</td>
-                            </tr>
-                            <tr>
                                 <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                <td><strong>₹{{ order.total_amount }}</strong></td>
+                                <td><strong>₹{{ order.subtotal }}</strong></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
                 
                 <div class="text-muted">
-                    <small>Booked on: {{ order.created_at|date:"F d, Y" }}</small>
+                    <small>Ordered on: {{ order.created_at|date:"F d, Y" }}</small>
                 </div>
             </div>
         </div>
 
         <!-- QR Code Modal for each order -->
-        <div class="modal fade" id="qrModal{{ order.order_number }}" tabindex="-1" aria-labelledby="qrModalLabel{{ order.order_number }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-dark" id="qrModalLabel{{ order.order_number }}">QR Code for Ticket #{{ order.order_number }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <img src="{% static 'images/qr.png' %}" alt="QR Code" class="img-fluid">
-                    </div>
-                </div>
-            </div>
-        </div>
+       
         {% endfor %}
     {% else %}
         <div class="alert alert-info">

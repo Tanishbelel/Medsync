@@ -5,8 +5,8 @@ from .models import *
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['name', 'description', 'date', 'location', 'price', 
-                 'total_tickets', 'status', 'image']
+        fields = ['name', 'description', 'date', 'price', 
+      'image']
         widgets = {
             'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'description': forms.Textarea(attrs={'rows': 4}),

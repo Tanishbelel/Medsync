@@ -613,3 +613,18 @@ def select_seats(request, event_id):
     event = Event.objects.get(id=event_id)
     return render(request, 'select_seats.html', {'event': event})
 
+def delete_event(request, event_id):
+    # Get the event or return 404
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Check if the current user is the vendor who created this event
+    if request.user.vendor == event.vendor:
+        # Store the name for the success message
+        event_name = event.name
+        event.delete()
+        messages.success(request, f"'{event_name}' has been deleted successfully.")
+    else:
+        messages.error(request, "You don't have permission to delete this event.")
+    
+    # Redirect to the vendor dashboard
+    return redirect('vendor_dashboard')

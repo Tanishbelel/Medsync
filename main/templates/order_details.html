@@ -29,12 +29,8 @@
                     <td class="text-end">₹{{ order.subtotal }}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="text-end fw-bold">Platform Fee (2%):</td>
-                    <td class="text-end">₹{{ order.platform_fee }}</td>
-                </tr>
-                <tr>
                     <td colspan="2" class="text-end fw-bold">Total:</td>
-                    <td class="text-end fw-bold text-primary">₹{{ order.total_amount }}</td>
+                    <td class="text-end fw-bold text-primary">₹{{ order.subtotal }}</td>
                 </tr>
             </tfoot>
         </table>

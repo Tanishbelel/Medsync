@@ -1,79 +1,160 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome to VibeTix{% endblock %}
+{% block title %}Welcome to RND Foods - Delicious Delivered{% endblock %}
 
 {% block start %}
 <!-- Hero Section -->
-<div class="hero-section position-relative mb-5">
-    <div class="hero-overlay"></div>
-    <div class="container py-5 position-relative">
-        <div class="row align-items-center min-vh-75">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4 text-gradient">Experience Live Entertainment Like Never Before</h1>
-                <p class="lead mb-4 text-white">Discover and book tickets for concerts, festivals, theater shows, and live events. Your gateway to unforgettable experiences.</p>
-                {% if not request.user.is_authenticated %}
-                    <div class="d-flex gap-3">
-                        <a href="{% url 'login' %}" class="btn btn-glow btn-lg px-4">Find Events</a>
-                        <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-4">Join VibeTix</a>
-                    </div>
-                {% else %}
-                    <a href="/main/" class="btn btn-glow btn-lg px-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-perforated me-2" viewBox="0 0 16 16">
-                            <path d="M4 4.85v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Zm-7 1.8v.9h1v-.9H4Zm7 0v.9h1v-.9h-1Z"/>
-                            <path d="M1.5 3A1.5 1.5 0 0 0 0 4.5V6a.5.5 0 0 0 .5.5 1.5 1.5 0 1 1 0 3 .5.5 0 0 0-.5.5v1.5A1.5 1.5 0 0 0 1.5 13h13a1.5 1.5 0 0 0 1.5-1.5V10a.5.5 0 0 0-.5-.5 1.5 1.5 0 0 1 0-3A.5.5 0 0 0 16 6V4.5A1.5 1.5 0 0 0 14.5 3h-13ZM1 4.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v1.05a2.5 2.5 0 0 0 0 4.9v1.05a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-1.05a2.5 2.5 0 0 0 0-4.9V4.5Z"/>
-                        </svg>
-                        Browse Events
-                    </a>
-                {% endif %}
-            </div>
-            <div class="col-lg-6 d-none d-lg-block">
-                <!-- Add event illustration or image here -->
-            </div>
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="hero-title">Delicious Food, Delivered to You!</h1>
+        <p class="hero-subtitle">Fresh ingredients, quick delivery, and a taste you'll love.</p>
+        <div class="hero-buttons">
+            <a href="{% url 'main' %}" class="btn btn-primary btn-lg">Browse Menu</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">Sign Up</a>
         </div>
     </div>
 </div>
 
 <!-- Features Section -->
-<div class="container mb-5 m-50">
-    <div class="row g-4">
+<div class="container my-5">
+    <div class="section-header text-center mb-5">
+        <h2 class="section-title">Why Choose Us</h2>
+        <div class="section-divider"></div>
+        <p class="section-subtitle">Experience the best food delivery service in town</p>
+    </div>
+    
+    <div class="row text-center">
         <div class="col-md-4">
             <div class="feature-card">
-                <div class="card-body text-center p-4">
-                    <div class="icon-circle mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
-                            <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
-                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                        </svg>
-                    </div>
-                    <h3 class="h5 mb-3">Exclusive Events</h3>
-                    <p class="text-muted">Get access to premier events and exclusive pre-sales before anyone else.</p>
+                <div class="feature-icon-wrapper">
+                    <img src="static/images/delivery.png" alt="Fast Delivery" class="feature-icon">
                 </div>
+                <h3>Fast Delivery</h3>
+                <p>We deliver your food hot and fresh within minutes.</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="feature-card">
-                <div class="card-body text-center p-4">
-                    <div class="icon-circle mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-lightning" viewBox="0 0 16 16">
-                            <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5zM6.374 1 4.168 8.5H7.5a.5.5 0 0 1 .478.647L6.78 13.04 11.478 7H8a.5.5 0 0 1-.474-.658L9.306 1H6.374z"/>
-                        </svg>
-                    </div>
-                    <h3 class="h5 mb-3">Instant Confirmation</h3>
-                    <p class="text-muted">Secure your tickets instantly with our real-time booking system and digital delivery.</p>
+                <div class="feature-icon-wrapper">
+                    <img src="static/images/ingredients.png" alt="Fresh Ingredients" class="feature-icon">
                 </div>
+                <h3>Fresh Ingredients</h3>
+                <p>Only the best ingredients go into our delicious meals.</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="feature-card">
-                <div class="card-body text-center p-4">
-                    <div class="icon-circle mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
-                            <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
-                            <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                        </svg>
+                <div class="feature-icon-wrapper">
+                    <img src="static/images/order.png" alt="Easy Ordering" class="feature-icon">
+                </div>
+                <h3>Easy Ordering</h3>
+                <p>Order in just a few clicks and enjoy your meal.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Dishes Preview -->
+<div class="container my-5">
+    <div class="section-header text-center mb-5">
+        <h2 class="section-title">Popular Dishes</h2>
+        <div class="section-divider"></div>
+        <p class="section-subtitle">Discover what our customers love</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="dish-card">
+                <div class="dish-image" style="background-image: url('static/images/dish1.jpg')"></div>
+                <div class="dish-info">
+                    <h4>Signature Burger</h4>
+                    <div class="dish-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span>(245)</span>
                     </div>
-                    <h3 class="h5 mb-3">Secure Booking</h3>
-                    <p class="text-muted">100% secure payments and guaranteed authentic tickets for your peace of mind.</p>
+                    <p class="dish-price">$12.99</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dish-card">
+                <div class="dish-image" style="background-image: url('static/images/dish2.jpg')"></div>
+                <div class="dish-info">
+                    <h4>Vegetarian Pizza</h4>
+                    <div class="dish-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span>(189)</span>
+                    </div>
+                    <p class="dish-price">$14.99</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dish-card">
+                <div class="dish-image" style="background-image: url('static/images/dish3.jpg')"></div>
+                <div class="dish-info">
+                    <h4>Chicken Pasta</h4>
+                    <div class="dish-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span>(327)</span>
+                    </div>
+                    <p class="dish-price">$11.99</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'main' %}" class="btn btn-outline-primary">View Full Menu</a>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="testimonials-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <h2 class="section-title text-white">What Our Customers Say</h2>
+            <div class="section-divider bg-white"></div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">
+                        <img src="static/images/avatar1.jpg" alt="Customer" class="rounded-circle">
+                    </div>
+                    <p class="testimonial-text">"The food arrived hot and fresh, and the taste was absolutely amazing. Will definitely order again!"</p>
+                    <p class="testimonial-name">- Sarah Johnson</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">
+                        <img src="static/images/avatar2.jpg" alt="Customer" class="rounded-circle">
+                    </div>
+                    <p class="testimonial-text">"Best delivery service in town! Quick, reliable, and the app is super easy to use."</p>
+                    <p class="testimonial-name">- Mike Thompson</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">
+                        <img src="static/images/avatar3.jpg" alt="Customer" class="rounded-circle">
+                    </div>
+                    <p class="testimonial-text">"I love the variety of options. Something for everyone in the family, and all of it delicious!"</p>
+                    <p class="testimonial-name">- Jennifer Lopez</p>
                 </div>
             </div>
         </div>
@@ -81,270 +162,506 @@
 </div>
 
 <!-- Call to Action -->
-<div class="container mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
-            <h2 class="fw-bold mb-4 text-gradient">Don't Miss Out on Amazing Events</h2>
-            {% if not request.user.is_authenticated %}
-                <a href="{% url 'register' %}" class="btn btn-glow btn-lg px-4">Join VibeTix Today</a>
-            {% endif %}
+<div class="cta-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h2>Craving Something Tasty?</h2>
+                <p>Explore our menu and order your favorite meals now. Use code <span class="promo-code">WELCOME10</span> for 10% off your first order!</p>
+            </div>
+            <div class="col-lg-5 text-lg-end text-center mt-3 mt-lg-0">
+                <a href="{% url 'main' %}" class="btn btn-light btn-lg">Order Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- App Download Section -->
+<div class="container my-5">
+    <div class="app-download-section">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="static/images/app-mockup.png" alt="Mobile App" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <h2>Get Our Mobile App</h2>
+                <p>Order faster, track your delivery, and earn rewards with our mobile app. Download now for iOS and Android.</p>
+                <div class="app-buttons">
+                    <a href="#" class="app-button">
+                        <img src="static/images/app-store.png" alt="App Store">
+                    </a>
+                    <a href="#" class="app-button">
+                        <img src="static/images/play-store.png" alt="Play Store">
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-/* Modern Color Scheme - Dark Theme */
+/* Light Theme Colors */
 :root {
-    --primary-color: #8b5cf6;
-    --secondary-color: #7c3aed;
-    --accent-color: #6d28d9;
-    --dark-bg: #0f172a;
-    --dark-card: #1e293b;
-    --light-text: #e2e8f0;
-    --muted-text: #94a3b8;
-    --glow-color: rgba(139, 92, 246, 0.5);
+    --primary-color: #ff6b00;
+    --secondary-color: #ffbd59;
+    --background-color: #fff9f2;
+    --text-color: #333;
+    --button-hover: #ff7000;
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    --section-spacing: 100px;
 }
 
+/* General Styles */
 body {
-    background-color: var(--dark-bg);
-    color: var(--light-text);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+}
+
+a {
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 12px 30px;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--button-hover);
+    border-color: var(--button-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 30px;
+    padding: 12px 30px;
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.3);
+}
+
+/* Section Styles */
+.section-header {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.section-divider {
+    height: 4px;
+    width: 60px;
+    background-color: var(--primary-color);
+    margin: 0 auto 20px;
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #777;
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #1e1b4b, #3730a3);
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('static/images/hero-bg.jpg') center/cover no-repeat;
+    padding: 150px 20px;
+    text-align: center;
+    color: white;
     position: relative;
-    overflow: hidden;
-    padding: 120px 0;
-    border-radius: 0 0 3rem 3rem;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-}
-
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-    opacity: 0.4;
-}
-
-/* Text Gradient */
-.text-gradient {
-    background: linear-gradient(to right, #fff, #c4b5fd);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-}
-
-/* Feature Cards */
-.feature-card {
-    background: var(--dark-card);
-    border-radius: 24px;
+    border-radius: 0 0 80px 80px;
+    margin-bottom: var(--section-spacing);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    overflow: hidden;
-    position: relative;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    animation: fadeInDown 1s ease;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: fadeInUp 1s ease;
+}
+
+.hero-buttons {
+    animation: fadeIn 1.5s ease;
+}
+
+.hero-buttons .btn {
+    padding: 15px 35px;
+    font-size: 1.1rem;
+    margin: 10px;
+    font-weight: 600;
+}
+
+/* Features Section */
+.feature-card {
+    background: white;
+    padding: 40px 25px;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.4s ease;
+    height: 100%;
+    border-bottom: 4px solid transparent;
 }
 
 .feature-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
-    border-color: rgba(139, 92, 246, 0.3);
+    transform: translateY(-10px);
+    border-bottom: 4px solid var(--primary-color);
 }
 
-.feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, #8b5cf6, #6d28d9);
-    transform: scaleX(0);
-    transition: transform 0.4s ease;
-}
-
-.feature-card:hover::before {
-    transform: scaleX(1);
-}
-
-/* Icon Circle */
-.icon-circle {
-    width: 80px;
-    height: 80px;
+.feature-icon-wrapper {
+    background-color: rgba(255, 107, 0, 0.1);
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
-    background: rgba(139, 92, 246, 0.1);
-    border: 2px solid rgba(139, 92, 246, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto;
-    transition: all 0.4s ease;
+    margin: 0 auto 25px;
+    transition: all 0.3s ease;
 }
 
-.icon-circle svg {
+.feature-card:hover .feature-icon-wrapper {
+    background-color: var(--primary-color);
+}
+
+.feature-icon {
+    width: 50px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    filter: brightness(5);
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.feature-card p {
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* Popular Dishes */
+.dish-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+}
+
+.dish-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dish-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+}
+
+.dish-info {
+    padding: 20px;
+}
+
+.dish-info h4 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.dish-rating {
+    color: #ffc107;
+    margin-bottom: 10px;
+}
+
+.dish-rating span {
+    color: #777;
+    margin-left: 5px;
+}
+
+.dish-price {
+    font-weight: 700;
     color: var(--primary-color);
-    transition: all 0.4s ease;
+    font-size: 1.2rem;
+    margin: 0;
 }
 
-.feature-card:hover .icon-circle {
-    background: var(--primary-color);
-    transform: scale(1.1);
-    border-color: var(--primary-color);
+/* Testimonials Section */
+.testimonials-section {
+    background: linear-gradient(135deg, var(--primary-color), #ff9500);
+    padding: 80px 0;
+    margin: 80px 0;
+    border-radius: 20px;
 }
 
-.feature-card:hover .icon-circle svg {
-    color: white;
-    transform: scale(1.1) rotate(360deg);
-}
-
-/* Enhanced Glowing Button */
-.btn-glow {
-    background: linear-gradient(45deg, #8b5cf6, #6d28d9);
-    color: white;
-    border: none;
-    border-radius: 100px;
-    padding: 15px 30px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+.testimonial-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
     position: relative;
-    overflow: hidden;
-    z-index: 1;
-    transition: all 0.4s ease;
+    margin-top: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: calc(100% - 40px);
 }
 
-.btn-glow::before {
-    content: '';
+.testimonial-avatar {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(45deg, #8b5cf6, #6d28d9, #8b5cf6);
-    transition: all 0.6s ease;
-    z-index: -1;
+    top: -30px;
+    left: 50%;
     transform: translateX(-50%);
-}
-
-.btn-glow::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #8b5cf6, #6d28d9, #8b5cf6);
-    border-radius: 100px;
-    z-index: -2;
-    opacity: 0;
-    transition: all 0.4s ease;
-}
-
-.btn-glow:hover {
-    transform: translateY(-3px) scale(1.02);
-    color: white;
-    box-shadow: 0 0 30px var(--glow-color);
-}
-
-.btn-glow:hover::before {
-    transform: translateX(0);
-}
-
-.btn-glow:hover::after {
-    opacity: 1;
-}
-
-/* Outline Button Enhancement */
-.btn-outline-light {
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 100px;
-    padding: 15px 30px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.4s ease;
-    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     overflow: hidden;
+    box-shadow: 0 0 0 5px white;
 }
 
-.btn-outline-light:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
-    transform: translateY(-3px);
+.testimonial-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testimonial-text {
+    margin-top: 30px;
+    font-style: italic;
+    color: #555;
+}
+
+.testimonial-name {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(90deg, var(--primary-color), #ff9f50);
+    color: white;
+    padding: 70px 0;
+    border-radius: 20px;
+    margin: 80px 0;
+    box-shadow: 0 10px 30px rgba(255, 107, 0, 0.3);
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+.promo-code {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.cta-section .btn {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.cta-section .btn:hover {
+    transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
 }
 
-/* Text Colors */
-.text-muted {
-    color: var(--muted-text) !important;
+/* App Download Section */
+.app-download-section {
+    background: white;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
 }
 
-/* Custom Scrollbar - Dark Theme */
-::-webkit-scrollbar {
-    width: 12px;
+.app-download-section h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #222;
 }
 
-::-webkit-scrollbar-track {
-    background: var(--dark-bg);
+.app-download-section p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 25px;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 6px;
-    border: 3px solid var(--dark-bg);
+.app-buttons {
+    display: flex;
+    gap: 15px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary-color);
+.app-button {
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.app-button:hover {
+    transform: translateY(-5px);
+}
+
+.app-button img {
+    height: 50px;
+}
+
+/* Animation keyframes */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 /* Responsive Design */
+@media (max-width: 991px) {
+    .section-title {
+        font-size: 2.2rem;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+    }
+    
+    .cta-section h2 {
+        font-size: 2.2rem;
+    }
+}
+
 @media (max-width: 768px) {
     .hero-section {
-        padding: 80px 0;
+        padding: 100px 20px;
     }
-
-    .display-4 {
+    
+    .hero-title {
         font-size: 2.5rem;
     }
     
-    .lead {
+    .hero-subtitle {
         font-size: 1.1rem;
     }
-
-    .btn-glow, .btn-outline-light {
-        padding: 12px 24px;
+    
+    .section-title {
+        font-size: 2rem;
     }
-
-    .icon-circle {
-        width: 60px;
-        height: 60px;
+    
+    .cta-section {
+        text-align: center;
     }
-
-    .icon-circle svg {
-        width: 24px;
-        height: 24px;
+    
+    .testimonial-card {
+        margin-bottom: 50px;
+    }
+    
+    .app-download-section {
+        text-align: center;
+        padding: 30px;
+    }
+    
+    .app-buttons {
+        justify-content: center;
     }
 }
 
-/* Ticket Icon Animation */
-.bi-ticket-perforated {
-    animation: ticket-wave 2s ease-in-out infinite;
-}
-@keyframes ticket-wave {
-    0%, 100% {
-        transform: rotate(0deg);
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
     }
-    25% {
-        transform: rotate(-3deg);
+    
+    .section-title {
+        font-size: 1.8rem;
     }
-    75% {
-        transform: rotate(3deg);
+    
+    .cta-section h2 {
+        font-size: 1.8rem;
+    }
+    
+    .cta-section p {
+        font-size: 1rem;
+    }
+    
+    .hero-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
     }
 }
 </style>
+
 {% endblock %}
