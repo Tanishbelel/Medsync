@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedSync - Prescription Analysis Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header text-center p-4 sea-green-gradient border-0">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background-color: white; border-radius: 50%;">
+                            <i class="bi bi-clipboard2-pulse" style="font-size: 2.5rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h3 class="fw-bold text-white mb-1">Prescription Analysis</h3>
+                        <p class="text-white-50 mb-0">Here are the medicines extracted from your prescription</p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="results-container">
+                            <div class="section-title d-flex align-items-center mb-3">
+                                <i class="bi bi-capsule me-2" style="color: var(--primary-color); font-size: 1.5rem;"></i>
+                                <h2 class="mb-0">Extracted Medicines</h2>
+                            </div>
+                            
+                            <div class="medicine-list p-3 rounded-3">
+                                <ul class="list-unstyled">
+                                    {% for name, details in medicines.items %}
+                                        <li class="medicine-item p-3 mb-3 rounded-3">
+                                            <div class="d-flex align-items-start">
+                                                <div class="medicine-icon me-3">
+                                                    <i class="bi bi-capsule-pill" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                                                </div>
+                                                <div class="medicine-content">
+                                                    <h5 class="medicine-name mb-1">{{ name }}</h5>
+                                                    <p class="medicine-details mb-0">{{ details }}</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <div class="alert alert-info p-3 rounded-3 d-flex align-items-center">
+                                    <i class="bi bi-info-circle-fill me-3" style="font-size: 1.5rem;"></i>
+                                    <div>
+                                        <h6 class="mb-1">Important Note</h6>
+                                        <p class="mb-0 small">Always consult with your healthcare provider before starting, stopping, or changing any medication.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-light p-4 text-center border-0 rounded-bottom-4">
+                        <a href="{% url 'upload_prescription' %}" class="btn btn-primary btn-lg px-4 rounded-pill">
+                            <i class="bi bi-upload me-2"></i> Upload Another Prescription
+                        </a>
+                        <p class="text-muted small mt-3 mb-0">
+                            Need help understanding your medication? <a href="#" class="text-decoration-none">Contact our pharmacist</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2e8b57; /* Sea Green */
+            --secondary-color: #20b2aa; /* Light Sea Green */
+            --accent-color: #1e6e5c; /* Dark Sea Green */
+            --light-bg: #f0f8f6; /* Very Light Sea Green */
+            --text-color: #2c3e50; /* Dark Slate Gray */
+        }
+        
+        body {
+            background-color: #e8f5f2; /* Light sea green background */
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Sea Green Gradient */
+        .sea-green-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+        
+        /* Card styling */
+        .card {
+            border-radius: 1rem;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .rounded-4 {
+            border-radius: 1rem !important;
+        }
+        
+        .rounded-bottom-4 {
+            border-bottom-left-radius: 1rem !important;
+            border-bottom-right-radius: 1rem !important;
+        }
+        
+        /* Medicine list styling */
+        .medicine-list {
+            background-color: var(--light-bg);
+        }
+        
+        .medicine-item {
+            background-color: white;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .medicine-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .medicine-name {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .medicine-details {
+            color: var(--text-color);
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Alert styling */
+        .alert-info {
+            background-color: rgba(32, 178, 170, 0.1);
+            border-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        /* Section title */
+        .section-title {
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 0.75rem;
+        }
+        
+        /* Links */
+        a {
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+    </style>
+</body>
+</html>

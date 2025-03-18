@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block start %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-success text-white">
+                    <h2 class="text-center mb-0 py-3">Buy Health Insurance</h2>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-center text-muted mb-4">Choose a plan that best suits your needs and proceed with the purchase.</p>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <label for="plan_name">Plan name:</label>
+                        <select id="plan_name" name="plan_name" class="form-control">
+                            <option value="Basic Health">Basic Health</option>
+                            <option value="Premium Health">Premium Health</option>
+                            <option value="Family Care">Family Care</option>
+                        </select>
+                    
+                        <label for="coverage_amount">Coverage amount:</label>
+                        <select id="coverage_amount" name="coverage_amount" class="form-control">
+                            <option value="50000">₹50,000</option>
+                            <option value="100000">₹1,00,000</option>
+                            <option value="500000">₹5,00,000</option>
+                        </select>
+                    
+                        <label for="monthly_premium">Monthly premium:</label>
+                        <select id="monthly_premium" name="monthly_premium" class="form-control">
+                            <option value="500">₹500</option>
+                            <option value="1000">₹1,000</option>
+                            <option value="5000">₹5,000</option>
+                        </select>
+                    
+                        <button type="submit" class="btn btn-success mt-3">Purchase Insurance</button>
+                    </form>
+                    
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="text-muted mb-0">Need help? Contact our support team at <strong>support@medsync.com</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Benefits section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">Why Choose MedSync Insurance?</h3>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 hover-shadow-lg">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-hospital text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="card-title">Comprehensive Coverage</h5>
+                    <p class="card-text">Access to a wide network of hospitals and specialists with minimal waiting periods.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 hover-shadow-lg">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-cash-coin text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="card-title">Affordable Premiums</h5>
+                    <p class="card-text">Flexible payment options with competitive rates and family discounts.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 hover-shadow-lg">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-clock-history text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <h5 class="card-title">24/7 Support</h5>
+                    <p class="card-text">Round-the-clock customer service and emergency assistance whenever you need it.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-green: #28a745;
+        --dark-green: #218838;
+        --light-green: #e8f5e9;
+        --hover-green: #1e7e34;
+    }
+    
+    .hover-shadow-lg {
+        transition: box-shadow 0.3s ease-in-out;
+    }
+    .hover-shadow-lg:hover {
+        box-shadow: 0 1rem 3rem rgba(0, 128, 0, 0.15)!important;
+        border-color: var(--primary-green);
+    }
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+        border-color: #e0e0e0;
+    }
+    form .form-group p {
+        margin-bottom: 1.5rem;
+    }
+    form .form-group p label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+        color: #495057;
+    }
+    form .form-group p input, 
+    form .form-group p select, 
+    form .form-group p textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+    }
+    form .form-group p input:focus, 
+    form .form-group p select:focus, 
+    form .form-group p textarea:focus {
+        border-color: var(--primary-green);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    .bg-success {
+        background-color: var(--primary-green) !important;
+    }
+    .text-success {
+        color: var(--primary-green) !important;
+    }
+    .btn-success {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+        transition: all 0.3s ease;
+    }
+    .btn-success:hover {
+        background-color: var(--dark-green);
+        border-color: var(--hover-green);
+        transform: translateY(-2px);
+    }
+    .btn-outline-success {
+        color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+    .btn-outline-success:hover {
+        background-color: var(--primary-green);
+        color: white;
+    }
+    .card-header.bg-success {
+        border-bottom: 0;
+    }
+    h3 {
+        color: #2e7d32;
+    }
+    /* Optional subtle green background */
+    body {
+        background-color: #fbfdf8;
+    }
+</style>
+{% endblock %}

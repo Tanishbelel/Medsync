@@ -20,6 +20,13 @@ from main.views import *
 from django.conf import settings
 from django.conf.urls.static import static 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.shortcuts import redirect
+from django.urls import include, path
+from main.views import *
+from ocr.views import upload_prescription
+
+def redirect_to_chatbot(request):
+    return redirect("chatbot")  # Redirect to chatbot URL
 
 urlpatterns = [
     path('' , home , name="home"),
@@ -52,8 +59,15 @@ urlpatterns = [
     path('buy_vibies/', buy_vibies, name='buy_vibies'),
     path('select-seats/<int:event_id>/', select_seats, name='select_seats'),
     path('events/delete/<int:event_id>/', delete_event, name='delete_event'),
-    
-    
+     path('book/', book_consultation, name='book_consultation'),
+    path('confirmation/<int:appointment_id>/', appointment_confirmation, name='appointment_confirmation'),
+    path('doctor-availability/<int:doctor_id>/', get_doctor_availability, name='doctor_availability'),
+    path('cancel/<int:appointment_id>/', cancel_appointment, name='cancel_appointment'),
+     path('chatbot/', chatbot_view, name='chatbot'),
+    path('admin/', admin.site.urls),
+    path("ocr/upload-prescription/", upload_prescription, name="upload_prescription"),
+    path('insurance/', insurance_page, name='insurance_page'),
+    path('insurance/success/', insurance_success, name='insurance_success'),
     
    
     
@@ -66,3 +80,5 @@ urlpatterns = [
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
+   

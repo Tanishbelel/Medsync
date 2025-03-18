@@ -1,0 +1,503 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedSync</title>
+    <style>
+        /* Base styles */
+        :root {
+            --primary-color: #59db42;
+            --primary-light: #59db42;
+            --primary-dark: #21fd08;
+            --bg-color: #f7fafc;
+            --container-bg: #ffffff;
+            --text-color: #2d3748;
+            --input-bg: #edf2f7;
+            --chat-user-bg: #e9d5ff;
+            --chat-bot-bg: #edf2f7;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #e2e8f0;
+        }
+
+        /* Dark theme variables */
+        .dark-theme {
+            --primary-color: #3f21c4;
+            --primary-light: #2f01fd;
+            --primary-dark: #2f01fd;
+            --bg-color: #1a202c;
+            --container-bg: #2d3748;
+            --text-color: #f7fafc;
+            --input-bg: #4a5568;
+            --chat-user-bg: #553c9a;
+            --chat-bot-bg: #4a5568;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #4a5568;
+        }
+
+        /* Transition for all color properties */
+        * {
+            transition-property: background-color, color, border-color, box-shadow;
+            transition-duration: 0.5s;
+            transition-timing-function: ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background shapes */
+        .background-shape {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.5;
+            transition: all 0.5s ease;
+        }
+
+        .circle1 {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+            top: -100px;
+            left: -100px;
+        }
+
+        .circle2 {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .square1 {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+            bottom: 100px;
+            left: 50px;
+            transform: rotate(45deg);
+        }
+
+        .square2 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+            top: 100px;
+            right: 80px;
+            transform: rotate(20deg);
+        }
+
+        .triangle1 {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 86px solid var(--primary-light);
+            top: 200px;
+            left: 300px;
+        }
+
+        .dot1, .dot2, .dot3 {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+        }
+
+        .dot1 {
+            top: 40%;
+            left: 20%;
+        }
+
+        .dot2 {
+            top: 60%;
+            right: 30%;
+        }
+
+        .dot3 {
+            bottom: 25%;
+            left: 40%;
+        }
+
+        .wave1, .wave2 {
+            width: 200px;
+            height: 50px;
+            background: var(--primary-light);
+            opacity: 0.3;
+            border-radius: 100px / 25px;
+        }
+
+        .wave1 {
+            top: 30%;
+            right: 10%;
+            transform: rotate(30deg);
+        }
+
+        .wave2 {
+            bottom: 20%;
+            left: 10%;
+            transform: rotate(-15deg);
+        }
+
+        /* Chat container */
+        #chat-container {
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
+            max-height: 700px;
+            background-color: var(--container-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        /* Header */
+        #heading {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.5s ease;
+        }
+
+        /* Theme toggle */
+        #theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        #theme-toggle i {
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Chat window */
+        #chat-window {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        #chat-log {
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) var(--input-bg);
+            transition: all 0.5s ease;
+        }
+
+        #chat-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-log::-webkit-scrollbar-track {
+            background: var(--input-bg);
+            border-radius: 10px;
+        }
+
+        #chat-log::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 10px;
+        }
+
+        .user-message, .bot-message {
+            max-width: 80%;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            line-height: 1.4;
+            transition: all 0.5s ease;
+        }
+
+        .user-message {
+            background-color: var(--chat-user-bg);
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            color: var(--text-color);
+        }
+
+        .bot-message {
+            background-color: var(--chat-bot-bg);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Input area */
+        #user-input {
+            padding: 15px;
+            border: none;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            font-size: 16px;
+            flex: 1;
+            outline: none;
+            color: var(--text-color);
+            transition: all 0.5s ease;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        }
+
+        .input-container {
+            display: flex;
+            border-top: 1px solid var(--border-color);
+            transition: all 0.5s ease;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            margin-bottom: 15px;
+        }
+
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            margin: 0 2px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: inline-block;
+            opacity: 0.4;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- CSRF Token for Django -->
+    {% csrf_token %}
+</head>
+<body>
+    <div class="background-shape circle1"></div>
+    <div class="background-shape circle2"></div>
+    <div class="background-shape square1"></div>
+    <div class="background-shape square2"></div>
+    <div class="background-shape triangle1"></div>
+    <div class="background-shape dot1"></div>
+    <div class="background-shape dot2"></div>
+    <div class="background-shape dot3"></div>
+    <div class="background-shape wave1"></div>
+    <div class="background-shape wave2"></div>
+  
+    <div id="chat-container">
+        <h1 id="heading">
+            MedSync
+            <button id="theme-toggle" aria-label="Toggle dark mode">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+        </h1>
+        <div id="chat-window">
+            <div id="chat-log">
+                <div class="bot-message"><b>MedSync:</b> Hello! How can I help you today?</div>
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+  
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        // Check for saved theme preference or use preferred color scheme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            enableDarkMode();
+        } else {
+            disableDarkMode();
+        }
+        
+        function enableDarkMode() {
+            body.classList.add('dark-theme');
+            themeIcon.className = 'fas fa-sun';
+            localStorage.setItem('theme', 'dark');
+        }
+        
+        function disableDarkMode() {
+            body.classList.remove('dark-theme');
+            themeIcon.className = 'fas fa-moon';
+            localStorage.setItem('theme', 'light');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('dark-theme')) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+
+        // Format message with markdown-like syntax
+        function formatMessage(message) {
+            // Replace asterisks with bold tags
+            return message.replace(/\\(.?)\\*/g, '<strong>$1</strong>')
+                         .replace(/\n/g, '<br>');
+        }
+
+        // Generate a progressive response
+        function generateProgressiveResponse(element, fullResponse, typeDelay = 30) {
+            const words = fullResponse.split(' ');
+            let currentIndex = 0;
+            
+            function typeNextWord() {
+                if (currentIndex < words.length) {
+                    element.innerHTML += (currentIndex > 0 ? ' ' : '') + words[currentIndex];
+                    currentIndex++;
+                    element.parentNode.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    setTimeout(typeNextWord, typeDelay);
+                }
+            }
+            
+            typeNextWord();
+        }
+
+        // Get CSRF token
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+
+        async function sendMessage() {
+            const userInput = document.getElementById("user-input");
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            const chatLog = document.getElementById("chat-log");
+            chatLog.innerHTML += `<div class="user-message"><b>You:</b> ${message}</div>`;
+            userInput.value = '';
+
+            // Add typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+            chatLog.appendChild(typingIndicator);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            try {
+                // Send request to Django backend
+                const formData = new FormData();
+                formData.append('message', message);
+                formData.append('csrfmiddlewaretoken', getCSRFToken());
+                
+                const response = await fetch('', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                chatLog.removeChild(typingIndicator);
+                
+                // Create bot response element
+                const botResponse = document.createElement('div');
+                botResponse.className = 'bot-message';
+                
+                // Add MediSync prefix instead of MediBot
+                botResponse.innerHTML = '<b>MedSync:</b> ';
+                
+                // Add to chat log
+                chatLog.appendChild(botResponse);
+                
+                // Add the text progressively
+                const textContainer = document.createElement('span');
+                botResponse.appendChild(textContainer);
+                generateProgressiveResponse(textContainer, formatMessage(data.response));
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Remove typing indicator
+                chatLog.removeChild(typingIndicator);
+                
+                // Show error message with MediSync prefix instead of MediBot
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'bot-message';
+                errorMessage.innerHTML = '<b>MedSync:</b> <span>Sorry, I encountered an error. Please try again later.</span>';
+                chatLog.appendChild(errorMessage);
+            }
+
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

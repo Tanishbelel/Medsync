@@ -25,14 +25,177 @@
             height: 100%;
             border: none;
         }
+        /* Chatbot styles */
+        .chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px; 
+    border-radius: 25%;
+    background-color: #2196F3; /* Changed to blue */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+
+
+/* Spline text alignment */
+.spline-text {
+    position: fixed;
+    bottom: 30px; /* Align with the chatbot button */
+    right: 90px; /* Position next to the button */
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+}
+        .chatbot-icon {
+            font-size: 24px;
+        }
+        .chat-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .chat-header {
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: var(--light-bg);
+        }
+        .chat-input-container {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+            background-color: white;
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .chat-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.2);
+        }
+        .chat-send {
+            margin-left: 10px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .chat-send:hover {
+            background-color: var(--secondary-color);
+        }
+        .bot-message {
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            display: inline-block;
+            max-width: 80%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+        }
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            display: inline-block;
+            max-width: 80%;
+            margin-left: auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+        }
+        .user-message-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+        .blur-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          backdrop-filter: blur(12px); /* Control blur strength */
+          -webkit-backdrop-filter: blur(12px); /* For Safari */
+          z-index: 0; /* Make sure it's behind the chatbot button and chatbox */
+      }
     </style>
 </head>
 <body>
-    <iframe src="https://my.spline.design/pillanddnaanimation-1312b8dab64af0cebbb8e91646ce732b/" allowfullscreen></iframe>
+  <!-- Blur Overlay -->
+  <div class="blur-overlay"><iframe src="https://my.spline.design/pillanddnaanimation-1312b8dab64af0cebbb8e91646ce732b/" allowfullscreen></iframe>
+  </div>
+
+    
+    
+    <!-- Chatbot Button -->
+    <a href="chatbot/">
+      <div class="chatbot-button" id="chatbotButton">
+          <i class="bi bi-chat-dots-fill chatbot-icon"></i>
+          <span class="chatbot-text">MedSync</span>
+      </div>
+  </a>
+   
+    
+    <!-- Chat Container -->
+    
+            <!-- Messages will be inserted here -->
+            <div class="bot-message">
+                <strong>MedSync Assistant:</strong> Hello! How can I help you with your healthcare needs today?
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+            <button class="chat-send" id="sendMessage">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
 </body>
 </html>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -61,57 +224,117 @@ $(document).ready(function() {
             }
         });
     });
-
+    
     // Countdown timer functionality
     function updateTimer() {
         const countdownEl = document.getElementById('countdown');
-        let [hours, minutes, seconds] = countdownEl.textContent.split(':').map(Number);
-        
-        setInterval(() => {
-            if (seconds > 0) {
-                seconds--;
-            } else if (minutes > 0) {
-                minutes--;
-                seconds = 59;
-            } else if (hours > 0) {
-                hours--;
-                minutes = 59;
-                seconds = 59;
-            }
+        if (countdownEl) {
+            let [hours, minutes, seconds] = countdownEl.textContent.split(':').map(Number);
             
-            countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }, 1000);
-    }
-
-    updateTimer();
-});
-$('#searchInput').on('input', function() {
-    const searchTerm = $(this).val().toLowerCase().trim();
-    
-    $('.searchable-item').each(function() {
-        const $item = $(this);
-        const titleText = $item.find('.card-title').text().toLowerCase();
-        const descriptionText = $item.find('.card-text').text().toLowerCase();
-        const priceText = $item.find('.h4').text().toLowerCase();
-        
-        const searchableText = `${titleText} ${descriptionText} ${priceText}`;
-        const matches = searchableText.includes(searchTerm);
-        
-        $item.toggle(matches);
-    });
-
-    // Show "No results found" message if no items are visible
-    const visibleItems = $('.searchable-item:visible').length;
-    if (visibleItems === 0 && searchTerm !== '') {
-        if ($('#no-results').length === 0) {
-            $('.row.g-4').after('<div id="no-results" class="text-center mt-4"><p class="text-muted">No matches found</p></div>');
+            setInterval(() => {
+                if (seconds > 0) {
+                    seconds--;
+                } else if (minutes > 0) {
+                    minutes--;
+                    seconds = 59;
+                } else if (hours > 0) {
+                    hours--;
+                    minutes = 59;
+                    seconds = 59;
+                }
+                
+                countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }, 1000);
         }
-    } else {
-        $('#no-results').remove();
+    }
+    updateTimer();
+    
+    // Search functionality
+    $('#searchInput').on('input', function() {
+        const searchTerm = $(this).val().toLowerCase().trim();
+        
+        $('.searchable-item').each(function() {
+            const $item = $(this);
+            const titleText = $item.find('.card-title').text().toLowerCase();
+            const descriptionText = $item.find('.card-text').text().toLowerCase();
+            const priceText = $item.find('.h4').text().toLowerCase();
+            
+            const searchableText = `${titleText} ${descriptionText} ${priceText}`;
+            const matches = searchableText.includes(searchTerm);
+            
+            $item.toggle(matches);
+        });
+        
+        // Show "No results found" message if no items are visible
+        const visibleItems = $('.searchable-item:visible').length;
+        if (visibleItems === 0 && searchTerm !== '') {
+            if ($('#no-results').length === 0) {
+                $('.row.g-4').after('<div id="no-results" class="text-center mt-4"><p class="text-muted">No matches found</p></div>');
+            }
+        } else {
+            $('#no-results').remove();
+        }
+    });
+    
+    // Chatbot functionality
+    $('#chatbotButton').click(function() {
+        $('#chatContainer').fadeToggle();
+    });
+    
+    $('#closeChat').click(function() {
+        $('#chatContainer').fadeOut();
+    });
+    
+    $('#sendMessage').click(sendChatMessage);
+    
+    $('#chatInput').keypress(function(e) {
+        if (e.which === 13) {
+            sendChatMessage();
+        }
+    });
+    
+    function sendChatMessage() {
+        const message = $('#chatInput').val().trim();
+        if (message) {
+            // Add user message
+            $('#chatMessages').append(`
+                <div class="user-message-container">
+                    <div class="user-message">${message}</div>
+                </div>
+            `);
+            
+            // Clear input
+            $('#chatInput').val('');
+            
+            // Scroll to bottom
+            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+            
+            // Simulate bot response after a delay
+            setTimeout(() => {
+                let botResponse = "Thank you for your message. Our healthcare team will get back to you shortly.";
+                
+                // Simple response logic based on keywords
+                if (message.toLowerCase().includes("prescription")) {
+                    botResponse = "For prescription-related inquiries, please ensure you have your prescription ID ready. Our pharmacist will assist you shortly.";
+                } else if (message.toLowerCase().includes("delivery")) {
+                    botResponse = "We offer same-day delivery for orders placed before 2 PM. Would you like to check the status of your order?";
+                } else if (message.toLowerCase().includes("price") || message.toLowerCase().includes("cost")) {
+                    botResponse = "Our prices are competitive and we offer various discounts for regular customers. Is there a specific medication you're inquiring about?";
+                }
+                
+                $('#chatMessages').append(`
+                    <div class="bot-message">
+                        <strong>MedSync Assistant:</strong> ${botResponse}
+                    </div>
+                `);
+                
+                // Scroll to bottom again
+                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+            }, 1000);
+        }
     }
 });
 </script>
-
 <style>
 .hover-shadow-lg {
     transition: box-shadow 0.3s ease-in-out;
@@ -127,5 +350,43 @@ $('#searchInput').on('input', function() {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Chatbot styles */
+.chatbot-button {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 180px; 
+    height: 70px;
+    border: 2px solid white;
+    border-radius: 35px;
+    background-color:rgb(0, 90, 34);
+    color:rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.chatbot-button:hover {
+  color: #2E8B57;
+  border-color: #2E8B57;
+  background-color:rgb(207, 255, 207); /* Darker blue on hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Spline text alignment */
+.spline-text {
+    position: fixed;
+    bottom: 30px; /* Align with the chatbot button */
+    right: 90px; /* Position next to the button */
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+}
 </style>
 {% endblock %}

@@ -28,8 +28,77 @@ from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.contrib.admin.views.decorators import staff_member_required
 from .forms import *
+import google.generativeai as genai
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_protect
 
+from datetime import datetime, timedelta
 
+# Configure Gemini API
+API_KEY = "AIzaSyAOIxGJvzpiehT6i8en7RJL6ovvFRqA_ng"
+genai.configure(api_key=API_KEY)
+model = genai.GenerativeModel("gemini-1.5-pro-latest")
+
+# Define patterns for queries you want to handle specially
+DATE_PATTERNS = [
+    r"what('s| is)? (the )?date",
+    r"what day is (it|today)",
+    r"today'?s date",
+    r"current date"
+]
+
+TIME_PATTERNS = [
+    r"what('s| is)? (the )?time",
+    r"current time"
+]
+
+@csrf_protect
+def chatbot_view(request):
+    if request.method == "POST":
+        user_input = request.POST.get("message", "").strip().lower()
+        
+        if user_input:
+            # Check for date/time related queries and provide custom responses
+            if any(re.search(pattern, user_input) for pattern in DATE_PATTERNS):
+                return JsonResponse({
+                    "response": "I'm focused on medical questions. How can I help you with a health-related topic?"
+                })
+            
+            elif any(re.search(pattern, user_input) for pattern in TIME_PATTERNS):
+                return JsonResponse({
+                    "response": "I'm focused on medical questions. How can I help you with a health-related topic?"
+                })
+            
+            # Add more custom responses here
+            elif "who are you" in user_input or "what are you" in user_input:
+                return JsonResponse({
+                    "response": "I'm MediSync, an AI assistant designed to help with medical and health-related questions."
+                })
+                
+            try:
+                # For all other queries, use the Gemini API
+                # You can add system instructions to guide the model's behavior
+                system_instruction = """
+                You are MediSync, a medical assistant chatbot. Focus only on providing health and medical information in detail
+                - Do not provide information about dates, times, or non-medical topics
+                - If asked about date or time, redirect to medical topics
+                - Keep responses concise and helpful 
+                - When uncertain, suggest consulting a healthcare professional
+                """
+                #u can add and write in detail to make it a detail responsive BOT
+                # Generate response from Gemini with the system instruction
+                response = model.generate_content(
+                    [system_instruction, user_input]
+                )
+                
+                return JsonResponse({"response": response.text})
+                
+            except Exception as e:
+                # Handle API errors
+                return JsonResponse({"response": "I'm sorry, I'm having trouble processing your request. How can I help you with a health-related question?"}, status=500)
+    
+    # Render the chat template for GET requests
+    return render(request, "chatbot.html")
 
 def home(request):
     products = [
@@ -56,7 +125,7 @@ def login_page(request):
              return redirect('/login/')
         else :
             login(request, user)
-            return redirect('/main/')
+            return redirect('/')
 
     return render(request, 'login.html')
     
@@ -419,6 +488,10 @@ def orders(request):
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
         print(f"Number of orders found: {orders.count()}")
         
+        # Get all appointments for the current user
+        appointments = Appointment.objects.filter(patient=request.user).order_by('appointment_date', 'appointment_time')
+        print(f"Number of appointments found: {appointments.count()}")
+        
         # Print details of each order
         for order in orders:
             print(f"""
@@ -428,12 +501,24 @@ def orders(request):
                 - Total: {order.total_amount}
                 - Items: {order.items.all().count()}
             """)
-
+        
+        # Print details of each appointment
+        for appointment in appointments:
+            print(f"""
+                Appointment details:
+                - Doctor: Dr. {appointment.doctor.last_name}
+                - Date: {appointment.appointment_date}
+                - Time: {appointment.appointment_time}
+                - Status: {appointment.status}
+            """)
+        
         context = {
+            'appointments': appointments,
             'orders': orders,
             'debug_info': {
                 'user': request.user.username,
                 'order_count': orders.count(),
+                'appointment_count': appointments.count(),
                 'orders_list': [
                     {
                         'number': order.order_number,
@@ -441,16 +526,23 @@ def orders(request):
                         'total': float(order.total_amount),
                         'items_count': order.items.all().count()
                     } for order in orders
+                ],
+                'appointments_list': [
+                    {
+                        'doctor': f"Dr. {appointment.doctor.last_name}",
+                        'date': appointment.appointment_date.strftime('%Y-%m-%d'),
+                        'time': appointment.appointment_time,
+                        'status': appointment.status
+                    } for Appoint in Appointment
                 ]
             }
         }
         
         return render(request, 'orders.html', context)
-        
+    
     except Exception as e:
         print(f"Error in orders view: {str(e)}")
         return render(request, 'orders.html', {'error': str(e)})
-
 def is_staff(user):
     return user.is_staff
 
@@ -628,3 +720,202 @@ def delete_event(request, event_id):
     
     # Redirect to the vendor dashboard
     return redirect('vendor_dashboard')
+from .models import Doctor, Appointment, InsuranceInfo
+from .forms import AppointmentForm, InsuranceInfoForm
+
+@login_required
+def book_consultation(request):
+    """
+    View for booking a new consultation.
+    Handles both GET (display form) and POST (process form) requests.
+    """
+    # Get all active doctors
+    doctors = Doctor.objects.filter(is_active=True).order_by('specialization', 'last_name')
+    
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        insurance_form = InsuranceInfoForm(request.POST)
+        
+        if form.is_valid() and insurance_form.is_valid():
+            try:
+                # Create appointment but don't save yet
+                appointment = form.save(commit=False)
+                appointment.patient = request.user
+                
+                # Check if the slot is still available
+                existing_appointments = Appointment.objects.filter(
+                    doctor=appointment.doctor,
+                    appointment_date=appointment.appointment_date,
+                    appointment_time=appointment.appointment_time
+                )
+                
+                if existing_appointments.exists():
+                    messages.error(request, "Sorry, that time slot has just been booked. Please select another time.")
+                    return render(request, 'booking/book_consultation.html', {
+                        'form': form,
+                        'insurance_form': insurance_form,
+                        'doctors': doctors
+                    })
+                
+                # Save the appointment
+                appointment.save()
+                
+                # Save or update insurance info
+                if insurance_form.has_changed():
+                    insurance_info, created = InsuranceInfo.objects.update_or_create(
+                        patient=request.user,
+                        defaults={
+                            'provider': insurance_form.cleaned_data['insurance'],
+                            'policy_number': insurance_form.cleaned_data['policy_number']
+                        }
+                    )
+                
+                # Set new patient flag if checked
+                if 'new_patient' in request.POST:
+                    # Update user profile or associated patient profile
+                    profile = request.user.profile
+                    profile.is_new_patient = True
+                    profile.save()
+                
+                messages.success(request, "Appointment booked successfully! You'll receive a confirmation email shortly.")
+                return redirect('appointment_confirmation', appointment_id=appointment.id)
+                
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+                return render(request, 'booking/book_consultation.html', {
+                    'form': form,
+                    'insurance_form': insurance_form,
+                    'doctors': doctors
+                })
+        else:
+            # Form validation failed
+            messages.error(request, "Please correct the errors in the form.")
+    else:
+        # GET request - display empty form
+        form = AppointmentForm()
+        
+        # Pre-fill insurance info if available
+        try:
+            insurance_info = InsuranceInfo.objects.get(patient=request.user)
+            insurance_form = InsuranceInfoForm(initial={
+                'insurance': insurance_info.provider,
+                'policy_number': insurance_info.policy_number
+            })
+        except InsuranceInfo.DoesNotExist:
+            insurance_form = InsuranceInfoForm()
+    
+    return render(request, 'consultation.html', {
+        'form': form,
+        'insurance_form': insurance_form,
+        'doctors': doctors
+    })
+
+@login_required
+def appointment_confirmation(request, appointment_id):
+    """
+    Display confirmation page after successful booking
+    """
+    try:
+        appointment = Appointment.objects.get(id=appointment_id, patient=request.user)
+        return render(request, 'booking/confirmation.html', {'appointment': appointment})
+    except Appointment.DoesNotExist:
+        messages.error(request, "Appointment not found.")
+        return redirect('dashboard')
+
+@login_required
+def get_doctor_availability(request, doctor_id):
+    """
+    AJAX endpoint to fetch doctor availability for a specific date
+    """
+    try:
+        doctor = Doctor.objects.get(id=doctor_id)
+        selected_date = request.GET.get('date')
+        
+        if not selected_date:
+            return JsonResponse({'error': 'Date is required'}, status=400)
+        
+        # Parse the date
+        date_obj = datetime.strptime(selected_date, '%Y-%m-%d').date()
+        
+        # Check if date is in the past
+        if date_obj < timezone.now().date():
+            return JsonResponse({'error': 'Cannot check availability for past dates'}, status=400)
+        
+        # Get all booked slots for this doctor on the selected date
+        booked_slots = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date=date_obj
+        ).values_list('appointment_time', flat=True)
+        
+        # Get doctor's available hours based on their schedule
+        # This is a simplified version - in a real app, you'd check the doctor's working hours
+        all_slots = [
+            '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00',
+            '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+        ]
+        
+        # Remove booked slots from available slots
+        available_slots = [slot for slot in all_slots if slot not in booked_slots]
+        
+        return JsonResponse({
+            'doctor_name': f"Dr. {doctor.first_name} {doctor.last_name}",
+            'date': selected_date,
+            'available_slots': available_slots
+        })
+        
+    except Doctor.DoesNotExist:
+        return JsonResponse({'error': 'Doctor not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+@require_POST
+def cancel_appointment(request, appointment_id):
+    """
+    Cancel an existing appointment
+    """
+    try:
+        appointment = Appointment.objects.get(id=appointment_id, patient=request.user)
+        
+        # Check if appointment is in the future and cancellation is allowed
+        if appointment.appointment_date < timezone.now().date():
+            messages.error(request, "Cannot cancel past appointments.")
+            return redirect('dashboard')
+            
+        # Check if appointment is within 24 hours (for cancellation policy)
+        appointment_datetime = datetime.combine(
+            appointment.appointment_date, 
+            datetime.strptime(appointment.appointment_time, '%H:%M').time()
+        )
+        
+        if timezone.make_aware(appointment_datetime) - timezone.now() < timedelta(hours=24):
+            messages.warning(request, "Appointment cancelled with late cancellation fee.")
+            # Here you could add logic to apply a cancellation fee
+        else:
+            messages.success(request, "Appointment cancelled successfully.")
+        
+        # Mark as cancelled rather than deleting
+        appointment.status = 'CANCELLED'
+        appointment.save()
+        
+        return redirect('dashboard')
+        
+    except Appointment.DoesNotExist:
+        messages.error(request, "Appointment not found.")
+        return redirect('dashboard')
+@login_required
+def insurance_page(request):
+    if request.method == "POST":
+        form = InsurancePurchaseForm(request.POST)
+        if form.is_valid():
+            insurance = form.save(commit=False)
+            insurance.user = request.user
+            insurance.save()
+            return redirect('insurance_success')  # Redirect after purchase
+    else:
+        form = InsurancePurchaseForm()
+    
+    return render(request, 'insurance.html', {'form': form})
+
+def insurance_success(request):
+    return render(request, 'insurance_success.html')

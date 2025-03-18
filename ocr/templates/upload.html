@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedSync - Prescription Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header text-center p-4 sea-green-gradient border-0">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background-color: white; border-radius: 50%;">
+                            <i class="bi bi-file-medical" style="font-size: 2.5rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h3 class="fw-bold text-white mb-1">Upload Prescription</h3>
+                        <p class="text-white-50 mb-0">We'll analyze your prescription details</p>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <form method="post" enctype="multipart/form-data" class="prescription-form">
+                            {% csrf_token %}
+                            
+                            <div class="upload-area mb-4">
+                                <div class="upload-placeholder text-center p-5 rounded-3">
+                                    <i class="bi bi-cloud-arrow-up-fill mb-3" style="font-size: 3rem; color: var(--primary-color);"></i>
+                                    <h5 class="mb-2">Drag & Drop your prescription</h5>
+                                    <p class="text-muted mb-3">or select a file from your device</p>
+                                    
+                                    <div class="position-relative">
+                                        <input type="file" name="prescription" id="prescription" accept="image/*" class="file-input" required>
+                                        <label for="prescription" class="btn btn-outline-primary px-4 py-2 rounded-pill select-file-btn">
+                                            Select File
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="selected-file mt-3 d-none">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-file-earmark-image me-2" style="color: var(--primary-color);"></i>
+                                            <span class="file-name">No file selected</span>
+                                            <button type="button" class="btn btn-sm text-danger ms-2 remove-file">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="upload-guidelines mb-4">
+                                <h6 class="text-muted mb-2"><i class="bi bi-info-circle me-1"></i> Guidelines for best results:</h6>
+                                <ul class="small text-muted">
+                                    <li>Ensure the prescription is clearly visible</li>
+                                    <li>Make sure all text is legible</li>
+                                    <li>Include the entire prescription in the image</li>
+                                    <li>Supported formats: JPG, PNG, GIF</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                                <label class="form-check-label small" for="termsCheck">
+                                    I confirm this is a valid prescription and I have the right to upload it
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg upload-btn">
+                                    <i class="bi bi-upload me-2"></i> Upload & Analyze
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="card-footer bg-light p-3 text-center border-0 rounded-bottom-4">
+                        <p class="text-muted small mb-0">
+                            Your prescription data is encrypted and secure. 
+                            <a href="#" class="text-decoration-none" style="color: var(--primary-color);">Learn more</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('prescription');
+            const selectedFile = document.querySelector('.selected-file');
+            const fileName = document.querySelector('.file-name');
+            const removeBtn = document.querySelector('.remove-file');
+            const uploadArea = document.querySelector('.upload-area');
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    fileName.textContent = this.files[0].name;
+                    selectedFile.classList.remove('d-none');
+                    uploadArea.classList.add('has-file');
+                } else {
+                    selectedFile.classList.add('d-none');
+                    uploadArea.classList.remove('has-file');
+                }
+            });
+            
+            removeBtn.addEventListener('click', function() {
+                fileInput.value = '';
+                selectedFile.classList.add('d-none');
+                uploadArea.classList.remove('has-file');
+            });
+            
+            // Add drag and drop functionality
+            const dropArea = document.querySelector('.upload-placeholder');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('highlight');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('highlight');
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                
+                if (files.length > 0) {
+                    fileName.textContent = files[0].name;
+                    selectedFile.classList.remove('d-none');
+                    uploadArea.classList.add('has-file');
+                }
+            }
+        });
+    </script>
+    
+    <style>
+        :root {
+            --primary-color: #2e8b57; /* Sea Green */
+            --secondary-color: #20b2aa; /* Light Sea Green */
+            --accent-color: #1e6e5c; /* Dark Sea Green */
+            --light-bg: #f0f8f6; /* Very Light Sea Green */
+            --text-color: #2c3e50; /* Dark Slate Gray */
+        }
+        
+        body {
+            background-color: #e8f5f2; /* Light sea green background */
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Sea Green Gradient */
+        .sea-green-gradient {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+        
+        /* Card styling */
+        .card {
+            border-radius: 1rem;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .rounded-4 {
+            border-radius: 1rem !important;
+        }
+        
+        .rounded-bottom-4 {
+            border-bottom-left-radius: 1rem !important;
+            border-bottom-right-radius: 1rem !important;
+        }
+        
+        /* Upload area styling */
+        .upload-placeholder {
+            border: 2px dashed var(--primary-color);
+            transition: all 0.3s ease;
+            background-color: var(--light-bg);
+        }
+        
+        .upload-placeholder:hover, .upload-placeholder.highlight {
+            background-color: rgba(46, 139, 87, 0.1);
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .select-file-btn {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .select-file-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .upload-area.has-file .upload-placeholder {
+            background-color: rgba(46, 139, 87, 0.1);
+            border-color: var(--secondary-color);
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Form check styling */
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* Animations */
+        .upload-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Links */
+        a {
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+    </style>
+</body>
+</html>

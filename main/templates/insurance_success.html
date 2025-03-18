@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block start %}
+<div class="container text-align-center py-5">
+    <h2>Insurance Purchased Successfully!</h2>
+    <p>Thank you for buying insurance with MedSync.</p>
+    <a href="{% url 'main' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+
+
+<style>
+    .btn-primary {
+        background-color: #2e8b57;
+        border-color: #2e2e2e;
+    }
+</style>
+{% endblock %}
