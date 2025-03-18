@@ -68,6 +68,9 @@ urlpatterns = [
     path("ocr/upload-prescription/", upload_prescription, name="upload_prescription"),
     path('insurance/', insurance_page, name='insurance_page'),
     path('insurance/success/', insurance_success, name='insurance_success'),
+    path('ambulance/', ambulance, name='ambulance'),
+    path('profile/', profile, name='profile'),
+
     
    
     

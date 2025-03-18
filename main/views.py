@@ -919,3 +919,19 @@ def insurance_page(request):
 
 def insurance_success(request):
     return render(request, 'insurance_success.html')
+
+def ambulance(request):
+    return render(request,'emerg.html')
+
+from .forms import PatientProfileForm
+def profile(request):
+    if request.method == "POST":
+        form = PatientProfileForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = PatientProfileForm()
+    
+    patients = PatientProfile.objects.all()
+    return render(request, 'profile.html', {'form': form, 'patients': patients})

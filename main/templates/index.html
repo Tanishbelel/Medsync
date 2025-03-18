@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spline 3D Model</title>
+    <title>MedSync - Simplifying Healthcare, Enhancing Lives</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     <style>
         * {
             margin: 0;
@@ -16,377 +17,275 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
         }
-        iframe {
+        .main-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .spline-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
+        }
+        .content-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+        }
+        .header-text {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+        }
+        .tagline {
+            font-size: 2rem;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
             border: none;
         }
+        /* Emergency SOS button styles */
+        .emergency-sos {
+            position: absolute;
+            top: 700px;
+            right: 1450px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #FF0000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+            }
+        }
+        .emergency-icon {
+            font-size: 24px;
+        }
+        
         /* Chatbot styles */
         .chatbot-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 180px; 
+            height: 70px;
+            border: 2px solid white;
+            border-radius: 35px;
+            background-color: rgb(0, 90, 34);
+            color: rgb(255, 255, 255);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .chatbot-button:hover {
+            color: #2E8B57;
+            border-color: #2E8B57;
+            background-color: rgb(207, 255, 207);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        .chatbot-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Full-screen Spline Model Container -->
+        <div class="spline-container">
+            <iframe src="https://my.spline.design/pillanddnaanimation-1312b8dab64af0cebbb8e91646ce732b/" allowfullscreen></iframe>
+        </div>
+        
+        <!-- Content Overlay (Centered on top of Spline) -->
+        <div class="content-overlay">
+            <h1 class="header-text">MedSync</h1>
+            <p class="tagline">Simplifying Healthcare, Enhancing Lives</p>
+        </div>
+    </div>
+    
+    <!-- Emergency SOS Button - Moved to overlay on top of Spline -->
+   
+    <!-- empty container -->
+    <style>
+        .custom-container {
+            position: absolute;
+            width: 300px;  /* Set width */
+            height: 100px; /* Set height */
+            background-color: #008D52; /* Green background */
+            margin: 20px auto; /* Centering */
+            z-index: 1000;
+            right: 10px;
+            top: 410px;
+        }
+        /* Emergency SOS button styles */
+.emergency-sos {
+    position: absolute;
+    top: 675px;
+    left: 20px; /* Changed from right: 1375px to left: 20px for better positioning */
     width: 60px;
-    height: 60px; 
-    border-radius: 25%;
-    background-color: #2196F3; /* Changed to blue */
+    height: 60px;
+    border-radius: 30px;
+    background-color: #FF0000;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     z-index: 1000;
+    animation: pulse 2s infinite;
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
 }
 
-
-
-/* Spline text alignment */
-.spline-text {
-    position: fixed;
-    bottom: 30px; /* Align with the chatbot button */
-    right: 90px; /* Position next to the button */
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    z-index: 1000;
+.emergency-sos .emergency-icon {
+    font-size: 24px;
+    transition: margin-right 0.3s ease;
 }
-        .chatbot-icon {
+
+.emergency-sos .emergency-text {
+    white-space: nowrap;
+    opacity: 0;
+    width: 0;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 0;
+}
+
+.emergency-sos:hover {
+    width: 200px;
+    border-radius: 30px;
+    transform: translateX(30px); /* Shifts button to the right when hovered */
+    justify-content: flex-start;
+    padding-left: 20px;
+    animation: pulse-hover 1.5s infinite;
+}
+
+.emergency-sos:hover .emergency-icon {
+    margin-right: 10px;
+}
+
+.emergency-sos:hover .emergency-text {
+    opacity: 1;
+    width: auto;
+    font-size: 16px;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+@keyframes pulse-hover {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.9);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}      
+  .emergency-icon {
             font-size: 24px;
         }
-        .chat-container {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 350px;
-            height: 450px;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-            display: none;
-            flex-direction: column;
-            z-index: 1000;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-        .chat-header {
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .chat-messages {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background-color: var(--light-bg);
-        }
-        .chat-input-container {
-            display: flex;
-            padding: 12px;
-            border-top: 1px solid var(--border-color);
-            background-color: white;
-        }
-        .chat-input {
-            flex-grow: 1;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            outline: none;
-            font-family: 'Montserrat', sans-serif;
-        }
-        .chat-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.2);
-        }
-        .chat-send {
-            margin-left: 10px;
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .chat-send:hover {
-            background-color: var(--secondary-color);
-        }
-        .bot-message {
-            background-color: white;
-            padding: 10px 15px;
-            border-radius: 18px;
-            margin-bottom: 10px;
-            display: inline-block;
-            max-width: 80%;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
-        }
-        .user-message {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 18px;
-            margin-bottom: 10px;
-            display: inline-block;
-            max-width: 80%;
-            margin-left: auto;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
-        }
-        .user-message-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 10px;
-        }
-        .blur-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          backdrop-filter: blur(12px); /* Control blur strength */
-          -webkit-backdrop-filter: blur(12px); /* For Safari */
-          z-index: 0; /* Make sure it's behind the chatbot button and chatbox */
-      }
+        
     </style>
 </head>
 <body>
-  <!-- Blur Overlay -->
-  <div class="blur-overlay"><iframe src="https://my.spline.design/pillanddnaanimation-1312b8dab64af0cebbb8e91646ce732b/" allowfullscreen></iframe>
-  </div>
 
-    
-    
+    <!-- Container with height and width -->
+    <div class="custom-container"></div>
+
+</body>
     <!-- Chatbot Button -->
     <a href="chatbot/">
-      <div class="chatbot-button" id="chatbotButton">
-          <i class="bi bi-chat-dots-fill chatbot-icon"></i>
-          <span class="chatbot-text">MedSync</span>
-      </div>
-  </a>
-   
-    
-    <!-- Chat Container -->
-    
-            <!-- Messages will be inserted here -->
-            <div class="bot-message">
-                <strong>MedSync Assistant:</strong> Hello! How can I help you with your healthcare needs today?
-            </div>
+        <div class="chatbot-button" id="chatbotButton"> 
+            <span class="chatbot-text">MedSync</span>
         </div>
-        <div class="chat-input-container">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-            <button class="chat-send" id="sendMessage">
-                <i class="bi bi-send-fill"></i>
-            </button>
-        </div>
-    </div>
+    </a>
+    <!-- Emergency SOS Button - Moved to overlay on top of Spline -->
+    <a href="ambulance"><div class="emergency-sos" id="emergencySOS">
+      <i class="bi bi-bell-fill emergency-icon"></i>
+      <span class="emergency-text">Emergency SOS</span>
+  </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Emergency SOS button click handler
+            $('#emergencySOS').click(function() {
+                alert('Emergency assistance requested. Medical help is on the way.');
+                // Here you would typically trigger an emergency API call
+            });
+            
+            // Add to cart functionality
+            $('.add-to-cart').click(function() {
+                const button = $(this);
+                const productName = button.data('product-name');
+                const price = button.data('price');
+                
+                $.ajax({
+                    url: '{% url "add_to_cart" %}',
+                    type: 'POST',
+                    data: {
+                        'product_name': productName,
+                        'price': price,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#cart-count').text(response.cart_count);
+                            button.html('Added to Cart').addClass('btn-success').removeClass('btn-primary');
+                            setTimeout(() => {
+                                button.html('Book Now').addClass('btn-primary').removeClass('btn-success');
+                            }, 2000);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-</div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Add to cart functionality
-    $('.add-to-cart').click(function() {
-        const button = $(this);
-        const productName = button.data('product-name');
-        const price = button.data('price');
-        
-        $.ajax({
-            url: '{% url "add_to_cart" %}',
-            type: 'POST',
-            data: {
-                'product_name': productName,
-                'price': price,
-                'csrfmiddlewaretoken': '{{ csrf_token }}'
-            },
-            success: function(response) {
-                if (response.status === 'success') {
-                    $('#cart-count').text(response.cart_count);
-                    button.html('Added to Cart').addClass('btn-success').removeClass('btn-primary');
-                    setTimeout(() => {
-                        button.html('Book Now').addClass('btn-primary').removeClass('btn-success');
-                    }, 2000);
-                }
-            }
-        });
-    });
-    
-    // Countdown timer functionality
-    function updateTimer() {
-        const countdownEl = document.getElementById('countdown');
-        if (countdownEl) {
-            let [hours, minutes, seconds] = countdownEl.textContent.split(':').map(Number);
-            
-            setInterval(() => {
-                if (seconds > 0) {
-                    seconds--;
-                } else if (minutes > 0) {
-                    minutes--;
-                    seconds = 59;
-                } else if (hours > 0) {
-                    hours--;
-                    minutes = 59;
-                    seconds = 59;
-                }
-                
-                countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            }, 1000);
-        }
-    }
-    updateTimer();
-    
-    // Search functionality
-    $('#searchInput').on('input', function() {
-        const searchTerm = $(this).val().toLowerCase().trim();
-        
-        $('.searchable-item').each(function() {
-            const $item = $(this);
-            const titleText = $item.find('.card-title').text().toLowerCase();
-            const descriptionText = $item.find('.card-text').text().toLowerCase();
-            const priceText = $item.find('.h4').text().toLowerCase();
-            
-            const searchableText = `${titleText} ${descriptionText} ${priceText}`;
-            const matches = searchableText.includes(searchTerm);
-            
-            $item.toggle(matches);
-        });
-        
-        // Show "No results found" message if no items are visible
-        const visibleItems = $('.searchable-item:visible').length;
-        if (visibleItems === 0 && searchTerm !== '') {
-            if ($('#no-results').length === 0) {
-                $('.row.g-4').after('<div id="no-results" class="text-center mt-4"><p class="text-muted">No matches found</p></div>');
-            }
-        } else {
-            $('#no-results').remove();
-        }
-    });
-    
-    // Chatbot functionality
-    $('#chatbotButton').click(function() {
-        $('#chatContainer').fadeToggle();
-    });
-    
-    $('#closeChat').click(function() {
-        $('#chatContainer').fadeOut();
-    });
-    
-    $('#sendMessage').click(sendChatMessage);
-    
-    $('#chatInput').keypress(function(e) {
-        if (e.which === 13) {
-            sendChatMessage();
-        }
-    });
-    
-    function sendChatMessage() {
-        const message = $('#chatInput').val().trim();
-        if (message) {
-            // Add user message
-            $('#chatMessages').append(`
-                <div class="user-message-container">
-                    <div class="user-message">${message}</div>
-                </div>
-            `);
-            
-            // Clear input
-            $('#chatInput').val('');
-            
-            // Scroll to bottom
-            $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-            
-            // Simulate bot response after a delay
-            setTimeout(() => {
-                let botResponse = "Thank you for your message. Our healthcare team will get back to you shortly.";
-                
-                // Simple response logic based on keywords
-                if (message.toLowerCase().includes("prescription")) {
-                    botResponse = "For prescription-related inquiries, please ensure you have your prescription ID ready. Our pharmacist will assist you shortly.";
-                } else if (message.toLowerCase().includes("delivery")) {
-                    botResponse = "We offer same-day delivery for orders placed before 2 PM. Would you like to check the status of your order?";
-                } else if (message.toLowerCase().includes("price") || message.toLowerCase().includes("cost")) {
-                    botResponse = "Our prices are competitive and we offer various discounts for regular customers. Is there a specific medication you're inquiring about?";
-                }
-                
-                $('#chatMessages').append(`
-                    <div class="bot-message">
-                        <strong>MedSync Assistant:</strong> ${botResponse}
-                    </div>
-                `);
-                
-                // Scroll to bottom again
-                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-            }, 1000);
-        }
-    }
-});
-</script>
-<style>
-.hover-shadow-lg {
-    transition: box-shadow 0.3s ease-in-out;
-}
-.hover-shadow-lg:hover {
-    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
-}
-.transition-shadow {
-    transition: all 0.3s ease;
-}
-.card {
-    background: var(--dark-card);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Chatbot styles */
-.chatbot-button {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 180px; 
-    height: 70px;
-    border: 2px solid white;
-    border-radius: 35px;
-    background-color:rgb(0, 90, 34);
-    color:rgb(255, 255, 255);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    z-index: 1000;
-    transition: all 0.3s ease;
-}
-
-.chatbot-button:hover {
-  color: #2E8B57;
-  border-color: #2E8B57;
-  background-color:rgb(207, 255, 207); /* Darker blue on hover */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Spline text alignment */
-.spline-text {
-    position: fixed;
-    bottom: 30px; /* Align with the chatbot button */
-    right: 90px; /* Position next to the button */
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    z-index: 1000;
-}
-</style>
 {% endblock %}

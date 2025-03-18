@@ -86,3 +86,11 @@ class InsurancePurchaseForm(forms.ModelForm):
     class Meta:
         model = InsurancePurchase
         fields = ['plan_name', 'coverage_amount', 'monthly_premium']
+
+from django import forms
+from .models import PatientProfile
+
+class PatientProfileForm(forms.ModelForm):
+    class Meta:
+        model = PatientProfile
+        fields = '__all__'

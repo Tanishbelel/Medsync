@@ -218,3 +218,20 @@ class InsurancePurchase(models.Model):
 
     def _str_(self):
         return f"{self.user.username} - {self.plan_name}"
+    
+from django.db import models
+class PatientProfile(models.Model):
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')])
+    blood_group = models.CharField(max_length=5)
+    allergies = models.TextField(blank=True, null=True)
+    chronic_conditions = models.TextField(blank=True, null=True)
+    medications = models.TextField(blank=True, null=True)
+    surgeries = models.TextField(blank=True, null=True)
+    vaccination_status = models.CharField(max_length=50, choices=[('Fully Vaccinated', 'Fully Vaccinated'), ('Partially Vaccinated', 'Partially Vaccinated')])
+    emergency_contact = models.CharField(max_length=15)
+    last_checkup_date = models.DateField()
+
+    def _str_(self):
+        return self.name

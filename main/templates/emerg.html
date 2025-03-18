@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedSync Emergency Radar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+            background-color: #007c41;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .status {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .radar-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin: 0 auto;
+        }
+        
+        .radar-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #007c41;
+            box-shadow: 0 0 20px rgba(0, 124, 65, 0.3);
+        }
+        
+        .radar-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 124, 65, 0.5);
+        }
+        
+        .circle-1 {
+            width: 25%;
+            height: 25%;
+            top: 37.5%;
+            left: 37.5%;
+        }
+        
+        .circle-2 {
+            width: 50%;
+            height: 50%;
+            top: 25%;
+            left: 25%;
+        }
+        
+        .circle-3 {
+            width: 75%;
+            height: 75%;
+            top: 12.5%;
+            left: 12.5%;
+        }
+        
+        .radar-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .horizontal-line, .vertical-line {
+            position: absolute;
+            background-color: rgba(0, 124, 65, 0.3);
+        }
+        
+        .horizontal-line {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+        }
+        
+        .vertical-line {
+            width: 1px;
+            height: 100%;
+            left: 50%;
+        }
+        
+        .diagonal-line-1, .diagonal-line-2 {
+            position: absolute;
+            width: 141%;
+            height: 1px;
+            top: 50%;
+            left: -20.5%;
+            background-color: rgba(0, 124, 65, 0.3);
+        }
+        
+        .diagonal-line-1 {
+            transform: rotate(45deg);
+        }
+        
+        .diagonal-line-2 {
+            transform: rotate(-45deg);
+        }
+        
+        .radar-sweep {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 0;
+            left: 50%;
+            border-radius: 0 100% 0 0;
+            background: linear-gradient(90deg, rgba(0, 124, 65, 0) 0%, rgba(0, 124, 65, 0.4) 100%);
+            transform-origin: bottom left;
+            animation: sweep 4s infinite linear;
+        }
+        
+        @keyframes sweep {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .center-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #007c41;
+            border-radius: 50%;
+            top: calc(50% - 5px);
+            left: calc(50% - 5px);
+            box-shadow: 0 0 10px #007c41;
+        }
+        
+        .ambulance {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 0 5px #007c41);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                filter: drop-shadow(0 0 0 #007c41);
+            }
+            70% {
+                filter: drop-shadow(0 0 10px #007c41);
+            }
+            100% {
+                filter: drop-shadow(0 0 0 #007c41);
+            }
+        }
+        
+        .info-panel {
+            width: 500px;
+            margin-top: 30px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #007c41;
+        }
+        
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 124, 65, 0.3);
+        }
+        
+        .ambulance-count {
+            font-weight: bold;
+            color: #007c41;
+        }
+        
+        .ambulance-list {
+            list-style: none;
+        }
+        
+        .ambulance-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(0, 124, 65, 0.05);
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .ambulance-item:hover {
+            background-color: rgba(0, 124, 65, 0.1);
+        }
+        
+        .ambulance-id {
+            color: #007c41;
+            font-weight: bold;
+        }
+        
+        .distance {
+            color: #666;
+        }
+        
+        .status-available {
+            color: #007c41;
+        }
+        
+        .status-enroute {
+            color: #f39c12;
+        }
+        
+        .nav-bar {
+            display: flex;
+            width: 100%;
+            background-color: white;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007c41;
+        }
+        
+        .logo-icon {
+            margin-right: 10px;
+            color: #007c41;
+        }
+        
+        .nav-items {
+            display: flex;
+            margin-left: 30px;
+        }
+        
+        .nav-item {
+            margin-right: 20px;
+            color: #007c41;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-item svg {
+            margin-right: 5px;
+        }
+        
+        .user-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            color: #007c41;
+        }
+    </style>
+</head>
+<body>
+    
+    
+    <div class="header">
+        <h1>MedSync Emergency Radar</h1>
+        <div class="status">Scanning for nearby ambulances...</div>
+    </div>
+    
+    <div class="radar-container">
+        <div class="radar-background"></div>
+        <div class="radar-circle circle-1"></div>
+        <div class="radar-circle circle-2"></div>
+        <div class="radar-circle circle-3"></div>
+        
+        <div class="radar-lines">
+            <div class="horizontal-line"></div>
+            <div class="vertical-line"></div>
+            <div class="diagonal-line-1"></div>
+            <div class="diagonal-line-2"></div>
+        </div>
+        
+        <div class="radar-sweep"></div>
+        <div class="center-dot"></div>
+        
+        <!-- Ambulances will be added dynamically via JavaScript -->
+    </div>
+    
+    <div class="info-panel">
+        <div class="info-header">
+            <h2>Nearby Ambulances</h2>
+            <span class="ambulance-count" id="ambulance-count">0 found</span>
+        </div>
+        <ul class="ambulance-list" id="ambulance-list">
+            <!-- Ambulance details will be added dynamically -->
+        </ul>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const radarContainer = document.querySelector('.radar-container');
+            const ambulanceList = document.getElementById('ambulance-list');
+            const ambulanceCountElement = document.getElementById('ambulance-count');
+            const statusElement = document.querySelector('.status');
+            
+            // Configuration
+            const maxAmbulances = 6;
+            const updateInterval = 5000; // milliseconds
+            const radarRadius = 250; // half of radar container width/height
+            
+            // Ambulance data storage
+            let ambulances = [];
+            let ambulanceElements = {};
+            
+            // SVG Ambulance Icon
+            const ambulanceIcon = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#007c41">
+                    <path d="M19,18H5a2,2,0,0,1-2-2V11a2,2,0,0,1,2-2H7V6a2,2,0,0,1,2-2h6a2,2,0,0,1,2,2V9h2a2,2,0,0,1,2,2v5A2,2,0,0,1,19,18ZM15,6H9V9h6ZM19,11H5v5H19ZM6.5,16A1.5,1.5,0,1,0,8,14.5,1.5,1.5,0,0,0,6.5,16Zm11,0A1.5,1.5,0,1,0,19,14.5,1.5,1.5,0,0,0,17.5,16ZM11,13h2v2H11Zm3-2h2v2H14ZM8,13h2v2H8Z"/>
+                </svg>
+            `;
+            
+            function getRandomPosition(minDistance, maxDistance) {
+                // Convert polar coordinates to Cartesian
+                const distance = minDistance + Math.random() * (maxDistance - minDistance);
+                const angle = Math.random() * Math.PI * 2;
+                
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                return {
+                    x: x,
+                    y: y,
+                    distance: distance,
+                    angle: angle
+                };
+            }
+            
+            function createAmbulance() {
+                // Generate random ID
+                const id = 'MED-' + Math.floor(1000 + Math.random() * 9000);
+                
+                // Get random position (between 30% and 90% of radar radius)
+                const position = getRandomPosition(radarRadius * 0.3, radarRadius * 0.9);
+                
+                // Random status
+                const status = Math.random() > 0.5 ? 'Available' : 'En Route';
+                
+                // Calculate displayed distance (in km)
+                const displayDistance = (position.distance / radarRadius * 5).toFixed(1);
+                
+                return {
+                    id,
+                    x: position.x,
+                    y: position.y,
+                    distance: position.distance,
+                    displayDistance,
+                    status,
+                    element: null,
+                    listElement: null
+                };
+            }
+            
+            function updateAmbulancePosition(ambulance) {
+                // Move slightly based on current position
+                const moveAngle = Math.random() * Math.PI * 2;
+                const moveDistance = Math.random() * 5;
+                
+                ambulance.x += Math.cos(moveAngle) * moveDistance;
+                ambulance.y += Math.sin(moveAngle) * moveDistance;
+                
+                // Constrain to radar
+                const distance = Math.sqrt(ambulance.x * ambulance.x + ambulance.y * ambulance.y);
+                if (distance > radarRadius * 0.9) {
+                    const scale = (radarRadius * 0.9) / distance;
+                    ambulance.x *= scale;
+                    ambulance.y *= scale;
+                } else if (distance < radarRadius * 0.3) {
+                    const scale = (radarRadius * 0.3) / distance;
+                    ambulance.x *= scale;
+                    ambulance.y *= scale;
+                }
+                
+                // Recalculate display distance
+                ambulance.distance = Math.sqrt(ambulance.x * ambulance.x + ambulance.y * ambulance.y);
+                ambulance.displayDistance = (ambulance.distance / radarRadius * 5).toFixed(1);
+                
+                // Update position on radar
+                if (ambulance.element) {
+                    ambulance.element.style.left = `${50 + (ambulance.x / radarRadius) * 50}%`;
+                    ambulance.element.style.top = `${50 - (ambulance.y / radarRadius) * 50}%`;
+                }
+                
+                // Update list item
+                if (ambulance.listElement) {
+                    const distanceElement = ambulance.listElement.querySelector('.distance');
+                    if (distanceElement) {
+                        distanceElement.textContent = `${ambulance.displayDistance} km`;
+                    }
+                }
+            }
+            
+            function renderAmbulance(ambulance) {
+                // Create ambulance icon on radar
+                const ambulanceElement = document.createElement('div');
+                ambulanceElement.className = 'ambulance pulse';
+                ambulanceElement.style.left = `${50 + (ambulance.x / radarRadius) * 50}%`;
+                ambulanceElement.style.top = `${50 - (ambulance.y / radarRadius) * 50}%`;
+                ambulanceElement.innerHTML = ambulanceIcon;
+                radarContainer.appendChild(ambulanceElement);
+                ambulance.element = ambulanceElement;
+                
+                // Create list item
+                const listItem = document.createElement('li');
+                listItem.className = 'ambulance-item';
+                listItem.innerHTML = `
+                    <span class="ambulance-id">${ambulance.id}</span>
+                    <span class="distance">${ambulance.displayDistance} km</span>
+                    <span class="status-${ambulance.status === 'Available' ? 'available' : 'enroute'}">${ambulance.status}</span>
+                `;
+                ambulanceList.appendChild(listItem);
+                ambulance.listElement = listItem;
+                
+                return ambulance;
+            }
+            
+            function removeAmbulance(ambulance) {
+                // Remove from DOM
+                if (ambulance.element) {
+                    ambulance.element.remove();
+                }
+                if (ambulance.listElement) {
+                    ambulance.listElement.remove();
+                }
+                
+                // Remove from array
+                ambulances = ambulances.filter(a => a.id !== ambulance.id);
+                updateAmbulanceCount();
+            }
+            
+            function updateAmbulanceCount() {
+                ambulanceCountElement.textContent = `${ambulances.length} found`;
+            }
+            
+            function initializeRandomAmbulances() {
+                const initialCount = 3 + Math.floor(Math.random() * 3);
+                
+                for (let i = 0; i < initialCount; i++) {
+                    const ambulance = createAmbulance();
+                    renderAmbulance(ambulance);
+                    ambulances.push(ambulance);
+                }
+                
+                updateAmbulanceCount();
+            }
+            
+            function simulateAmbulanceActivity() {
+                // Random updates
+                ambulances.forEach(updateAmbulancePosition);
+                
+                // Randomly add or remove ambulances
+                if (Math.random() < 0.3) {
+                    if (ambulances.length < maxAmbulances && Math.random() < 0.7) {
+                        // Add a new ambulance
+                        const ambulance = createAmbulance();
+                        renderAmbulance(ambulance);
+                        ambulances.push(ambulance);
+                        
+                        statusElement.textContent = `New ambulance detected: ${ambulance.id}`;
+                        setTimeout(() => {
+                            statusElement.textContent = 'Scanning for nearby ambulances...';
+                        }, 3000);
+                    } else if (ambulances.length > 0) {
+                        // Remove a random ambulance
+                        const randomIndex = Math.floor(Math.random() * ambulances.length);
+                        const ambulance = ambulances[randomIndex];
+                        
+                        statusElement.textContent = `Ambulance ${ambulance.id} is no longer in range`;
+                        setTimeout(() => {
+                            statusElement.textContent = 'Scanning for nearby ambulances...';
+                        }, 3000);
+                        
+                        removeAmbulance(ambulance);
+                    }
+                    
+                    updateAmbulanceCount();
+                }
+            }
+            
+            // Initialize
+            initializeRandomAmbulances();
+            
+            // Set up simulation
+            setInterval(simulateAmbulanceActivity, updateInterval);
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const radarContainer = document.querySelector('.radar-container');
+            const ambulanceList = document.getElementById('ambulance-list');
+            const ambulanceCountElement = document.getElementById('ambulance-count');
+            const statusElement = document.querySelector('.status');
+            
+            // Configuration
+            const maxAmbulances = 6;
+            const updateInterval = 5000; // milliseconds
+            const radarRadius = 250; // half of radar container width/height
+            const bookingDelay = 10000; // Book an ambulance after 10 seconds
+            
+            // Ambulance data storage
+            let ambulances = [];
+            let ambulanceElements = {};
+            
+            // SVG Ambulance Icon
+            const ambulanceIcon = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#007c41">
+                    <path d="M19,18H5a2,2,0,0,1-2-2V11a2,2,0,0,1,2-2H7V6a2,2,0,0,1,2-2h6a2,2,0,0,1,2,2V9h2a2,2,0,0,1,2,2v5A2,2,0,0,1,19,18ZM15,6H9V9h6ZM19,11H5v5H19ZM6.5,16A1.5,1.5,0,1,0,8,14.5,1.5,1.5,0,0,0,6.5,16Zm11,0A1.5,1.5,0,1,0,19,14.5,1.5,1.5,0,0,0,17.5,16ZM11,13h2v2H11Zm3-2h2v2H14ZM8,13h2v2H8Z"/>
+                </svg>
+            `;
+            
+            function getRandomPosition(minDistance, maxDistance) {
+                // Convert polar coordinates to Cartesian
+                const distance = minDistance + Math.random() * (maxDistance - minDistance);
+                const angle = Math.random() * Math.PI * 2;
+                
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                return {
+                    x: x,
+                    y: y,
+                    distance: distance,
+                    angle: angle
+                };
+            }
+            
+            function createAmbulance() {
+                // Generate random ID
+                const id = 'MED-' + Math.floor(1000 + Math.random() * 9000);
+                
+                // Get random position (between 30% and 90% of radar radius)
+                const position = getRandomPosition(radarRadius * 0.3, radarRadius * 0.9);
+                
+                // Random status
+                const status = Math.random() > 0.5 ? 'Available' : 'En Route';
+                
+                // Calculate displayed distance (in km)
+                const displayDistance = (position.distance / radarRadius * 5).toFixed(1);
+                
+                return {
+                    id,
+                    x: position.x,
+                    y: position.y,
+                    distance: position.distance,
+                    displayDistance,
+                    status,
+                    element: null,
+                    listElement: null,
+                    booked: false
+                };
+            }
+            
+            function updateAmbulancePosition(ambulance) {
+                // Skip updating if ambulance is booked
+                if (ambulance.booked) return;
+                
+                // Move slightly based on current position
+                const moveAngle = Math.random() * Math.PI * 2;
+                const moveDistance = Math.random() * 5;
+                
+                ambulance.x += Math.cos(moveAngle) * moveDistance;
+                ambulance.y += Math.sin(moveAngle) * moveDistance;
+                
+                // Constrain to radar
+                const distance = Math.sqrt(ambulance.x * ambulance.x + ambulance.y * ambulance.y);
+                if (distance > radarRadius * 0.9) {
+                    const scale = (radarRadius * 0.9) / distance;
+                    ambulance.x *= scale;
+                    ambulance.y *= scale;
+                } else if (distance < radarRadius * 0.3) {
+                    const scale = (radarRadius * 0.3) / distance;
+                    ambulance.x *= scale;
+                    ambulance.y *= scale;
+                }
+                
+                // Recalculate display distance
+                ambulance.distance = Math.sqrt(ambulance.x * ambulance.x + ambulance.y * ambulance.y);
+                ambulance.displayDistance = (ambulance.distance / radarRadius * 5).toFixed(1);
+                
+                // Update position on radar
+                if (ambulance.element) {
+                    ambulance.element.style.left = `${50 + (ambulance.x / radarRadius) * 50}%`;
+                    ambulance.element.style.top = `${50 - (ambulance.y / radarRadius) * 50}%`;
+                }
+                
+                // Update list item
+                if (ambulance.listElement) {
+                    const distanceElement = ambulance.listElement.querySelector('.distance');
+                    if (distanceElement) {
+                        distanceElement.textContent = `${ambulance.displayDistance} km`;
+                    }
+                }
+            }
+            
+            function renderAmbulance(ambulance) {
+                // Create ambulance icon on radar
+                const ambulanceElement = document.createElement('div');
+                ambulanceElement.className = 'ambulance pulse';
+                ambulanceElement.style.left = `${50 + (ambulance.x / radarRadius) * 50}%`;
+                ambulanceElement.style.top = `${50 - (ambulance.y / radarRadius) * 50}%`;
+                ambulanceElement.innerHTML = ambulanceIcon;
+                radarContainer.appendChild(ambulanceElement);
+                ambulance.element = ambulanceElement;
+                
+                // Create list item
+                const listItem = document.createElement('li');
+                listItem.className = 'ambulance-item';
+                listItem.innerHTML = `
+                    <span class="ambulance-id">${ambulance.id}</span>
+                    <span class="distance">${ambulance.displayDistance} km</span>
+                    <span class="status-${ambulance.status === 'Available' ? 'available' : 'enroute'}">${ambulance.status}</span>
+                `;
+                ambulanceList.appendChild(listItem);
+                ambulance.listElement = listItem;
+                
+                return ambulance;
+            }
+            
+            function removeAmbulance(ambulance) {
+                // Remove from DOM
+                if (ambulance.element) {
+                    ambulance.element.remove();
+                }
+                if (ambulance.listElement) {
+                    ambulance.listElement.remove();
+                }
+                
+                // Remove from array
+                ambulances = ambulances.filter(a => a.id !== ambulance.id);
+                updateAmbulanceCount();
+            }
+            
+            function updateAmbulanceCount() {
+                ambulanceCountElement.textContent = `${ambulances.length} found`;
+            }
+            
+            function createNotification(message) {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.backgroundColor = '#007c41';
+                notification.style.color = 'white';
+                notification.style.padding = '15px 20px';
+                notification.style.borderRadius = '5px';
+                notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                notification.style.zIndex = '1000';
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                notification.style.transition = 'opacity 0.3s, transform 0.3s';
+                
+                document.body.appendChild(notification);
+                
+                // Show notification with animation
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 5000);
+            }
+            
+            function bookAmbulance(ambulance) {
+                // Mark as booked
+                ambulance.booked = true;
+                
+                // Change status text and color
+                if (ambulance.listElement) {
+                    const statusElement = ambulance.listElement.querySelector('.status-available, .status-enroute');
+                    if (statusElement) {
+                        statusElement.className = 'status-enroute';
+                        statusElement.textContent = 'Booked';
+                    }
+                    
+                    // Highlight the booked ambulance
+                    ambulance.listElement.style.backgroundColor = 'rgba(255, 193, 7, 0.2)';
+                    ambulance.listElement.style.borderLeft = '3px solid #f39c12';
+                }
+                
+                // Change color on radar
+                if (ambulance.element) {
+                    const svgElement = ambulance.element.querySelector('svg');
+                    if (svgElement) {
+                        svgElement.style.fill = '#f39c12';
+                    }
+                }
+                
+                // Update status message
+                statusElement.textContent = `Ambulance ${ambulance.id} has been booked`;
+                
+                // Show notification
+                createNotification(`Ambulance ${ambulance.id} has been booked successfully!`);
+            }
+            
+            function initializeRandomAmbulances() {
+                const initialCount = 3 + Math.floor(Math.random() * 3);
+                
+                for (let i = 0; i < initialCount; i++) {
+                    const ambulance = createAmbulance();
+                    renderAmbulance(ambulance);
+                    ambulances.push(ambulance);
+                }
+                
+                updateAmbulanceCount();
+            }
+            
+            function simulateAmbulanceActivity() {
+                // Random updates
+                ambulances.forEach(updateAmbulancePosition);
+                
+                // Randomly add or remove ambulances
+                if (Math.random() < 0.3) {
+                    if (ambulances.length < maxAmbulances && Math.random() < 0.7) {
+                        // Add a new ambulance
+                        const ambulance = createAmbulance();
+                        renderAmbulance(ambulance);
+                        ambulances.push(ambulance);
+                        
+                        statusElement.textContent = `New ambulance detected: ${ambulance.id}`;
+                        setTimeout(() => {
+                            statusElement.textContent = 'Scanning for nearby ambulances...';
+                        }, 3000);
+                    } else if (ambulances.length > 0) {
+                        // Find an ambulance that isn't booked
+                        const availableAmbulances = ambulances.filter(a => !a.booked);
+                        if (availableAmbulances.length > 0) {
+                            const randomIndex = Math.floor(Math.random() * availableAmbulances.length);
+                            const ambulance = availableAmbulances[randomIndex];
+                            
+                            statusElement.textContent = `Ambulance ${ambulance.id} is no longer in range`;
+                            setTimeout(() => {
+                                statusElement.textContent = 'Scanning for nearby ambulances...';
+                            }, 3000);
+                            
+                            removeAmbulance(ambulance);
+                        }
+                    }
+                    
+                    updateAmbulanceCount();
+                }
+            }
+            
+            function bookRandomAmbulance() {
+                // Find available ambulances
+                const availableAmbulances = ambulances.filter(
+                    a => a.status === 'Available' && !a.booked
+                );
+                
+                if (availableAmbulances.length > 0) {
+                    // Choose a random available ambulance
+                    const randomIndex = Math.floor(Math.random() * availableAmbulances.length);
+                    const ambulanceToBook = availableAmbulances[randomIndex];
+                    
+                    // Book it
+                    bookAmbulance(ambulanceToBook);
+                } else {
+                    // No available ambulances, try again later
+                    setTimeout(bookRandomAmbulance, 5000);
+                }
+            }
+            
+            // Initialize
+            initializeRandomAmbulances();
+            
+            // Set up simulation
+            setInterval(simulateAmbulanceActivity, updateInterval);
+            
+            // Set up booking timeout
+            setTimeout(bookRandomAmbulance, bookingDelay);
+        });
+    </script>
+</body>
+</html>
