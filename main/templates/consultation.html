@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block start %}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5 sea-green-gradient">
+                    <!-- Logo and Brand Name -->
+                    <div class="text-center mb-4">
+                        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: white; border-radius: 50%;">
+                            <i class="bi bi-calendar-plus" style="font-size: 2rem; color: var(--primary-color);"></i>
+                        </div>
+                        <h4 class="fw-bold text-white">Book Your Consultation</h4>
+                        <p class="text-white-50">Select a doctor and schedule your appointment</p>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4 rounded-3" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Booking Form -->
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Doctor Selection -->
+                        <div class="mb-3">
+                            <label for="doctor" class="form-label small fw-bold text-white">Select Doctor</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <i class="bi bi-person-badge" style="color: var(--primary-color);"></i>
+                                </span>
+                                <select name="doctor" class="form-control bg-white border-start-0 rounded-end-3" id="doctor" required>
+                                    <option value="" selected disabled>Choose a doctor</option>
+                                    <option value="1">Dr. Sarah Johnson - Cardiologist</option>
+                                    <option value="2">Dr. Michael Chen - General Physician</option>
+                                    <option value="3">Dr. Emily Taylor - Neurologist</option>
+                                    <option value="4">Dr. Robert Smith - Pediatrician</option>
+                                    <option value="5">Dr. Olivia Williams - Dermatologist</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Date Selection -->
+                        <div class="mb-3">
+                            <label for="appointment_date" class="form-label small fw-bold text-white">Appointment Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <i class="bi bi-calendar3" style="color: var(--primary-color);"></i>
+                                </span>
+                                <input type="date" name="appointment_date" class="form-control bg-white border-start-0 rounded-end-3" id="appointment_date" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Time Selection -->
+                        <div class="mb-3">
+                            <label for="appointment_time" class="form-label small fw-bold text-white">Appointment Time</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <i class="bi bi-clock" style="color: var(--primary-color);"></i>
+                                </span>
+                                <select name="appointment_time" class="form-control bg-white border-start-0 rounded-end-3" id="appointment_time" required>
+                                    <option value="" selected disabled>Select time slot</option>
+                                    <option value="09:00">09:00 AM</option>
+                                    <option value="09:30">09:30 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="10:30">10:30 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="11:30">11:30 AM</option>
+                                    <option value="12:00">12:00 PM</option>
+                                    <option value="14:00">02:00 PM</option>
+                                    <option value="14:30">02:30 PM</option>
+                                    <option value="15:00">03:00 PM</option>
+                                    <option value="15:30">03:30 PM</option>
+                                    <option value="16:00">04:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Consultation Type -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-white">Consultation Type</label>
+                            <div class="d-flex gap-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="consultation_type" id="in_person" value="in_person" checked>
+                                    <label class="form-check-label text-white" for="in_person">
+                                        <i class="bi bi-person-fill me-1"></i> In-Person
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="consultation_type" id="virtual" value="virtual">
+                                    <label class="form-check-label text-white" for="virtual">
+                                        <i class="bi bi-camera-video-fill me-1"></i> Virtual
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reason for Visit -->
+                        <div class="mb-4">
+                            <label for="reason" class="form-label small fw-bold text-white">Reason for Visit</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 rounded-start-3">
+                                    <i class="bi bi-journal-text" style="color: var(--primary-color);"></i>
+                                </span>
+                                <textarea name="reason" class="form-control bg-white border-start-0 rounded-end-3" id="reason" rows="3" placeholder="Briefly describe your symptoms or reason for consultation"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Additional Patient Information -->
+                        <div class="mb-4 p-4 bg-white bg-opacity-10 rounded-3">
+                            <h6 class="text-white mb-3">Additional Information</h6>
+                            
+                            <div class="mb-3">
+                                <label for="insurance" class="form-label small fw-bold text-white">Insurance Provider</label>
+                                <input type="text" name="insurance" class="form-control bg-white rounded-3" id="insurance" placeholder="Enter your insurance provider">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="policy_number" class="form-label small fw-bold text-white">Policy Number</label>
+                                <input type="text" name="policy_number" class="form-control bg-white rounded-3" id="policy_number" placeholder="Enter your policy number">
+                            </div>
+                            
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="new_patient" name="new_patient" value="1">
+                                <label class="form-check-label text-white" for="new_patient">
+                                    I am a new patient
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-lg text-success fw-bold rounded-3" style="background-color: white;">Book Appointment</button>
+                        </div>
+                    </form>
+
+                    <!-- Back to Dashboard -->
+                    <p class="text-center mb-0">
+                        <a href="/dashboard/" class="text-decoration-none fw-bold text-white">
+                            <i class="bi bi-arrow-left-circle me-1"></i> Back to Dashboard
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Appointment Policy -->
+            <div class="card mt-4 shadow border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title" style="color: var(--primary-color);">
+                        <i class="bi bi-info-circle me-2"></i>Appointment Policy
+                    </h5>
+                    <ul class="small text-muted mb-0">
+                        <li>Please arrive 15 minutes before your scheduled appointment time.</li>
+                        <li>A cancellation fee may apply if cancelled less than 24 hours before appointment.</li>
+                        <li>Bring your insurance card and ID for verification.</li>
+                        <li>For virtual consultations, ensure you have a stable internet connection.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doctor Availability Modal -->
+<div class="modal fade" id="doctorAvailabilityModal" tabindex="-1" aria-labelledby="doctorAvailabilityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header sea-green-gradient text-white border-0">
+                <h5 class="modal-title" id="doctorAvailabilityModalLabel">Doctor's Schedule</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="availabilityCalendar">
+                    <!-- Calendar will be loaded dynamically -->
+                    <p class="text-center text-muted">
+                        <i class="bi bi-calendar-week me-2"></i>
+                        Select a doctor to view their availability
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript for Booking Page -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date picker with minimum date as tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+        document.getElementById('appointment_date').setAttribute('min', tomorrowFormatted);
+        
+        // When doctor selection changes
+        document.getElementById('doctor').addEventListener('change', function() {
+            const doctorId = this.value;
+            if (doctorId) {
+                // Here you would typically fetch available slots from server
+                console.log(`Fetching availability for doctor ID: ${doctorId}`);
+                
+                // For demonstration, we'll show the modal
+                // In a real application, you'd populate the modal with actual data
+                // const availabilityModal = new bootstrap.Modal(document.getElementById('doctorAvailabilityModal'));
+                // availabilityModal.show();
+            }
+        });
+        
+        // Disable past dates in the date picker
+        const dateInput = document.getElementById('appointment_date');
+        dateInput.addEventListener('input', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                this.value = tomorrowFormatted;
+                alert('Please select a future date for your appointment.');
+            }
+        });
+        
+        // Toggle fields based on consultation type
+        const consultationType = document.querySelectorAll('input[name="consultation_type"]');
+        consultationType.forEach(type => {
+            type.addEventListener('change', function() {
+                // Here you could conditionally show/hide fields based on type
+                // For example, show a "meeting link" field for virtual consultations
+            });
+        });
+    });
+</script>
+
+<!-- Medical Green Theme Custom CSS -->
+<style>
+    /* Rounded card with gradient */
+    .card {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    
+    /* Create gradient background */
+    .sea-green-gradient {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+    }
+    
+    .form-control, .input-group-text, .btn {
+        padding: 0.75rem 1rem;
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+        border-color: var(--accent-color);
+    }
+    
+    .input-group-text {
+        color: var(--text-color);
+    }
+    
+    /* Add more rounded corners to all elements */
+    .rounded-3 {
+        border-radius: 0.5rem !important;
+    }
+    
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    .rounded-start-3 {
+        border-top-left-radius: 0.5rem !important;
+        border-bottom-left-radius: 0.5rem !important;
+    }
+    
+    .rounded-end-3 {
+        border-top-right-radius: 0.5rem !important;
+        border-bottom-right-radius: 0.5rem !important;
+    }
+    
+    /* Custom button styles */
+    .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        background-color: var(--light-bg);
+    }
+    
+    /* Inverted text colors for better contrast */
+    .text-white-50 {
+        opacity: 0.8;
+    }
+    
+    a.text-white:hover {
+        color: var(--accent-color) !important;
+        text-decoration: underline !important;
+    }
+    
+    /* Form check inputs */
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    /* Time slots hover effect */
+    #appointment_time option:hover {
+        background-color: var(--light-bg);
+    }
+</style>
+
+{% endblock %}
