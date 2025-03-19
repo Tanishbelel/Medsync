@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearest Medical Stores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* Custom styles for the map */
+        #map {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .user-dot {
+            background-color: #4285F4;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.4);
+            height: 16px;    
+            width: 16px;
+            animation: pulse 2s infinite;
+        }
+
+        .active-marker {
+            border: 4px solid #0d7e3e;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(13, 126, 62, 0.6);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.6);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(66, 133, 244, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+            }
+        }
+
+        /* Responsive styling */
+        @media (max-width: 992px) {
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Username display -->
+        <div class="welcome-banner mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold text-success">Nearest Medical Stores</h4>
+                <p class="text-muted mb-0">Welcome, User</p>
+            </div>
+            <a href="#" class="btn btn-outline-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                </svg>
+                <span id="cart-count" class="ms-2">{{ cart_count }}</span>
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body p-0">
+                        <div id="map" style="width: 100%; height: 500px; border-radius: 8px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="fw-bold mb-0 text-success">Store Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="store-info">
+                            <div class="text-center py-4" id="initial-message">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#0d7e3e" class="bi bi-geo-alt mb-3" viewBox="0 0 16 16">
+                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                                <p class="text-muted">Click on a marker to view store details</p>
+                            </div>
+                            <div id="store-details" class="d-none">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Store Name</label>
+                                    <p id="store-name" class="fw-bold fs-5 mb-3">-</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Address</label>
+                                    <p id="store-address" class="mb-3">-</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Opening Hours</label>
+                                    <p id="store-timings" class="mb-3">-</p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small mb-1">Contact</label>
+                                    <p id="store-contact" class="mb-0">-</p>
+                                </div>
+                                <div class="d-grid gap-2 mt-4">
+                                    <button id="directions-btn" class="btn btn-success">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-signpost-2 me-2" viewBox="0 0 16 16">
+                                            <path d="M7 1.414V2H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h5v1H2.5a1 1 0 0 0-.8.4L.725 8.7a.5.5 0 0 0 0 .6l.975 1.3a1 1 0 0 0 .8.4H7v5h2v-5h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H9V6h4.5a1 1 0 0 0 .8-.4l.975-1.3a.5.5 0 0 0 0-.6L14.3 2.4a1 1 0 0 0-.8-.4H9v-.586a1 1 0 0 0-2 0zM13.5 3l.75 1-.75 1H2V3h11.5zm.5 5v2H2V8h12z"/>
+                                        </svg>
+                                        Get Directions
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="fw-bold mb-0 text-success">All Medical Stores Nearby</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Distance</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stores-list">
+                                    <!-- Will be populated via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map centered on Andheri
+        var map = L.map('map').setView([19.1196, 72.8468], 14);
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Add console log to check if map is initialized
+        console.log("Map initialized:", map);
+        
+        // Get the medical stores data from Django context
+        // For Django template, uncomment this line and comment out the next section:
+        // var medicalStores = {{ medical_stores_json|safe }};
+        
+        // Sample medical store data (since we can't get it from Django in this standalone HTML)
+        var medicalStores = [
+            {
+                name: "Apollo Pharmacy",
+                address: "Andheri West, Mumbai, Maharashtra 400053",
+                lat: 19.1196,
+                lng: 72.8468,
+                timings: "9:00 AM - 10:00 PM",
+                contact: "+91 9876543210",
+                distance: "0.5 km"
+            },
+            {
+                name: "MedPlus",
+                address: "Lokhandwala, Andheri West, Mumbai",
+                lat: 19.1296,
+                lng: 72.8368,
+                timings: "8:00 AM - 11:00 PM",
+                contact: "+91 9876543211",
+                distance: "1.2 km"
+            },
+            {
+                name: "Wellness Forever",
+                address: "Versova, Andheri West, Mumbai",
+                lat: 19.1306,
+                lng: 72.8268,
+                timings: "24 Hours",
+                contact: "+91 9876543212",
+                distance: "1.8 km"
+            },
+            {
+                name: "Davaindia Generic Pharmacy",
+                address: "Andheri East, Mumbai",
+                lat: 19.118,
+                lng: 72.849,
+                timings: "9:00 AM - 10:00 PM",
+                contact: "+91 9876543213",
+                distance: "1.0 km"
+            },
+            {
+                name: "Rameshwar Medical and General Store",
+                address: "Andheri West, Mumbai",
+                lat: 19.122,
+                lng: 72.846,
+                timings: "8:00 AM - 9:00 PM",
+                contact: "+91 9876543214",
+                distance: "0.7 km"
+            },
+            {
+                name: "Purnima Medical Stores",
+                address: "Andheri West, Mumbai",
+                lat: 19.121,
+                lng: 72.845,
+                timings: "9:00 AM - 9:00 PM",
+                contact: "+91 9876543215",
+                distance: "0.6 km"
+            },
+            {
+                name: "Kiran Medical & General Stores",
+                address: "Andheri East, Mumbai",
+                lat: 19.116,
+                lng: 72.850,
+                timings: "10:00 AM - 9:30 PM",
+                contact: "+91 9876543216",
+                distance: "1.3 km"
+            },
+            {
+                name: "Anupam Medical General Store",
+                address: "Andheri East, Mumbai",
+                lat: 19.114,
+                lng: 72.851,
+                timings: "9:00 AM - 10:00 PM",
+                contact: "+91 9876543217",
+                distance: "1.4 km"
+            },
+            {
+                name: "Jai Hind Medical Stores",
+                address: "Mumbai, Maharashtra",
+                lat: 19.110,
+                lng: 72.855,
+                timings: "Contact for timings",
+                contact: "+91 9876543218",
+                distance: "1.8 km"
+            }
+        ];
+        
+        // Add custom green marker icon
+        var greenIcon = L.icon({
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+        
+        // Store the markers for later reference
+        var markers = [];
+        var activeMarker = null;
+        var currentStoreData = null;
+        
+        // Function to update store info display
+        function updateInfo(store) {
+            // Store the current store data for directions button
+            currentStoreData = store;
+            
+            // Hide initial message and show details
+            document.getElementById('initial-message').classList.add('d-none');
+            document.getElementById('store-details').classList.remove('d-none');
+            
+            // Update store details
+            document.getElementById('store-name').textContent = store.name;
+            document.getElementById('store-address').textContent = store.address;
+            document.getElementById('store-timings').textContent = store.timings;
+            document.getElementById('store-contact').textContent = store.contact || 'Not available';
+            
+            // Set up directions button - FIXED VERSION
+            document.getElementById('directions-btn').onclick = function() {
+                const encodedAddress = encodeURIComponent(store.address);
+                const url = `https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}&destination_place_id=&travelmode=driving`;
+                window.open(url, '_blank');
+            };
+        }
+        
+        // Function to populate the stores list
+        function populateStoresList() {
+            const storesList = document.getElementById('stores-list');
+            storesList.innerHTML = '';
+            
+            medicalStores.forEach(function(store, index) {
+                const row = document.createElement('tr');
+                
+                // Determine if store is open or closed
+                const now = new Date();
+                const currentHour = now.getHours();
+                let isOpen = false;
+                
+                // Check if store is open 24 hours
+                if (store.timings.toLowerCase().includes('24 hour')) {
+                    isOpen = true;
+                } else if (store.timings.includes('AM') && store.timings.includes('PM')) {
+                    // Parse opening hours if not 24 hours
+                    const times = store.timings.split('-');
+                    if (times.length === 2) {
+                        let openingTime = times[0].trim();
+                        let closingTime = times[1].trim();
+                        
+                        // Convert to 24-hour format for easier comparison
+                        const openingHour = parseInt(openingTime.split(':')[0]) + (openingTime.includes('PM') && !openingTime.includes('12:') ? 12 : 0);
+                        let closingHour = parseInt(closingTime.split(':')[0]) + (closingTime.includes('PM') && !closingTime.includes('12:') ? 12 : 0);
+                        
+                        // Handle cases like 9:00 AM - 12:00 AM (midnight)
+                        if (closingTime.includes('12:00 AM')) {
+                            closingHour = 24;
+                        }
+                        
+                        // Check if current hour is within opening hours
+                        isOpen = (currentHour >= openingHour && currentHour < closingHour);
+                    }
+                } else {
+                    // If can't determine, default to open during business hours (9am-6pm)
+                    isOpen = (currentHour >= 9 && currentHour < 18);
+                }
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="store-icon me-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#0d7e3e" class="bi bi-shop" viewBox="0 0 16 16">
+                                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.371 2.371 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976l2.61-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3zm3 0h-2v3h2v-3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="fw-medium mb-0">${store.name}</p>
+                                <small class="text-muted">${store.address.split(',')[0]}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${store.distance || '< 1 km'}</td>
+                    <td>
+                        <span class="badge ${isOpen ? 'bg-success' : 'bg-secondary'} rounded-pill">
+                            ${isOpen ? 'Open' : 'Closed'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-success view-store-btn" data-index="${index}">View</button>
+                    </td>
+                `;
+                
+                storesList.appendChild(row);
+            });
+            
+            // Add event listeners to the view buttons
+            document.querySelectorAll('.view-store-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const store = medicalStores[index];
+                    
+                    // Update the info panel
+                    updateInfo(store);
+                    
+                    // Pan to the marker and highlight it
+                    map.setView([store.lat, store.lng], 16);
+                    
+                    // Trigger marker click
+                    markers[index].fire('click');
+                });
+            });
+        }
+        
+        // Add markers for each medical store
+        medicalStores.forEach(function(store, index) {
+            var marker = L.marker([store.lat, store.lng], {
+                icon: greenIcon || undefined
+            }).addTo(map);
+            
+            // Add popup with store name - FIXED: Added backticks for template string
+            marker.bindPopup(`<b>${store.name}</b><br>${store.address}`);
+            
+            // Store the marker in our array
+            markers.push(marker);
+            
+            // Add click event to the marker
+            marker.on('click', function() {
+                // Remove active class from previous marker
+                if (activeMarker) {
+                    activeMarker._icon.classList.remove('active-marker');
+                }
+                
+                // Add active class to current marker
+                marker._icon.classList.add('active-marker');
+                activeMarker = marker;
+                
+                // Update info display
+                updateInfo(store);
+            });
+        });
+        
+        // Populate the stores list
+        populateStoresList();
+        
+        // Try to get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                
+                // Add user marker
+                L.marker([userLat, userLng], {
+                    icon: L.divIcon({
+                        className: 'user-location',
+                        html: '<div class="user-dot"></div>',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map);
+                
+                // Add accuracy circle
+                L.circle([userLat, userLng], {
+                    radius: position.coords.accuracy,
+                    fillColor: '#4285F4',
+                    fillOpacity: 0.15,
+                    stroke: false
+                }).addTo(map);
+                
+                // Center map on user's location
+                map.setView([userLat, userLng], 15);
+            }, function(error) {
+                console.log("Error getting location: ", error.message);
+            });
+        }
+    });
+    </script>
+</body>
+</html>

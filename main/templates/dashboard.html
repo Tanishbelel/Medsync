@@ -1,13 +1,20 @@
-{% extends "base.html" %} 
-{% block start %} 
+{% extends "base.html" %}
+
+{% block start %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Dashboard</h2>
-        <a href="{% url 'create_event' %}" class="btn btn-primary">Create New Item</a>
+        <div>
+            <a href="{% url 'create_event' %}" class="btn btn-primary me-2">Create New Item</a>
+            <a href="{% url 'create_appointment' %}" class="btn btn-success">Create Appointment</a>
+        </div>
     </div>
-    <div class="row">
+
+    <!-- Items Section -->
+    <h3 class="mb-3">Your Items</h3>
+    <div class="row mb-5">
         {% for event in events %}
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100 border-0 rounded-3 shadow-sm hover-shadow-lg transition-shadow">
                 {% if event.image %}
                 <div class="card-img-wrapper position-relative">
@@ -37,6 +44,58 @@
         <div class="col-12">
             <div class="alert alert-info">
                 No Items yet. Click "Create New Item" to get started!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Appointments Section -->
+    <h3 class="mb-3">Your Appointments</h3>
+    <div class="row">
+        {% for appointment in appointments %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 rounded-3 shadow-sm hover-shadow-lg transition-shadow">
+                <div class="card-header bg-{% if appointment.status == 'CONFIRMED' %}info{% elif appointment.status == 'COMPLETED' %}success{% elif appointment.status == 'CANCELLED' %}danger{% elif appointment.status == 'MISSED' %}warning{% else %}primary{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">{{ appointment.get_status_display }}</h5>
+                        <span class="badge bg-light text-dark">{{ appointment.get_consultation_type_display }}</span>
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <p class="mb-0"><strong>Date:</strong> {{ appointment.appointment_date|date:"M d, Y" }}</p>
+                            <p class="mb-0"><strong>Time:</strong> {{ appointment.appointment_time }}</p>
+                        </div>
+                        <div class="text-end">
+                            <p class="mb-0"><strong>Doctor:</strong> {{ appointment.doctor.get_full_name }}</p>
+                        </div>
+                    </div>
+                    <p class="card-text flex-grow-1">
+                        <strong>Reason:</strong> {{ appointment.reason|truncatewords:20 }}
+                    </p>
+                    <div class="mt-auto">
+                        <div class="d-flex gap-2">
+                            {% if appointment.is_upcoming %}
+                                {% if appointment.status != 'CANCELLED' %}
+                                <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-outline-danger flex-grow-1" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel</a>
+                                {% endif %}
+                                {% if appointment.consultation_type == 'virtual' and appointment.meeting_link %}
+                                <a href="{{ appointment.meeting_link }}" class="btn btn-primary flex-grow-1" target="_blank">Join Meeting</a>
+                                {% endif %}
+                                <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-outline-secondary flex-grow-1">Edit</a>
+                            {% else %}
+                                <a href="{% url 'appointment_details' appointment.id %}" class="btn btn-outline-secondary w-100">View Details</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No appointments yet. Click "Create Appointment" to schedule one!
             </div>
         </div>
         {% endfor %}

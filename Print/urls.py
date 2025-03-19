@@ -70,7 +70,12 @@ urlpatterns = [
     path('insurance/success/', insurance_success, name='insurance_success'),
     path('ambulance/', ambulance, name='ambulance'),
     path('profile/', profile, name='profile'),
-
+    path('appointments/create/', create_appointment, name='create_appointment'),
+     path('appointment/<int:appointment_id>/cancel/', cancel_appointment, name='cancel_appointment'),
+    path('appointment/<int:appointment_id>/', appointment_details, name='appointment_details'),
+    path('appointment/<int:appointment_id>/edit/', edit_appointment, name='edit_appointment'),
+    path('map/',map_view,name='map_view'),
+   
     
    
     

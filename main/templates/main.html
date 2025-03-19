@@ -26,18 +26,10 @@
         </div>
     </div>
 
-   
-
-       
-
-    
-            </div>
-        </div>
-    </div>
-
+    <!-- Events Display Section -->
     <div class="row g-4">
         {% for event in events %}
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 searchable-item">
             <div class="card h-100 border-0 rounded-3 shadow-sm hover-shadow-lg transition-shadow">
                 {% if event.image %}
                 <div class="card-img-wrapper position-relative">
@@ -51,11 +43,12 @@
                 {% endif %}
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title fw-bold mb-3 text-muted">{{ event.name }}</h5>
-                    <p class="card-text flex-grow-1 text-white">{{ event.description|truncatewords:20 }}</p>
+                    <p class="card-text flex-grow-1 text-dark">{{ event.description|truncatewords:20 }}</p>
                     <div class="mt-auto">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="h5 mb-0 text-white">₹{{ event.price }}</span>
                             
+                            <span class="h5 mb-0 muted text-dark">₹{{ event.price }}</span>
+                           
                         </div>
                         <div class="d-grid gap-2">
                             
@@ -74,6 +67,7 @@
             </div>
         </div>
         {% endfor %}
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -105,53 +99,32 @@ $(document).ready(function() {
         });
     });
 
-    // Countdown timer functionality
-    function updateTimer() {
-        const countdownEl = document.getElementById('countdown');
-        let [hours, minutes, seconds] = countdownEl.textContent.split(':').map(Number);
+    // Search functionality
+    $('#searchInput').on('input', function() {
+        const searchTerm = $(this).val().toLowerCase().trim();
         
-        setInterval(() => {
-            if (seconds > 0) {
-                seconds--;
-            } else if (minutes > 0) {
-                minutes--;
-                seconds = 59;
-            } else if (hours > 0) {
-                hours--;
-                minutes = 59;
-                seconds = 59;
-            }
+        $('.searchable-item').each(function() {
+            const $item = $(this);
+            const titleText = $item.find('.card-title').text().toLowerCase();
+            const descriptionText = $item.find('.card-text').text().toLowerCase();
+            const priceText = $item.find('.h5').text().toLowerCase();
             
-            countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }, 1000);
-    }
+            const searchableText = `${titleText} ${descriptionText} ${priceText}`;
+            const matches = searchableText.includes(searchTerm);
+            
+            $item.toggle(matches);
+        });
 
-    updateTimer();
-});
-$('#searchInput').on('input', function() {
-    const searchTerm = $(this).val().toLowerCase().trim();
-    
-    $('.searchable-item').each(function() {
-        const $item = $(this);
-        const titleText = $item.find('.card-title').text().toLowerCase();
-        const descriptionText = $item.find('.card-text').text().toLowerCase();
-        const priceText = $item.find('.h4').text().toLowerCase();
-        
-        const searchableText = `${titleText} ${descriptionText} ${priceText}`;
-        const matches = searchableText.includes(searchTerm);
-        
-        $item.toggle(matches);
-    });
-
-    // Show "No results found" message if no items are visible
-    const visibleItems = $('.searchable-item:visible').length;
-    if (visibleItems === 0 && searchTerm !== '') {
-        if ($('#no-results').length === 0) {
-            $('.row.g-4').after('<div id="no-results" class="text-center mt-4"><p class="text-muted">No matches found</p></div>');
+        // Show "No results found" message if no items are visible
+        const visibleItems = $('.searchable-item:visible').length;
+        if (visibleItems === 0 && searchTerm !== '') {
+            if ($('#no-results').length === 0) {
+                $('.row.g-4').after('<div id="no-results" class="text-center mt-4"><p class="text-muted">No matches found</p></div>');
+            }
+        } else {
+            $('#no-results').remove();
         }
-    } else {
-        $('#no-results').remove();
-    }
+    });
 });
 </script>
 
@@ -169,6 +142,14 @@ $('#searchInput').on('input', function() {
     background: var(--dark-card);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
+.btn-glow {
+    background-color: #0d6efd;
+    color: white;
+    transition: all 0.3s ease;
+}
+.btn-glow:hover {
+    box-shadow: 0 0 15px rgba(13, 110, 253, 0.5);
+    transform: translateY(-2px);
+}
 </style>
 {% endblock %}

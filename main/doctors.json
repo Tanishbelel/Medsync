@@ -1,0 +1,62 @@
+[
+    {
+      "model": "main.doctor",
+      "pk": 1,
+      "fields": {
+        "first_name": "Sarah",
+        "last_name": "Johnson",
+        "specialty": "Cardiology",
+        "is_active": true,
+        "years_experience": 12,
+        "bio": "Dr. Johnson is a board-certified cardiologist specializing in preventive cardiology and heart disease management."
+      }
+    },
+    {
+      "model": "main.doctor",
+      "pk": 2,
+      "fields": {
+        "first_name": "Michael",
+        "last_name": "Chen",
+        "specialty": "Family Medicine",
+        "is_active": true,
+        "years_experience": 8,
+        "bio": "Dr. Chen focuses on comprehensive family care, preventive medicine, and managing chronic conditions."
+      }
+    },
+    {
+      "model": "main.doctor",
+      "pk": 3,
+      "fields": {
+        "first_name": "Rebecca",
+        "last_name": "Martinez",
+        "specialty": "Pediatrics",
+        "is_active": true,
+        "years_experience": 15,
+        "bio": "Dr. Martinez has extensive experience in pediatric care, child development, and adolescent medicine."
+      }
+    },
+    {
+      "model": "main.doctor",
+      "pk": 4,
+      "fields": {
+        "first_name": "David",
+        "last_name": "Wilson",
+        "specialty": "Dermatology",
+        "is_active": true,
+        "years_experience": 10,
+        "bio": "Dr. Wilson specializes in medical and cosmetic dermatology, with expertise in skin cancer detection and treatment."
+      }
+    },
+    {
+      "model": "main.doctor",
+      "pk": 5,
+      "fields": {
+        "first_name": "Amara",
+        "last_name": "Okafor",
+        "specialty": "Neurology",
+        "is_active": true,
+        "years_experience": 14,
+        "bio": "Dr. Okafor is an expert in neurological disorders, headache management, and stroke prevention."
+      }
+    }
+  ]

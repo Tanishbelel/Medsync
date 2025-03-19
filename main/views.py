@@ -33,6 +33,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from datetime import datetime, timedelta
+from django.http import HttpResponse
+from django.http import HttpResponseForbidden
+
 
 # Configure Gemini API
 API_KEY = "AIzaSyAOIxGJvzpiehT6i8en7RJL6ovvFRqA_ng"
@@ -672,7 +675,9 @@ def vendor_dashboard(request):
     try:
         vendor = request.user.vendor
         events = Event.objects.filter(vendor=vendor)
-        return render(request, 'dashboard.html', {'events': events})
+        appointments = Appointment.objects.filter(patient=request.user)
+        
+        return render(request, 'dashboard.html', {'events': events,'appointments': appointments})
     except Vendor.DoesNotExist:
         messages.warning(request, "Please register as a vendor first.")
         return redirect('vendor_registration')
@@ -696,6 +701,39 @@ def create_event(request):
     else:
         form = EventForm()
     return render(request, 'create_event.html', {'form': form})
+
+@login_required
+def create_appointment(request):
+    try:
+        # Assuming you have a Patient model linked to User
+        patient = request.user
+    except Exception:
+        messages.warning(request, "Please register as a patient first.")
+        return redirect('patient_registration')
+    
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.patient = patient
+            
+            # Check if the selected time slot is available
+            doctor = form.cleaned_data['doctor']
+            date = form.cleaned_data['appointment_date']
+            time = form.cleaned_data['appointment_time']
+            
+            if Appointment.objects.filter(doctor=doctor, appointment_date=date, 
+                                          appointment_time=time).exists():
+                messages.error(request, "This time slot is already booked. Please select another time.")
+            else:
+                appointment.save()
+                messages.success(request, 'Appointment scheduled successfully!')
+                return redirect('vendor_dashboard')
+    else:
+        form = AppointmentForm()
+    
+    return render(request, 'create_appointment.html', {'form': form})
+
 
 @login_required
 def buy_vibies(request):
@@ -935,3 +973,118 @@ def profile(request):
     
     patients = PatientProfile.objects.all()
     return render(request, 'profile.html', {'form': form, 'patients': patients})
+
+@login_required
+def cancel_appointment(request, appointment_id):
+    """View to cancel an appointment"""
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Security check: ensure the user owns this appointment
+    if appointment.patient != request.user:
+        return HttpResponseForbidden("You don't have permission to cancel this appointment")
+    
+    # Only allow cancellation if the appointment is upcoming and not already cancelled
+    if appointment.is_upcoming() and appointment.status != 'CANCELLED':
+        appointment.status = 'CANCELLED'
+        appointment.save()
+        messages.success(request, f"Your appointment with Dr. {appointment.doctor.last_name} on {appointment.appointment_date} has been cancelled.")
+    else:
+        messages.error(request, "This appointment cannot be cancelled.")
+    
+    # Redirect back to the dashboard or wherever the user came from
+    return redirect('vendor_dashboard')  # Adjust this to your actual dashboard URL name
+
+@login_required
+def appointment_details(request, appointment_id):
+    """View to display appointment details"""
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Security check: ensure the user owns this appointment
+    if appointment.patient != request.user:
+        return HttpResponseForbidden("You don't have permission to view this appointment")
+    
+    return render(request, 'appointment_details.html', {'appointment': appointment})
+
+@login_required
+def edit_appointment(request, appointment_id):
+    """View to edit an appointment"""
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Security check: ensure the user owns this appointment
+    if appointment.patient != request.user:
+        return HttpResponseForbidden("You don't have permission to edit this appointment")
+    
+    if not appointment.is_upcoming() or appointment.status == 'CANCELLED':
+        messages.error(request, "This appointment cannot be edited.")
+        return redirect('vendor_dashboard')  # Adjust to your actual dashboard URL
+    
+    if request.method == 'POST':
+        # Process the form data
+        # This will depend on what fields you want to allow editing
+        # For example:
+        reason = request.POST.get('reason')
+        if reason:
+            appointment.reason = reason
+            appointment.save()
+            messages.success(request, "Appointment updated successfully.")
+            return redirect('vendor_dashboard')  # Adjust to your dashboard URL
+    
+    # For GET requests, show the edit form
+    return render(request, 'edit_appointment.html', {'appointment': appointment})
+
+from django.shortcuts import render
+import json
+
+def upload_prescription(request):
+    if request.method == "POST":
+        image = request.FILES["prescription"]
+        medicine_data = process_prescription(image)
+
+        # Convert queryset to dictionary
+        medicine_dict = {med.name: f"{med.dosage} {med.description}" for med in medicine_data}
+
+        return render(request, "result.html", {"medicines": medicine_dict})
+
+    return render(request, "upload.html")
+
+from django.shortcuts import render
+import json
+
+def upload_prescription(request):
+    if request.method == "POST":
+        image = request.FILES["prescription"]
+        medicine_data = process_prescription(image)
+
+        # Convert queryset to dictionary
+        medicine_dict = {med.name: f"{med.dosage} {med.description}" for med in medicine_data}
+
+        return render(request, "result.html", {"medicines": medicine_dict})
+
+    return render(request, "upload.html")
+
+def map_view(request):
+    # List of 20 medical stores in Andheri with details
+    medical_stores = [
+        {"name": "Apna Medical & General Stores", "lat": 19.1196, "lng": 72.8468, "address": "Andheri West, Mumbai", "timings": "9 AM - 11 PM"},
+        {"name": "Get Well Medical", "lat": 19.1210, "lng": 72.8491, "address": "Andheri East, Mumbai", "timings": "24 Hours"},
+        {"name": "People Chemist", "lat": 19.1185, "lng": 72.8430, "address": "Juhu, Andheri", "timings": "8 AM - 10 PM"},
+        {"name": "Wellcare Pharmacy", "lat": 19.1250, "lng": 72.8475, "address": "Andheri West", "timings": "10 AM - 9 PM"},
+        {"name": "Lifeline Medicals", "lat": 19.1225, "lng": 72.8422, "address": "Andheri East", "timings": "24 Hours"},
+        {"name": "MedPlus Pharmacy", "lat": 19.1170, "lng": 72.8501, "address": "Andheri East", "timings": "7 AM - 11 PM"},
+        {"name": "Care & Cure Pharmacy", "lat": 19.1208, "lng": 72.8415, "address": "Lokhandwala, Andheri", "timings": "10 AM - 10 PM"},
+        {"name": "Health Point Medical", "lat": 19.1267, "lng": 72.8449, "address": "Four Bungalows, Andheri", "timings": "9 AM - 11 PM"},
+        {"name": "Apollo Pharmacy", "lat": 19.1156, "lng": 72.8463, "address": "Andheri West", "timings": "24 Hours"},
+        {"name": "Wellness Chemist", "lat": 19.1182, "lng": 72.8490, "address": "Seven Bungalows, Andheri", "timings": "9 AM - 10 PM"},
+        {"name": "Prime Medicals", "lat": 19.1244, "lng": 72.8502, "address": "DN Nagar, Andheri", "timings": "8 AM - 11 PM"},
+        {"name": "Reliable Pharmacy", "lat": 19.1212, "lng": 72.8535, "address": "Mahakali Caves, Andheri", "timings": "7 AM - 12 AM"},
+        {"name": "HealthFirst Chemist", "lat": 19.1180, "lng": 72.8395, "address": "Versova, Andheri", "timings": "9 AM - 11 PM"},
+        {"name": "City Medicos", "lat": 19.1262, "lng": 72.8405, "address": "Jogeshwari-Vikhroli Link Rd", "timings": "10 AM - 10 PM"},
+        {"name": "QuickMeds Pharmacy", "lat": 19.1135, "lng": 72.8440, "address": "Andheri West", "timings": "24 Hours"},
+        {"name": "MediTrust Pharmacy", "lat": 19.1203, "lng": 72.8378, "address": "Yari Road, Andheri", "timings": "8 AM - 11 PM"},
+        {"name": "Apex Medical Store", "lat": 19.1169, "lng": 72.8517, "address": "Marol, Andheri", "timings": "10 AM - 9 PM"},
+        {"name": "LifeCare Pharmacy", "lat": 19.1237, "lng": 72.8529, "address": "JB Nagar, Andheri", "timings": "24 Hours"},
+        {"name": "Om Sai Medicals", "lat": 19.1174, "lng": 72.8466, "address": "Andheri East", "timings": "8 AM - 10 PM"},
+        {"name": "Sanford Chemist", "lat": 19.1159, "lng": 72.8403, "address": "Versova, Andheri", "timings": "9 AM - 11 PM"}
+    ]
+
+    return render(request, 'map.html', {'medical_stores': json.dumps(medical_stores)})

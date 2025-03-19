@@ -17,4 +17,4 @@ def upload_prescription(request):
 
         return render(request, "result.html", {"medicines": medicine_dict})
 
-    return render(request, "upload.html")
+    return render(request, "result.html")

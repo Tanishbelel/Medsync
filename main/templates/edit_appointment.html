@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block start %}
+{% load static %}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4" style="color: var(--primary-color);">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Appointment
+                    </h4>
+
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} rounded-3" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="appointment-date" class="form-label">Appointment Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                <input type="date" class="form-control" id="appointment-date" name="appointment_date" value="{{ appointment.appointment_date|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="appointment-time" class="form-label">Appointment Time</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                <input type="time" class="form-control" id="appointment-time" name="appointment_time" value="{{ appointment.appointment_time }}" required>
+                            </div>
+                            <div class="form-text">Current time: {{ appointment.get_formatted_time }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="consultation-type" class="form-label">Consultation Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-video3"></i></span>
+                                <select class="form-select" id="consultation-type" name="consultation_type">
+                                    <option value="in_person" {% if appointment.consultation_type == 'in_person' %}selected{% endif %}>In-Person</option>
+                                    <option value="virtual" {% if appointment.consultation_type == 'virtual' %}selected{% endif %}>Virtual</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for Appointment</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-journal-text"></i></span>
+                                <textarea class="form-control" id="reason" name="reason" rows="3">{{ appointment.reason }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Doctor Information</label>
+                            <div class="card border-0 bg-light rounded-3">
+                                <div class="card-body">
+                                    <p class="mb-1"><strong>Doctor:</strong> Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</p>
+                                    <p class="mb-1"><strong>Specialization:</strong> {{ appointment.doctor.specialization }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'vendor_dashboard' %}" class="btn btn-outline-secondary rounded-3">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-3">
+                                <i class="bi bi-check2-circle me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles for the form */
+    .form-control:focus, .form-select:focus {
+        border-color: rgba(var(--primary-color-rgb), 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.25);
+    }
+    
+    .input-group-text {
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+        border-color: rgba(var(--primary-color-rgb), 0.2);
+    }
+</style>
+
+{% endblock %}
