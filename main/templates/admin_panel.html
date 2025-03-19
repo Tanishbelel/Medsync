@@ -213,9 +213,181 @@
         .stat-info {
             flex: 1;
         }
+
+        /* Notification Popup Styles */
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            max-width: 350px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification-popup.show {
+            transform: translateX(0);
+        }
+
+        .notification-content {
+            margin-right: 15px;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+        }
+
+        .notification-actions {
+            display: flex;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .notification-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+        }
+
+        .btn-accept {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-decline {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .close-modal:hover {
+            color: black;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-create-meet {
+            background-color: #4285F4;
+            color: white;
+        }
+
+        .meet-link {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+        .meet-link a {
+            color: #4285F4;
+            text-decoration: none;
+        }
+
+        .meet-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
+    <div class="dashboard">
         <!-- Main Content -->
         <div class="main-content">
             <div class="header">
@@ -274,6 +446,71 @@
         </div>
     </div>
 
+    <!-- Notification Sound -->
+    <audio id="notificationSound">
+        <source src="static/CSS/preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Notification Popup -->
+    <div class="notification-popup" id="notificationPopup">
+        <div class="notification-content">
+            <div class="notification-title">New Consultation Request</div>
+            <div class="notification-message">You have a request from Darsh for consultancy.</div>
+            <div class="notification-actions">
+                <button class="btn notification-btn btn-accept" id="acceptBtn">Accept</button>
+                <button class="btn notification-btn btn-decline" id="declineBtn">Decline</button>
+            </div>
+        </div>
+        <button class="notification-close" id="closeNotification">&times;</button>
+    </div>
+
+    <!-- Schedule Meeting Modal -->
+    <div id="scheduleMeetingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Schedule Google Meet</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="meetTitle">Meeting Title</label>
+                    <input type="text" class="form-control" id="meetTitle" value="Consultation with Darsh">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="meetDate">Date</label>
+                    <input type="date" class="form-control" id="meetDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="meetTime">Time</label>
+                    <input type="time" class="form-control" id="meetTime">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="meetDuration">Duration (minutes)</label>
+                    <select class="form-control" id="meetDuration">
+                        <option value="15">15 minutes</option>
+                        <option value="30" selected>30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                        <option value="120">2 hours</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="meetEmail">Participant Email</label>
+                    <input type="email" class="form-control" id="meetEmail" value="darsh@example.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-create-meet" id="createMeetBtn">Create Meeting</button>
+            </div>
+            <div id="meetLinkContainer" style="display: none;">
+                <div class="meet-link">
+                    Meeting Link: <a href="#" id="meetLink" >https://meet.google.com/landing</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const statusCheckboxes = document.querySelectorAll('.status-checkbox');
@@ -307,6 +544,183 @@
 
             // Load saved states when page loads
             loadCheckboxStates();
+
+            // Notification popup functionality
+            const notificationPopup = document.getElementById('notificationPopup');
+            const closeNotification = document.getElementById('closeNotification');
+            const acceptBtn = document.getElementById('acceptBtn');
+            const declineBtn = document.getElementById('declineBtn');
+
+            // Modal elements
+            const scheduleMeetingModal = document.getElementById('scheduleMeetingModal');
+            const closeModal = document.getElementById('closeModal');
+            const createMeetBtn = document.getElementById('createMeetBtn');
+            const meetDateInput = document.getElementById('meetDate');
+            const meetLinkContainer = document.getElementById('meetLinkContainer');
+            const meetLink = document.getElementById('meetLink');
+
+            // Set default date to today
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            meetDateInput.value = formattedDate;
+
+            // Fixed notification sound function
+            function playNotificationSound() {
+                try {
+                    // Create audio context
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const audioContext = new AudioContext();
+                    
+                    // Create oscillators for a simple melody
+                    const notes = [
+                        { freq: 587.33, duration: 0.1 }, // D5
+                        { freq: 659.25, duration: 0.1 }, // E5
+                        { freq: 783.99, duration: 0.1 }  // G5
+                    ];
+                    
+                    notes.forEach((note, index) => {
+                        // Create oscillator and gain node for each note
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        // Configure sound
+                        oscillator.type = 'sine';
+                        oscillator.frequency.value = note.freq;
+                        
+                        // Configure volume with a nice envelope
+                        gainNode.gain.setValueAtTime(0, audioContext.currentTime + index * note.duration);
+                        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + index * note.duration + 0.01);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (index + 1) * note.duration);
+                        
+                        // Connect nodes
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        // Schedule playback
+                        oscillator.start(audioContext.currentTime + index * note.duration);
+                        oscillator.stop(audioContext.currentTime + (index + 1) * note.duration);
+                    });
+                } catch (error) {
+                    console.error("Error playing notification sound:", error);
+                    
+                    // Fallback: try to play the audio element if Web Audio API fails
+                    const notificationSound = document.getElementById('notificationSound');
+                    if (notificationSound) {
+                        notificationSound.play().catch(e => console.error("Couldn't play fallback audio:", e));
+                    }
+                }
+            }
+
+            // Add a user interaction event to initialize audio
+            document.body.addEventListener('click', function initAudio() {
+                // Create and play a silent audio context to unlock audio on iOS
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    const audioContext = new AudioContext();
+                    // Create a silent oscillator
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    gainNode.gain.value = 0; // Silent
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.001);
+                }
+                
+                // Also try to load the audio element
+                const notificationSound = document.getElementById('notificationSound');
+                if (notificationSound) {
+                    notificationSound.load();
+                }
+                
+                // Remove this initialization listener after first click
+                document.body.removeEventListener('click', initAudio);
+            });
+
+            // Show notification after a short delay when page loads
+            setTimeout(() => {
+                notificationPopup.classList.add('show');
+                
+                // For browsers that require user interaction before playing audio,
+                // we'll attempt to play the sound but catch and handle any errors
+                playNotificationSound();
+            }, 1000);
+
+            // Close notification when close button is clicked
+            closeNotification.addEventListener('click', () => {
+                notificationPopup.classList.remove('show');
+            });
+
+            // Handle accept button click
+            acceptBtn.addEventListener('click', () => {
+                notificationPopup.classList.remove('show');
+                scheduleMeetingModal.style.display = 'block';
+                // Play a sound when accepting - this will work because it follows user interaction
+                playNotificationSound();
+            });
+
+            // Handle decline button click
+            declineBtn.addEventListener('click', () => {
+                alert('Consultation request declined!');
+                notificationPopup.classList.remove('show');
+            });
+
+            // Close modal when close button is clicked
+            closeModal.addEventListener('click', () => {
+                scheduleMeetingModal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside of it
+            window.addEventListener('click', (event) => {
+                if (event.target === scheduleMeetingModal) {
+                    scheduleMeetingModal.style.display = 'none';
+                }
+            });
+
+            // Create meeting when create button is clicked
+            createMeetBtn.addEventListener('click', () => {
+                const title = document.getElementById('meetTitle').value;
+                const date = document.getElementById('meetDate').value;
+                const time = document.getElementById('meetTime').value;
+                const duration = document.getElementById('meetDuration').value;
+                const email = document.getElementById('meetEmail').value;
+
+                if (!title || !date || !time || !email) {
+                    alert('Please fill all required fields');
+                    return;
+                }
+
+                // Generate a fake Google Meet link
+                const meetId = 'abc-defg-hij';
+                const googleMeetLink = https://meet.google.com/${meetId};
+                
+                // Display the meeting link
+                meetLink.href = googleMeetLink;
+                meetLink.textContent = googleMeetLink;
+                meetLinkContainer.style.display = 'block';
+                
+                // In a real application, you would make an API call to Google Calendar API
+                console.log('Meeting details:', {
+                    title,
+                    date,
+                    time,
+                    duration,
+                    email,
+                    meetingLink: googleMeetLink
+                });
+                
+                // Change button text to indicate success
+                createMeetBtn.textContent = 'Meeting Created!';
+                createMeetBtn.disabled = true;
+                
+                // Simulate sending an email
+                setTimeout(() => {
+                    alert('Meeting scheduled successfully! Invitation sent to ' + email);
+                }, 1000);
+                
+                // Play a confirmation sound
+                playNotificationSound();
+            });
         });
     </script>
 </body>
