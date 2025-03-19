@@ -133,7 +133,7 @@
             height: 40px;
             line-height: 40px;
             border-radius: 50%;
-            background-color: var(--light-accent);
+    
         }
 
         .social-links a:hover {
@@ -170,6 +170,344 @@
             background-color: white;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
+        .medpoints-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .medpoints-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .medpoints-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-text);
+            transition: color 0.2s;
+        }
+        
+        .medpoints-modal-close:hover {
+            color: var(--text-color);
+        }
+        
+        .medpoints-modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .points-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--light-accent);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem auto;
+            border: 3px solid var(--accent-color);
+        }
+
+        .points-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .points-label {
+            font-size: 0.9rem;
+            color: var(--muted-text);
+        }
+
+        .points-info {
+            background-color: var(--light-accent);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: left;
+        }
+
+        .points-history {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .points-history-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+        }
+
+        .points-history-item:last-child {
+            border-bottom: none;
+        }
+
+        .points-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .points-date {
+            font-size: 0.8rem;
+            color: var(--muted-text);
+        }
+
+        .points-amount {
+            font-weight: 600;
+        }
+
+        .points-amount.earned {
+            color: #2E8B57;
+        }
+
+        .points-amount.redeemed {
+            color: #E65100;
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar-container {
+            height: 10px;
+            background-color: var(--light-accent);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+        }
+        /* Referral Modal Styles */
+        .referral-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .referral-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .referral-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-text);
+            transition: color 0.2s;
+        }
+        
+        .referral-modal-close:hover {
+            color: var(--text-color);
+        }
+        
+        .referral-modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .referral-code-display {
+            background-color: var(--light-accent);
+            padding: 1rem;
+            border-radius: 5px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0;
+            border: 1px dashed var(--border-color);
+            cursor: pointer;
+            color: var(--text-color);
+            letter-spacing: 1px;
+        }
+        
+        .referral-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 0.5rem;
+        }
+        
+        .referral-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .referral-secondary-button {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 0.5rem;
+        }
+        
+        .referral-secondary-button:hover {
+            background-color: white;
+        }
+        /* Referral Modal Styles */
+        .referral-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .referral-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .referral-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-text);
+            transition: color 0.2s;
+        }
+        
+        .referral-modal-close:hover {
+            color: var(--text-color);
+        }
+        
+        .referral-modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .referral-code-display {
+            background-color: var(--light-accent);
+            padding: 1rem;
+            border-radius: 5px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0;
+            border: 1px dashed var(--border-color);
+            cursor: pointer;
+            color: var(--text-color);
+            letter-spacing: 1px;
+        }
+        
+        .referral-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 0.5rem;
+        }
+        
+        .referral-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .referral-secondary-button {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 0.5rem;
+        }
+        
+        .referral-secondary-button:hover {
+            background-color: white;
+        }
+        
+        .copy-alert {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .copy-alert {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -205,13 +543,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="ocr/upload-prescription">
+                        <a class="nav-link" href="/ocr/upload-prescription/">
                             <i class="bi bi-clipboard-check me-1"></i>Prescription
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="insurance">
+                        <a class="nav-link" href="/insurance/">
                             <i class="bi bi-clipboard-check me-1"></i>Book Coverage
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="referralBtn">
+                            <i class="bi bi-share me-1"></i>Refer Friend
                         </a>
                     </li>
                     {% endif %}
@@ -232,8 +575,14 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="profile">
+                                <a class="dropdown-item" href="/profile/">
                                     <i class="bi bi-clipboard-check me-2"></i>Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" id="dropdownMedPointsBtn">
+                                    <i class="bi bi-star-fill me-2"></i>MedPoints
+                                    <span class="points-badge ms-1">0</span>
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -258,7 +607,70 @@
             </div>
         </div>
     </nav>
-
+    <!-- Referral Modal -->
+    <div class="referral-modal" id="referralModal">
+        <div class="referral-modal-content">
+            <span class="referral-modal-close" id="closeReferralModal">&times;</span>
+            <h3 class="referral-modal-title">Share MedSync with Friends</h3>
+            <p>Share this referral code with friends and family to help them get started with MedSync</p>
+            <div class="referral-code-display" id="referralCode">MEDSYNC-XXXXXX</div>
+            <p class="copy-alert" id="copyAlert">Code copied to clipboard!</p>
+            <div>
+                <button class="referral-button" id="copyReferralBtn">Copy Code</button>
+                <button class="referral-secondary-button" id="newReferralBtn">New Code</button>
+            </div>
+        </div>
+    </div>
+    <!-- MedPoints Modal -->
+    <div class="medpoints-modal" id="medPointsModal">
+        <div class="medpoints-modal-content">
+            <span class="medpoints-modal-close" id="closeMedPointsModal">&times;</span>
+            <h3 class="medpoints-modal-title">Your MedPoints</h3>
+            
+            <div class="points-circle">
+                <div class="points-value">0</div>
+                <div class="points-label">Available Points</div>
+            </div>
+            
+            
+            
+            <div class="points-info">
+                <h5><i class="bi bi-info-circle me-2"></i>How to Earn Points</h5>
+                <ul class="mb-0">
+                    <li>50 points for each prescription order</li>
+                    <li>10 points for every Rs20 spent</li>
+                    <li>100 points for each successful referral</li>
+                    <li>25 points for booking insurance coverage</li>
+                </ul>
+            </div>
+            
+            <h5>Points History</h5>
+            <div class="points-history">
+                <div class="points-history-item">
+                    <div class="points-type">
+                        <i class="bi bi-capsule"></i>
+                        </div>
+                    
+                </div>
+            </div>
+            
+            <button class="referral-button mt-2">Redeem Points</button>
+        </div>
+    </div>
+<!-- Referral Modal -->
+<div class="referral-modal" id="referralModal">
+    <div class="referral-modal-content">
+        <span class="referral-modal-close" id="closeReferralModal">&times;</span>
+        <h3 class="referral-modal-title">Share MedSync with Friends</h3>
+        <p>Share this referral code with friends and family to help them get started with MedSync</p>
+        <div class="referral-code-display" id="referralCode">MEDSYNC-XXXXXX</div>
+        <p class="copy-alert" id="copyAlert">Code copied to clipboard!</p>
+        <div>
+            <button class="referral-button" id="copyReferralBtn">Copy Code</button>
+            <button class="referral-secondary-button" id="newReferralBtn">New Code</button>
+        </div>
+    </div>
+</div>
     <!-- Main Content -->
     
         {% block start %}{% endblock %}
@@ -267,7 +679,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p class="mb-3">"Simplyfying Healthcare, Enhancing Lives"</p>
+         
             <div class="social-links mb-3">
                 <a href="#"><i class="bi bi-facebook"></i></a>
                 <a href="#"><i class="bi bi-twitter"></i></a>
@@ -286,5 +698,111 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Referral Code Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const referralBtn = document.getElementById('referralBtn');
+            const referralModal = document.getElementById('referralModal');
+            const closeReferralModal = document.getElementById('closeReferralModal');
+            const referralCode = document.getElementById('referralCode');
+            const copyReferralBtn = document.getElementById('copyReferralBtn');
+            const newReferralBtn = document.getElementById('newReferralBtn');
+            const copyAlert = document.getElementById('copyAlert');
+            
+            // Generate random referral code
+            function generateReferralCode() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let code = 'MEDSYNC-';
+                
+                for (let i = 0; i < 6; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                
+                referralCode.textContent = code;
+            }
+            
+            // Open modal
+            referralBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                generateReferralCode();
+                referralModal.style.display = 'flex';
+            });
+            
+            // Close modal
+            closeReferralModal.addEventListener('click', function() {
+                referralModal.style.display = 'none';
+            });
+            
+            // Close modal if clicked outside
+            window.addEventListener('click', function(event) {
+                if (event.target === referralModal) {
+                    referralModal.style.display = 'none';
+                }
+            });
+            
+            // Copy code
+            copyReferralBtn.addEventListener('click', function() {
+                copyToClipboard();
+            });
+            
+            // Copy when clicking on the code itself
+            referralCode.addEventListener('click', function() {
+                copyToClipboard();
+            });
+            
+            // Generate new code
+            newReferralBtn.addEventListener('click', function() {
+                generateReferralCode();
+            });
+            
+            // Copy to clipboard function
+            function copyToClipboard() {
+                const codeText = referralCode.textContent;
+                navigator.clipboard.writeText(codeText).then(function() {
+                    copyAlert.style.display = 'block';
+                    setTimeout(function() {
+                        copyAlert.style.display = 'none';
+                    }, 2000);
+                });
+            }
+            
+            // Generate initial code
+            generateReferralCode();
+
+            // MedPoints Modal Elements
+            const medPointsBtn = document.getElementById('medPointsBtn');
+            const dropdownMedPointsBtn = document.getElementById('dropdownMedPointsBtn');
+            const medPointsModal = document.getElementById('medPointsModal');
+            const closeMedPointsModal = document.getElementById('closeMedPointsModal');
+
+            // Open MedPoints modal
+            if (medPointsBtn) {
+                medPointsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    medPointsModal.style.display = 'flex';
+                });
+            }
+
+            if (dropdownMedPointsBtn) {
+                dropdownMedPointsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    medPointsModal.style.display = 'flex';
+                });
+            }
+
+            // Close MedPoints modal
+            closeMedPointsModal.addEventListener('click', function() {
+                medPointsModal.style.display = 'none';
+            });
+
+            // Close MedPoints modal if clicked outside
+            window.addEventListener('click', function(event) {
+                if (event.target === medPointsModal) {
+                    medPointsModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

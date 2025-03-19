@@ -281,6 +281,83 @@
             color: var(--text-dark);
         }
         
+        /* QR Code Modal Styles */
+        .qr-button {
+            background: var(--primary-green-light);
+            color: var(--primary-green-dark);
+            border: 1px solid var(--green-border);
+            margin-top: 30px;
+        }
+        
+        .qr-button:hover {
+            background: var(--primary-green-light);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--white);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 16px;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            text-align: center;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--text-light);
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .close-button:hover {
+            color: var(--text-dark);
+        }
+        
+        .qr-container {
+            margin: 15px 0;
+            background-color: var(--white);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        
+        .qr-title {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .qr-description {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -303,6 +380,11 @@
             
             .section-item:not(:last-child):after {
                 display: none;
+            }
+            
+            .modal-content {
+                width: 85%;
+                margin: 20% auto;
             }
         }
     </style>
@@ -422,41 +504,27 @@
         </div>
         
         <button type="submit">Save Profile</button>
-    </form>
-
-    <div class="patient-list">
-        <h3>Saved Profiles</h3>
         
-        {% if patients %}
-            {% for patient in patients %}
-            <div class="patient">
-                <div class="patient-header">
-                    <h4 class="patient-name">{{ patient.name }}</h4>
-                    <span class="badge">{{ patient.blood_group }}</span>
-                </div>
-                <p><strong>Age:</strong> {{ patient.age }} years</p>
-                <p><strong>Gender:</strong> {{ patient.gender }}</p>
-                
-                <div class="emergency-contact">
-                    <p><strong>Emergency Contact:</strong> {{ patient.emergency_name|default:"Not provided" }}</p>
-                    <p><strong>Relationship:</strong> {{ patient.emergency_relation|default:"Not specified" }}</p>
-                    <p><strong>Phone:</strong> {{ patient.emergency_phone|default:"Not provided" }}</p>
-                </div>
-                
-                <p><strong>Allergies:</strong> {{ patient.allergies|default:"None reported" }}</p>
-                <p><strong>Medical Conditions:</strong> {{ patient.chronic_conditions|default:"None reported" }}</p>
-                <p><strong>Medical History:</strong> {{ patient.medical_history|default:"None reported" }}</p>
-                <p><strong>Medications:</strong> {{ patient.medications|default:"None" }}</p>
-                <p><strong>Last Checkup:</strong> {{ patient.last_checkup_date|date:"F d, Y" }}</p>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="no-patients">
-                No patient profiles have been saved yet.
-            </div>
-        {% endif %}
+        <!-- QR Code Button -->
+        <button type="button" id="showQrButton" class="qr-button">Show QR Code</button>
+    </form>
+</div>
+
+<!-- QR Code Modal -->
+<!-- QR Modal -->
+<!-- QR Code Modal -->
+<div id="qrModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close-button">&times;</span>
+        <h4 class="qr-title">Patient Profile QR Code</h4>
+        <p class="qr-description">Scan this QR code to complete your profile!</p>
+        <div class="qr-container">
+            <img src="../static/images/qr1.jpg" alt="QR Code" class="qr-code">
+        </div>
     </div>
 </div>
+<!-- Add script for QR Code generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -544,7 +612,75 @@
             document.querySelector('.medical-complete').textContent = 
                 sections.medical.completed + '/' + sections.medical.fields;
         }
+        
+        // QR Code Modal functionality
+        const modal = document.getElementById('qrModal');
+        const showQrButton = document.getElementById('showQrButton');
+        const closeModal = document.getElementById('closeModal');
+        
+        showQrButton.addEventListener('click', function() {
+            // Generate QR code with form data
+            const patientData = collectPatientData();
+            const qrCodeContainer = document.getElementById('qrCode');
+            qrCodeContainer.innerHTML = ''; // Clear previous QR code
+            
+            // Create QR code
+            new QRCode(qrCodeContainer, {
+                text: JSON.stringify(patientData),
+                width: 200,
+                height: 200,
+                colorDark: '#059669',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Show modal
+            modal.style.display = 'block';
+        });
+        
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Collect patient data from the form
+        function collectPatientData() {
+            const form = document.getElementById('patientForm');
+            const formData = {};
+            
+            trackFields.forEach(field => {
+                formData[field.name] = field.value;
+            });
+            
+            return formData;
+        }
     });
+    // QR Code Modal functionality
+const modal = document.getElementById('qrModal');
+const showQrButton = document.getElementById('showQrButton');
+const closeModal = document.getElementById('closeModal');
+
+showQrButton.addEventListener('click', function() {
+    // Show modal
+    modal.style.display = 'block';
+});
+
+closeModal.addEventListener('click', function() {
+    modal.style.display = 'none';
+});
+
+// Close modal when clicking outside the modal content
+window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
 </script>
 
 </body>

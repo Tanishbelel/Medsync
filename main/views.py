@@ -128,7 +128,7 @@ def login_page(request):
              return redirect('/login/')
         else :
             login(request, user)
-            return redirect('/')
+            return redirect('main')
 
     return render(request, 'login.html')
     
@@ -431,8 +431,10 @@ def create_order(request):
 
 @login_required
 def order_list(request):
+    appointments = Appointment.objects.filter(patient=request.user)
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'orders.html', {'orders': orders})
+
+    return render(request, 'orders.html', {'orders': orders,'appointments': appointments})
 @login_required 
 def create_order(request):
     if request.method == 'POST':
@@ -789,7 +791,7 @@ def book_consultation(request):
                 
                 if existing_appointments.exists():
                     messages.error(request, "Sorry, that time slot has just been booked. Please select another time.")
-                    return render(request, 'booking/book_consultation.html', {
+                    return render(request, 'book_consultation.html', {
                         'form': form,
                         'insurance_form': insurance_form,
                         'doctors': doctors
@@ -1088,3 +1090,15 @@ def map_view(request):
     ]
 
     return render(request, 'map.html', {'medical_stores': json.dumps(medical_stores)})
+
+def upload_prescription(request):
+    if request.method == "POST":
+        image = request.FILES["prescription"]
+        medicine_data = process_prescription(image)
+
+        # Convert queryset to dictionary
+        medicine_dict = {med.name: f"{med.dosage} {med.description}" for med in medicine_data}
+
+        return render(request, "result.html", {"medicines": medicine_dict})
+
+    return render(request, "result.html")

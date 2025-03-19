@@ -99,73 +99,63 @@
                     </div>
 
                     <!-- Appointments Section -->
-                    <div>
-                        <h5 class="mb-3" style="color: var(--primary-color);">
-                            <i class="bi bi-calendar-check me-2"></i>Appointments
-                        </h5>
-                        
-                        {% if appointments %}
-                        <div class="accordion" id="appointmentsAccordion">
-                            {% for appointment in appointments %}
-                            <div class="accordion-item border-0 shadow-sm mb-3 rounded-3">
-                                <h2 class="accordion-header" id="heading-appt-{{ appointment.id }}">
-                                    <button class="accordion-button rounded-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-appt-{{ appointment.id }}" aria-expanded="false" aria-controls="collapse-appt-{{ appointment.id }}">
-                                        <div class="d-flex justify-content-between align-items-center w-100">
-                                            <span>Dr. {{ appointment.doctor.last_name }} - {{ appointment.appointment_date|date:"M d, Y" }} at {{ appointment.appointment_time }}</span>
-                                            <span class="badge {% if appointment.status == 'SCHEDULED' %}bg-warning{% elif appointment.status == 'CONFIRMED' %}bg-primary{% elif appointment.status == 'COMPLETED' %}bg-success{% elif appointment.status == 'CANCELLED' %}bg-danger{% else %}bg-secondary{% endif %} rounded-pill">{{ appointment.status }}</span>
-                                        </div>
-                                    </button>
-                                </h2>
-                                <!-- Rest of the appointment details -->
-                                <!-- ... -->
-                            </div>
-                            {% endfor %}
+                    <h3 class="mb-3">Your Appointments</h3>
+    <div class="row">
+        {% for appointment in appointments %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-0 rounded-3 shadow-sm hover-shadow-lg transition-shadow">
+                <div class="card-header bg-{% if appointment.status == 'CONFIRMED' %}info{% elif appointment.status == 'COMPLETED' %}success{% elif appointment.status == 'CANCELLED' %}danger{% elif appointment.status == 'MISSED' %}warning{% else %}primary{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-white">{{ appointment.get_status_display }}</h5>
+                        <span class="badge bg-light text-dark">{{ appointment.get_consultation_type_display }}</span>
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <p class="mb-0"><strong>Date:</strong> {{ appointment.appointment_date|date:"M d, Y" }}</p>
+                            <p class="mb-0"><strong>Time:</strong> {{ appointment.appointment_time }}</p>
                         </div>
-                    {% else %}
-                        <div class="alert alert-info rounded-3" role="alert">
-                            <i class="bi bi-info-circle me-2"></i>You don't have any appointments scheduled.
+                        <div class="text-end">
+                            <p class="mb-0"><strong>Doctor:</strong> {{ appointment.doctor.get_full_name }}</p>
                         </div>
-                    {% endif %}
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Action Buttons -->
-                                            <div class="mt-3 d-flex gap-2">
-                                                {% if appointment.status == 'SCHEDULED' or appointment.status == 'CONFIRMED' %}
-                                                <a href="{% url 'reschedule_appointment' appointment.id %}" class="btn btn-sm btn-outline-primary rounded-3">
-                                                    <i class="bi bi-calendar-plus me-1"></i>Reschedule
-                                                </a>
-                                                <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-sm btn-outline-danger rounded-3">
-                                                    <i class="bi bi-x-circle me-1"></i>Cancel
-                                                </a>
-                                                {% endif %}
-                                                {% if appointment.status == 'COMPLETED' %}
-                                                <a href="{% url 'leave_feedback' appointment.id %}" class="btn btn-sm btn-outline-success rounded-3">
-                                                    <i class="bi bi-star me-1"></i>Leave Feedback
-                                                </a>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="alert alert-info rounded-3" role="alert">
-                                <i class="bi bi-info-circle me-2"></i>You don't have any appointments scheduled.
-                            </div>
-                        {% endif %}
+                    </div>
+                    <p class="card-text flex-grow-1">
+                        <strong>Reason:</strong> {{ appointment.reason|truncatewords:20 }}
+                    </p>
+                    <div class="mt-auto">
+                        <div class="d-flex gap-2">
+                            {% if appointment.is_upcoming %}
+                                {% if appointment.status != 'CANCELLED' %}
+                                <a href="{% url 'cancel_appointment' appointment.id %}" class="btn btn-outline-danger flex-grow-1" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel</a>
+                                {% endif %}
+                                {% if appointment.consultation_type == 'virtual' and appointment.meeting_link %}
+                                <a href="{{ appointment.meeting_link }}" class="btn btn-primary flex-grow-1" target="_blank">Join Meeting</a>
+                                {% endif %}
+                                <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-outline-secondary flex-grow-1">Edit</a>
+                            {% else %}
+                                <a href="{% url 'appointment_details' appointment.id %}" class="btn btn-outline-secondary w-100">View Details</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No appointments yet. Click "Create Appointment" to schedule one!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
             
             <div class="text-center mt-4">
                 <a href="{% url 'main' %}" class="btn btn-outline-primary rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
                 </a>
-                <a href="{% url 'book_consultation' %}" class="btn btn-primary rounded-3 ms-2">
-                    <i class="bi bi-calendar-plus me-1"></i>Book New Appointment
-                </a>
+               
             </div>
         </div>
     </div>
