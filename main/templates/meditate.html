@@ -1,0 +1,661 @@
+{% extends 'base.html' %}
+
+{% block title %}Mental Health Exercises - Mann{% endblock %}
+
+{% block start %}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 3rem 0;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .exercise-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .exercise-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+    }
+
+    .exercise-card.selected {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 16px rgba(46, 139, 87, 0.2);
+        background: linear-gradient(135deg, rgba(46, 139, 87, 0.02), rgba(60, 179, 113, 0.02));
+    }
+
+    .exercise-card.selected::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-color);
+    }
+
+    .exercise-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--light-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        transition: all 0.3s ease;
+    }
+
+    .exercise-card.selected .exercise-icon {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .exercise-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .exercise-description {
+        color: var(--muted-text);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    .exercise-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--muted-text);
+        margin-bottom: 1rem;
+    }
+
+    .exercise-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .exercise-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .exercise-tag {
+        background: var(--light-accent);
+        color: var(--text-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .exercise-card.selected .exercise-tag {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        background: white;
+        color: var(--text-color);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .selected-exercises {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: sticky;
+        top: 100px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .selected-count {
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .start-session-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .start-session-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+    }
+
+    .start-session-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .selected-exercise-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: var(--light-accent);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    .remove-exercise {
+        background: none;
+        border: none;
+        color: var(--muted-text);
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+    }
+
+    .remove-exercise:hover {
+        color: #dc3545;
+    }
+
+    .progress-indicator {
+        background: var(--light-accent);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .progress-text {
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .selected-exercises {
+            position: relative;
+            top: 0;
+            margin-top: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+        }
+        
+        .filter-buttons {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div class="container">
+        <h1><i class="bi bi-heart-pulse me-3"></i>Mental Health Exercises</h1>
+        <p>Choose exercises that resonate with you and build your personalized wellness routine. Take care of your mental health, one step at a time.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <h5 class="mb-3"><i class="bi bi-funnel me-2"></i>Filter by Category</h5>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All Exercises</button>
+                    <button class="filter-btn" data-filter="breathing">Breathing</button>
+                    <button class="filter-btn" data-filter="mindfulness">Mindfulness</button>
+                    <button class="filter-btn" data-filter="relaxation">Relaxation</button>
+                    <button class="filter-btn" data-filter="cognitive">Cognitive</button>
+                    <button class="filter-btn" data-filter="movement">Movement</button>
+                    <button class="filter-btn" data-filter="gratitude">Gratitude</button>
+                </div>
+            </div>
+
+            <!-- Exercise Cards -->
+            <div class="exercises-grid">
+                <!-- Breathing Exercises -->
+                <div class="exercise-card" data-category="breathing" data-exercise="deep-breathing">
+                    <div class="exercise-icon">
+                        <i class="bi bi-wind"></i>
+                    </div>
+                    <h4 class="exercise-title">Deep Breathing Exercise</h4>
+                    <p class="exercise-description">A simple yet powerful technique to calm your mind and reduce stress through controlled breathing patterns.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 5-10 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Stress Relief</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Anxiety</span>
+                        <span class="exercise-tag">Quick Relief</span>
+                        <span class="exercise-tag">Anytime</span>
+                    </div>
+                </div>
+
+                <div class="exercise-card" data-category="breathing" data-exercise="box-breathing">
+                    <div class="exercise-icon">
+                        <i class="bi bi-square"></i>
+                    </div>
+                    <h4 class="exercise-title">Box Breathing (4-4-4-4)</h4>
+                    <p class="exercise-description">A structured breathing technique used by Navy SEALs to maintain focus and calm under pressure.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 5-15 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Intermediate</span>
+                        <span><i class="bi bi-heart"></i> Focus</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Concentration</span>
+                        <span class="exercise-tag">Performance</span>
+                        <span class="exercise-tag">Discipline</span>
+                    </div>
+                </div>
+
+                <!-- Mindfulness Exercises -->
+                <div class="exercise-card" data-category="mindfulness" data-exercise="body-scan">
+                    <div class="exercise-icon">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+                    <h4 class="exercise-title">Body Scan Meditation</h4>
+                    <p class="exercise-description">Systematically focus on different parts of your body to increase awareness and release physical tension.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 10-20 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Relaxation</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Tension Relief</span>
+                        <span class="exercise-tag">Awareness</span>
+                        <span class="exercise-tag">Sleep</span>
+                    </div>
+                </div>
+
+                <div class="exercise-card" data-category="mindfulness" data-exercise="mindful-walking">
+                    <div class="exercise-icon">
+                        <i class="bi bi-person-walking"></i>
+                    </div>
+                    <h4 class="exercise-title">Mindful Walking</h4>
+                    <p class="exercise-description">Combine gentle movement with mindfulness by focusing on each step and your surroundings.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 10-30 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Grounding</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Nature</span>
+                        <span class="exercise-tag">Movement</span>
+                        <span class="exercise-tag">Present Moment</span>
+                    </div>
+                </div>
+
+                <!-- Relaxation Exercises -->
+                <div class="exercise-card" data-category="relaxation" data-exercise="progressive-muscle">
+                    <div class="exercise-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <h4 class="exercise-title">Progressive Muscle Relaxation</h4>
+                    <p class="exercise-description">Systematically tense and relax different muscle groups to achieve deep physical and mental relaxation.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 15-25 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Deep Relaxation</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Muscle Tension</span>
+                        <span class="exercise-tag">Sleep Aid</span>
+                        <span class="exercise-tag">Stress</span>
+                    </div>
+                </div>
+
+                <div class="exercise-card" data-category="relaxation" data-exercise="visualization">
+                    <div class="exercise-icon">
+                        <i class="bi bi-eye"></i>
+                    </div>
+                    <h4 class="exercise-title">Guided Visualization</h4>
+                    <p class="exercise-description">Use your imagination to visit peaceful places and create positive mental imagery for relaxation.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 10-20 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Intermediate</span>
+                        <span><i class="bi bi-heart"></i> Escape</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Creativity</span>
+                        <span class="exercise-tag">Calm</span>
+                        <span class="exercise-tag">Imagery</span>
+                    </div>
+                </div>
+
+                <!-- Cognitive Exercises -->
+                <div class="exercise-card" data-category="cognitive" data-exercise="thought-challenging">
+                    <div class="exercise-icon">
+                        <i class="bi bi-lightbulb"></i>
+                    </div>
+                    <h4 class="exercise-title">Thought Challenging</h4>
+                    <p class="exercise-description">Learn to identify and challenge negative thought patterns with evidence-based questioning techniques.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 10-15 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Intermediate</span>
+                        <span><i class="bi bi-heart"></i> Cognitive Health</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Negative Thoughts</span>
+                        <span class="exercise-tag">CBT</span>
+                        <span class="exercise-tag">Reframing</span>
+                    </div>
+                </div>
+
+                <div class="exercise-card" data-category="cognitive" data-exercise="five-four-three">
+                    <div class="exercise-icon">
+                        <i class="bi bi-list-ol"></i>
+                    </div>
+                    <h4 class="exercise-title">5-4-3-2-1 Grounding</h4>
+                    <p class="exercise-description">Use your five senses to ground yourself in the present moment and reduce anxiety or panic.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 3-5 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Immediate Relief</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Panic</span>
+                        <span class="exercise-tag">Grounding</span>
+                        <span class="exercise-tag">Emergency</span>
+                    </div>
+                </div>
+
+                <!-- Movement Exercises -->
+                <div class="exercise-card" data-category="movement" data-exercise="gentle-stretching">
+                    <div class="exercise-icon">
+                        <i class="bi bi-person-arms-up"></i>
+                    </div>
+                    <h4 class="exercise-title">Gentle Stretching</h4>
+                    <p class="exercise-description">Simple stretches to release physical tension and improve mind-body connection.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 5-15 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Physical Wellness</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Flexibility</span>
+                        <span class="exercise-tag">Desk Breaks</span>
+                        <span class="exercise-tag">Gentle</span>
+                    </div>
+                </div>
+
+                <!-- Gratitude Exercises -->
+                <div class="exercise-card" data-category="gratitude" data-exercise="gratitude-journal">
+                    <div class="exercise-icon">
+                        <i class="bi bi-journal-heart"></i>
+                    </div>
+                    <h4 class="exercise-title">Gratitude Journaling</h4>
+                    <p class="exercise-description">Write down three things you're grateful for each day to cultivate positivity and appreciation.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 5-10 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Beginner</span>
+                        <span><i class="bi bi-heart"></i> Positivity</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Daily Practice</span>
+                        <span class="exercise-tag">Mood Boost</span>
+                        <span class="exercise-tag">Appreciation</span>
+                    </div>
+                </div>
+
+                <div class="exercise-card" data-category="gratitude" data-exercise="loving-kindness">
+                    <div class="exercise-icon">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <h4 class="exercise-title">Loving-Kindness Meditation</h4>
+                    <p class="exercise-description">Send positive wishes and compassion to yourself and others to cultivate emotional well-being.</p>
+                    <div class="exercise-meta">
+                        <span><i class="bi bi-clock"></i> 10-20 mins</span>
+                        <span><i class="bi bi-bar-chart"></i> Intermediate</span>
+                        <span><i class="bi bi-heart"></i> Compassion</span>
+                    </div>
+                    <div class="exercise-tags">
+                        <span class="exercise-tag">Self-Love</span>
+                        <span class="exercise-tag">Empathy</span>
+                        <span class="exercise-tag">Connection</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="selected-exercises">
+                <h5 class="d-flex align-items-center">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Selected Exercises
+                    <span class="selected-count" id="exerciseCount">0</span>
+                </h5>
+                
+                <div class="progress-indicator">
+                    <div class="progress-text" id="progressText">
+                        Select 3-5 exercises to create your personalized session
+                    </div>
+                </div>
+
+                <div id="selectedExercisesList"></div>
+
+                <button class="start-session-btn" id="startSessionBtn" disabled>
+                    <i class="bi bi-play-circle me-2"></i>Start Your Session
+                </button>
+                
+                <div class="mt-3 text-center">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Recommended: 15-30 minute sessions
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exerciseCards = document.querySelectorAll('.exercise-card');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const selectedExercisesList = document.getElementById('selectedExercisesList');
+    const exerciseCount = document.getElementById('exerciseCount');
+    const startSessionBtn = document.getElementById('startSessionBtn');
+    const progressText = document.getElementById('progressText');
+    
+    let selectedExercises = [];
+
+    // Filter functionality
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update active filter button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            const filter = button.getAttribute('data-filter');
+            
+            // Show/hide exercises based on filter
+            exerciseCards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                if (filter === 'all' || category === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Exercise selection functionality
+    exerciseCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const exerciseId = card.getAttribute('data-exercise');
+            const exerciseTitle = card.querySelector('.exercise-title').textContent;
+            const exerciseMeta = card.querySelector('.exercise-meta').textContent;
+            
+            if (card.classList.contains('selected')) {
+                // Deselect exercise
+                card.classList.remove('selected');
+                selectedExercises = selectedExercises.filter(ex => ex.id !== exerciseId);
+            } else {
+                // Select exercise (limit to 8 exercises)
+                if (selectedExercises.length < 8) {
+                    card.classList.add('selected');
+                    selectedExercises.push({
+                        id: exerciseId,
+                        title: exerciseTitle,
+                        meta: exerciseMeta.trim()
+                    });
+                } else {
+                    alert('You can select up to 8 exercises. Please deselect some exercises first.');
+                }
+            }
+            
+            updateSelectedExercises();
+        });
+    });
+
+    function updateSelectedExercises() {
+        // Update count
+        exerciseCount.textContent = selectedExercises.length;
+        
+        // Update progress text
+        if (selectedExercises.length === 0) {
+            progressText.textContent = 'Select 3-5 exercises to create your personalized session';
+        } else if (selectedExercises.length < 3) {
+            progressText.textContent = `Select ${3 - selectedExercises.length} more exercises`;
+        } else if (selectedExercises.length <= 5) {
+            progressText.textContent = 'Perfect! Your session is ready to start';
+        } else {
+            progressText.textContent = `${selectedExercises.length} exercises selected - Great variety!`;
+        }
+        
+        // Update selected exercises list
+        selectedExercisesList.innerHTML = '';
+        selectedExercises.forEach(exercise => {
+            const exerciseItem = document.createElement('div');
+            exerciseItem.className = 'selected-exercise-item';
+            exerciseItem.innerHTML = `
+                <div>
+                    <div class="fw-medium">${exercise.title}</div>
+                    <small class="text-muted">${exercise.meta}</small>
+                </div>
+                <button class="remove-exercise" data-exercise="${exercise.id}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            `;
+            
+            // Add remove functionality
+            const removeBtn = exerciseItem.querySelector('.remove-exercise');
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const exerciseId = removeBtn.getAttribute('data-exercise');
+                
+                // Remove from selected list
+                selectedExercises = selectedExercises.filter(ex => ex.id !== exerciseId);
+                
+                // Update UI
+                const card = document.querySelector(`[data-exercise="${exerciseId}"]`);
+                if (card) {
+                    card.classList.remove('selected');
+                }
+                
+                updateSelectedExercises();
+            });
+            
+            selectedExercisesList.appendChild(exerciseItem);
+        });
+        
+        // Enable/disable start button
+        startSessionBtn.disabled = selectedExercises.length === 0;
+    }
+
+    // Start session functionality
+    startSessionBtn.addEventListener('click', () => {
+        if (selectedExercises.length > 0) {
+            // Store selected exercises in sessionStorage for the next page
+            sessionStorage.setItem('selectedExercises', JSON.stringify(selectedExercises));
+            
+            // Show confirmation or redirect to session page
+            const confirmation = confirm(`Ready to start your wellness session with ${selectedExercises.length} exercises?\n\nEstimated duration: ${Math.ceil(selectedExercises.length * 2.5)} - ${selectedExercises.length * 5} minutes`);
+            
+            if (confirmation) {
+                // In a real application, you would redirect to a session page
+                alert('Session starting! In a real app, this would redirect to your guided session page.');
+                window.location.href = '/clock/';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

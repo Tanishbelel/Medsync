@@ -23,7 +23,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.shortcuts import redirect
 from django.urls import include, path
 from main.views import *
-from ocr.views import upload_prescription
+
 
 def redirect_to_chatbot(request):
     return redirect("chatbot")  # Redirect to chatbot URL
@@ -65,7 +65,6 @@ urlpatterns = [
     path('cancel/<int:appointment_id>/', cancel_appointment, name='cancel_appointment'),
      path('chatbot/', chatbot_view, name='chatbot'),
     path('admin/', admin.site.urls),
-    path("ocr/upload-prescription/", upload_prescription, name="upload_prescription"),
     path('insurance/', insurance_page, name='insurance_page'),
     path('insurance/success/', insurance_success, name='insurance_success'),
     path('ambulance/', ambulance, name='ambulance'),
@@ -75,6 +74,9 @@ urlpatterns = [
     path('appointment/<int:appointment_id>/', appointment_details, name='appointment_details'),
     path('appointment/<int:appointment_id>/edit/', edit_appointment, name='edit_appointment'),
     path('map/',map_view,name='map_view'),
+    path('consultancy/', consultancy, name='request_consultancy'),
+    path('meditate/',meditate,name = "meditate"),
+    path('clock/',clock,name = "clock"),
    
     
    

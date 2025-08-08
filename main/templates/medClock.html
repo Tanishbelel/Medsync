@@ -1,0 +1,1160 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Wellness Session - Mann{% endblock %}
+
+{% block start %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f0fff0 0%, #e0f5e0 100%);
+        overflow-x: hidden;
+    }
+
+    .session-container {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .session-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 1s ease-out;
+    }
+
+    .session-title {
+        color: var(--primary-color);
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .session-subtitle {
+        color: var(--muted-text);
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .session-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--border-color);
+        transition: all 0.4s ease;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .progress-dot.completed {
+        background: var(--primary-color);
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(46, 139, 87, 0.5);
+    }
+
+    .progress-dot.active {
+        background: var(--secondary-color);
+        transform: scale(1.4);
+        animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(60, 179, 113, 0.7); }
+        50% { box-shadow: 0 0 0 10px rgba(60, 179, 113, 0); }
+    }
+
+    /* Clock Animation Styles */
+    .clock-container {
+        position: relative;
+        width: 320px;
+        height: 320px;
+        margin: 2rem auto;
+        animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    .clock-face {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 10px solid var(--primary-color);
+        box-shadow: 
+            0 0 40px rgba(46, 139, 87, 0.3),
+            inset 0 0 40px rgba(0, 0, 0, 0.03),
+            0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .clock-numbers {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .clock-number {
+        position: absolute;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        transform: translate(-50%, -50%);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .clock-number:nth-child(1) { top: 10%; left: 50%; }   /* 12 */
+    .clock-number:nth-child(2) { top: 50%; right: 10%; }  /* 3 */
+    .clock-number:nth-child(3) { bottom: 10%; left: 50%; } /* 6 */
+    .clock-number:nth-child(4) { top: 50%; left: 10%; }   /* 9 */
+
+    /* Hour markers */
+    .hour-marker {
+        position: absolute;
+        width: 2px;
+        height: 20px;
+        background: var(--primary-color);
+        top: 5px;
+        left: 50%;
+        transform-origin: 1px 155px;
+        opacity: 0.3;
+    }
+
+    .hour-marker:nth-child(n+5) {
+        transform: translateX(-50%) rotate(calc((var(--i) - 1) * 30deg));
+    }
+
+    .clock-center {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        background: var(--primary-color);
+        border: 3px solid white;
+        border-radius: 50%;
+        z-index: 4;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .clock-hand {
+        position: absolute;
+        bottom: 50%;
+        left: 50%;
+        transform-origin: bottom center;
+        border-radius: 4px 4px 0 0;
+        z-index: 2;
+    }
+
+    .minute-hand {
+        width: 6px;
+        height: 120px;
+        background: linear-gradient(to top, var(--primary-color), var(--secondary-color));
+        margin-left: -3px;
+        transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-ring {
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        width: 332px;
+        height: 332px;
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring-bg {
+        fill: none;
+        stroke: var(--light-accent);
+        stroke-width: 6;
+        opacity: 0.3;
+    }
+
+    .progress-ring-circle {
+        fill: none;
+        stroke: var(--accent-color);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 1040;
+        stroke-dashoffset: 1040;
+        transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: drop-shadow(0 0 4px rgba(102, 205, 170, 0.5));
+    }
+
+    .time-display {
+        position: absolute;
+        top: 65%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-align: center;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .remaining-time {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--muted-text);
+        margin-top: 0.25rem;
+    }
+
+    /* Exercise Information */
+    .current-exercise {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin: 2rem 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 550px;
+        width: 100%;
+        animation: slideInUp 0.8s ease-out 0.6s both;
+        border: 1px solid rgba(46, 139, 87, 0.1);
+    }
+
+    .exercise-icon-large {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--light-accent), var(--accent-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.2rem;
+        color: var(--primary-color);
+        animation: breathe 3s infinite;
+        box-shadow: 0 4px 20px rgba(46, 139, 87, 0.2);
+    }
+
+    @keyframes breathe {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .exercise-name {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .exercise-instruction {
+        font-size: 1.1rem;
+        color: var(--muted-text);
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+    }
+
+    .exercise-guidance {
+        background: linear-gradient(135deg, var(--light-accent), rgba(224, 245, 224, 0.5));
+        border-radius: 15px;
+        padding: 1.25rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: var(--text-color);
+        border-left: 4px solid var(--accent-color);
+        position: relative;
+    }
+
+    .exercise-guidance::before {
+        content: '"';
+        font-size: 3rem;
+        color: var(--accent-color);
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        opacity: 0.5;
+    }
+
+    /* Control Buttons */
+    .session-controls {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 2.5rem;
+        animation: fadeIn 1s ease-out 0.9s both;
+    }
+
+    .control-btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .control-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .control-btn:hover::before {
+        left: 100%;
+    }
+
+    .play-pause-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .play-pause-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 25px rgba(46, 139, 87, 0.4);
+    }
+
+    .skip-btn {
+        background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+        color: white;
+    }
+
+    .skip-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 25px rgba(102, 205, 170, 0.4);
+    }
+
+    .end-session-btn {
+        background: linear-gradient(135deg, #dc3545, #e74c3c);
+        color: white;
+    }
+
+    .end-session-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 25px rgba(220, 53, 69, 0.4);
+    }
+
+    /* Session Complete Styles */
+    .session-complete {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        max-width: 550px;
+        width: 100%;
+        display: none;
+        border: 1px solid rgba(46, 139, 87, 0.1);
+    }
+
+    .completion-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        font-size: 3.5rem;
+        color: white;
+        animation: celebration 1.2s ease-in-out;
+        box-shadow: 0 8px 32px rgba(46, 139, 87, 0.3);
+    }
+
+    @keyframes celebration {
+        0% { transform: scale(0) rotate(0deg); }
+        50% { transform: scale(1.3) rotate(180deg); }
+        100% { transform: scale(1) rotate(360deg); }
+    }
+
+    .completion-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .completion-message {
+        font-size: 1.2rem;
+        color: var(--muted-text);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .session-stats {
+        background: linear-gradient(135deg, var(--light-accent), rgba(224, 245, 224, 0.3));
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 1.5rem;
+        text-align: center;
+        border: 1px solid var(--border-color);
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--muted-text);
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Breathing Animation for Deep Breathing Exercise */
+    .breathing-circle {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 80px;
+        border: 3px solid var(--accent-color);
+        border-radius: 50%;
+        opacity: 0;
+        animation: breathingGuide 8s infinite;
+    }
+
+    @keyframes breathingGuide {
+        0%, 100% { 
+            transform: translateX(-50%) scale(0.5); 
+            opacity: 0; 
+        }
+        25% { 
+            transform: translateX(-50%) scale(1.2); 
+            opacity: 0.7; 
+        }
+        50% { 
+            transform: translateX(-50%) scale(1.2); 
+            opacity: 0.7; 
+        }
+        75% { 
+            transform: translateX(-50%) scale(0.5); 
+            opacity: 0; 
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .clock-container {
+            width: 280px;
+            height: 280px;
+        }
+
+        .clock-face {
+            border-width: 8px;
+        }
+
+        .minute-hand {
+            height: 100px;
+        }
+
+        .progress-ring {
+            width: 296px;
+            height: 296px;
+            top: -4px;
+            left: -4px;
+        }
+
+        .session-controls {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            width: 200px;
+            justify-content: center;
+        }
+
+        .session-title {
+            font-size: 1.8rem;
+        }
+
+        .current-exercise {
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .exercise-name {
+            font-size: 1.4rem;
+        }
+
+        .time-display {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .clock-container {
+            width: 240px;
+            height: 240px;
+        }
+
+        .current-exercise {
+            padding: 1.5rem;
+        }
+
+        .session-stats {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="session-container">
+        <!-- Session Header -->
+        <div class="session-header">
+            <h1 class="session-title" id="sessionTitle">Starting Your Wellness Session</h1>
+            <p class="session-subtitle" id="sessionSubtitle">Take a deep breath and prepare for your journey</p>
+            
+            <!-- Progress Indicators -->
+            <div class="session-progress" id="sessionProgress">
+                <!-- Progress dots will be dynamically generated -->
+            </div>
+        </div>
+
+        <!-- Active Session Content -->
+        <div id="activeSession">
+            <!-- Clock Animation -->
+            <div class="clock-container">
+                <!-- Breathing guide for breathing exercises -->
+                <div class="breathing-circle" id="breathingGuide" style="display: none;"></div>
+                
+                <div class="clock-face">
+                    <!-- Progress Ring -->
+                    <svg class="progress-ring">
+                        <circle class="progress-ring-bg" cx="166" cy="166" r="166"></circle>
+                        <circle class="progress-ring-circle" cx="166" cy="166" r="166"></circle>
+                    </svg>
+                    
+                    <!-- Hour markers -->
+                    <div class="hour-marker" style="--i: 1"></div>
+                    <div class="hour-marker" style="--i: 2"></div>
+                    <div class="hour-marker" style="--i: 3"></div>
+                    <div class="hour-marker" style="--i: 4"></div>
+                    <div class="hour-marker" style="--i: 5"></div>
+                    <div class="hour-marker" style="--i: 6"></div>
+                    <div class="hour-marker" style="--i: 7"></div>
+                    <div class="hour-marker" style="--i: 8"></div>
+                    <div class="hour-marker" style="--i: 9"></div>
+                    <div class="hour-marker" style="--i: 10"></div>
+                    <div class="hour-marker" style="--i: 11"></div>
+                    <div class="hour-marker" style="--i: 12"></div>
+                    
+                    <!-- Clock Numbers -->
+                    <div class="clock-numbers">
+                        <div class="clock-number">12</div>
+                        <div class="clock-number">3</div>
+                        <div class="clock-number">6</div>
+                        <div class="clock-number">9</div>
+                    </div>
+                    
+                    <!-- Clock Hand -->
+                    <div class="clock-hand minute-hand" id="minuteHand"></div>
+                    <div class="clock-center"></div>
+                    
+                    <!-- Time Display -->
+                    <div class="time-display">
+                        <div id="timeRemaining">5:00</div>
+                        <div class="remaining-time">remaining</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Exercise Info -->
+            <div class="current-exercise">
+                <div class="exercise-icon-large" id="currentExerciseIcon">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <h2 class="exercise-name" id="currentExerciseName">Get Ready</h2>
+                <p class="exercise-instruction" id="currentExerciseInstruction">
+                    Your personalized wellness session is about to begin. Find a comfortable position and prepare to focus on your well-being.
+                </p>
+                <div class="exercise-guidance" id="currentExerciseGuidance">
+                    Take a moment to settle in and breathe naturally. When you're ready, click start to begin your journey.
+                </div>
+            </div>
+
+            <!-- Session Controls -->
+            <div class="session-controls">
+                <button class="control-btn play-pause-btn" id="playPauseBtn">
+                    <i class="bi bi-play-fill"></i>
+                    <span>Start Session</span>
+                </button>
+                <button class="control-btn skip-btn" id="skipBtn" style="display: none;">
+                    <i class="bi bi-skip-end-fill"></i>
+                    <span>Skip Exercise</span>
+                </button>
+                <button class="control-btn end-session-btn" id="endSessionBtn">
+                    <i class="bi bi-x-circle"></i>
+                    <span>End Session</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Session Complete -->
+        <div class="session-complete" id="sessionComplete">
+            <div class="completion-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <h2 class="completion-title">Session Complete!</h2>
+            <p class="completion-message">
+                Congratulations! You've completed your wellness session. Take a moment to notice how you feel and carry this sense of calm with you throughout your day.
+            </p>
+            
+            <div class="session-stats" id="sessionStats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalDuration">0</div>
+                    <div class="stat-label">Minutes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="exercisesCompleted">0</div>
+                    <div class="stat-label">Exercises</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">+50</div>
+                    <div class="stat-label">MedPoints</div>
+                </div>
+            </div>
+            
+            <div class="session-controls">
+                <button class="control-btn play-pause-btn" onclick="window.location.href='/ocr/upload-prescription/'">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <span>New Session</span>
+                </button>
+                <button class="control-btn skip-btn" onclick="window.location.href='/'">
+                    <i class="bi bi-house"></i>
+                    <span>Back to Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Exercise data with comprehensive information
+    const exerciseData = {
+        'deep-breathing': {
+            icon: 'bi-wind',
+            name: 'Deep Breathing Exercise',
+            instruction: 'Breathe in slowly through your nose for 4 counts, hold for 4 counts, then exhale through your mouth for 6 counts.',
+            guidance: 'Focus on the sensation of air entering and leaving your body. Let each breath bring you deeper into relaxation.',
+            duration: 5,
+            hasBreathingGuide: true
+        },
+        'box-breathing': {
+            icon: 'bi-square',
+            name: 'Box Breathing (4-4-4-4)',
+            instruction: 'Inhale for 4 counts, hold for 4 counts, exhale for 4 counts, hold empty for 4 counts. Repeat this cycle.',
+            guidance: 'Visualize drawing a square as you breathe. Each side represents one part of the breathing cycle.',
+            duration: 7,
+            hasBreathingGuide: true
+        },
+        'body-scan': {
+            icon: 'bi-person-check',
+            name: 'Body Scan Meditation',
+            instruction: 'Start at the top of your head and slowly move your attention down through each part of your body.',
+            guidance: 'Notice any areas of tension or relaxation. Simply observe without trying to change anything.',
+            duration: 10
+        },
+        'mindful-walking': {
+            icon: 'bi-person-walking',
+            name: 'Mindful Walking',
+            instruction: 'Walk slowly and deliberately, focusing on the sensation of each step and your surroundings.',
+            guidance: 'If walking in place, focus on lifting, moving, and placing each foot mindfully.',
+            duration: 8
+        },
+        'progressive-muscle': {
+            icon: 'bi-activity',
+            name: 'Progressive Muscle Relaxation',
+            instruction: 'Tense each muscle group for 5 seconds, then release and feel the contrast between tension and relaxation.',
+            guidance: 'Start with your feet and work your way up to your head. Notice the feeling of release.',
+            duration: 12
+        },
+        'visualization': {
+            icon: 'bi-eye',
+            name: 'Guided Visualization',
+            instruction: 'Close your eyes and imagine yourself in a peaceful, safe place. Use all your senses to make it vivid.',
+            guidance: 'What do you see, hear, smell, and feel in this place? Let yourself fully experience this sanctuary.',
+            duration: 10
+        },
+        'thought-challenging': {
+            icon: 'bi-lightbulb',
+            name: 'Thought Challenging',
+            instruction: 'Identify a negative thought, examine the evidence for and against it, then reframe it more positively.',
+            guidance: 'Ask yourself: Is this thought helpful? What would I tell a friend? What\'s a more balanced perspective?',
+            duration: 8
+        },
+        'five-four-three': {
+            icon: 'bi-list-ol',
+            name: '5-4-3-2-1 Grounding',
+            instruction: 'Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, 1 you can taste.',
+            guidance: 'Take your time with each sense. This exercise helps anchor you in the present moment.',
+            duration: 5
+        },
+        'gentle-stretching': {
+            icon: 'bi-person-arms-up',
+            name: 'Gentle Stretching',
+            instruction: 'Move your body gently, stretching areas that feel tense. Listen to your body and don\'t force anything.',
+            guidance: 'Breathe deeply as you stretch. Each movement should feel good and relieving.',
+            duration: 6
+        },
+        'gratitude-journal': {
+            icon: 'bi-journal-heart',
+            name: 'Gratitude Journaling',
+            instruction: 'Think of three things you\'re grateful for today. Consider why each one is meaningful to you.',
+            guidance: 'Let yourself really feel the appreciation. Notice how gratitude affects your mood and perspective.',
+            duration: 5
+        },
+        'loving-kindness': {
+            icon: 'bi-heart',
+            name: 'Loving-Kindness Meditation',
+            instruction: 'Send kind wishes to yourself, loved ones, neutral people, difficult people, and all beings.',
+            guidance: 'Use phrases like "May you be happy, may you be peaceful, may you be free from suffering."',
+            duration: 12
+        }
+    };
+
+    // Session state variables
+    let selectedExercises = [];
+    let currentExerciseIndex = 0;
+    let isSessionActive = false;
+    let isPaused = false;
+    let timeRemaining = 0;
+    let totalSessionTime = 0;
+    let sessionTimer = null;
+    let sessionStartTime = null;
+    let totalElapsedTime = 0;
+
+    // DOM elements
+    const sessionTitle = document.getElementById('sessionTitle');
+    const sessionSubtitle = document.getElementById('sessionSubtitle');
+    const sessionProgress = document.getElementById('sessionProgress');
+    const activeSession = document.getElementById('activeSession');
+    const sessionComplete = document.getElementById('sessionComplete');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const endSessionBtn = document.getElementById('endSessionBtn');
+    const minuteHand = document.getElementById('minuteHand');
+    const progressRing = document.querySelector('.progress-ring-circle');
+    const timeDisplay = document.getElementById('timeRemaining');
+    const currentExerciseIcon = document.getElementById('currentExerciseIcon');
+    const currentExerciseName = document.getElementById('currentExerciseName');
+    const currentExerciseInstruction = document.getElementById('currentExerciseInstruction');
+    const currentExerciseGuidance = document.getElementById('currentExerciseGuidance');
+    const breathingGuide = document.getElementById('breathingGuide');
+
+    // Initialize session on page load
+    function initializeSession() {
+        // Get selected exercises from sessionStorage
+        const storedExercises = sessionStorage.getItem('selectedExercises');
+        if (storedExercises) {
+            const exercises = JSON.parse(storedExercises);
+            selectedExercises = exercises.map(ex => ex.id).filter(id => exerciseData[id]);
+        }
+
+        // Default exercises if none selected (for testing purposes)
+        if (selectedExercises.length === 0) {
+            selectedExercises = ['deep-breathing', 'body-scan', 'gratitude-journal'];
+        }
+
+        // Calculate total session time
+        totalSessionTime = selectedExercises.reduce((total, exerciseId) => {
+            return total + (exerciseData[exerciseId]?.duration || 5);
+        }, 0);
+
+        // Create progress indicators
+        createProgressDots();
+        
+        // Set initial display
+        updateSessionDisplay();
+        
+        // Show welcome message
+        showWelcomeMessage();
+    }
+
+    function createProgressDots() {
+        sessionProgress.innerHTML = '';
+        selectedExercises.forEach((exerciseId, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot';
+            dot.title = exerciseData[exerciseId]?.name || `Exercise ${index + 1}`;
+            if (index === 0) dot.classList.add('active');
+            sessionProgress.appendChild(dot);
+        });
+    }
+
+    function showWelcomeMessage() {
+        sessionTitle.textContent = 'Your Wellness Journey Begins';
+        sessionSubtitle.textContent = `${selectedExercises.length} exercises • ~${totalSessionTime} minutes`;
+        
+        currentExerciseName.textContent = 'Ready to Begin?';
+        currentExerciseInstruction.textContent = 'You\'ve selected a wonderful set of exercises for your mental wellness. Take a moment to get comfortable, perhaps in a quiet space where you won\'t be disturbed.';
+        currentExerciseGuidance.textContent = 'Remember, this is your time. Move through each exercise at your own pace and be kind to yourself.';
+        
+        // Set initial time display
+        const firstExercise = exerciseData[selectedExercises[0]];
+        timeRemaining = firstExercise ? firstExercise.duration * 60 : 300;
+        updateTimeDisplay();
+    }
+
+    function updateSessionDisplay() {
+        if (currentExerciseIndex >= selectedExercises.length) {
+            completeSession();
+            return;
+        }
+
+        const currentExercise = exerciseData[selectedExercises[currentExerciseIndex]];
+        if (!currentExercise) return;
+
+        // Update exercise information
+        currentExerciseIcon.innerHTML = `<i class="${currentExercise.icon}"></i>`;
+        currentExerciseName.textContent = currentExercise.name;
+        currentExerciseInstruction.textContent = currentExercise.instruction;
+        currentExerciseGuidance.textContent = currentExercise.guidance;
+
+        // Show/hide breathing guide for breathing exercises
+        if (currentExercise.hasBreathingGuide) {
+            breathingGuide.style.display = 'block';
+        } else {
+            breathingGuide.style.display = 'none';
+        }
+
+        // Set time for current exercise
+        if (isSessionActive) {
+            timeRemaining = currentExercise.duration * 60; // Convert to seconds
+            updateTimeDisplay();
+        }
+
+        // Update progress dots
+        const dots = sessionProgress.querySelectorAll('.progress-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.remove('active', 'completed');
+            if (index < currentExerciseIndex) {
+                dot.classList.add('completed');
+            } else if (index === currentExerciseIndex) {
+                dot.classList.add('active');
+            }
+        });
+
+        // Update session title and subtitle
+        if (isSessionActive) {
+            sessionTitle.textContent = `Exercise ${currentExerciseIndex + 1} of ${selectedExercises.length}`;
+            sessionSubtitle.textContent = currentExercise.name;
+        }
+    }
+
+    function startExercise() {
+        if (!isSessionActive) {
+            // First time starting the session
+            isSessionActive = true;
+            sessionStartTime = Date.now();
+            
+            // Update to first exercise
+            const currentExercise = exerciseData[selectedExercises[currentExerciseIndex]];
+            timeRemaining = currentExercise.duration * 60;
+            
+            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i><span>Pause</span>';
+            skipBtn.style.display = 'inline-flex';
+            
+            updateSessionDisplay();
+        }
+
+        if (isPaused) {
+            // Resuming from pause
+            isPaused = false;
+            playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i><span>Pause</span>';
+        }
+
+        // Start the timer
+        if (!sessionTimer) {
+            sessionTimer = setInterval(updateTimer, 1000);
+        }
+    }
+
+    function pauseExercise() {
+        isPaused = true;
+        clearInterval(sessionTimer);
+        sessionTimer = null;
+        playPauseBtn.innerHTML = '<i class="bi bi-play-fill"></i><span>Resume</span>';
+    }
+
+    function skipExercise() {
+        // Clear current timer
+        clearInterval(sessionTimer);
+        sessionTimer = null;
+        
+        // Add remaining time to total elapsed (for stats)
+        const currentExercise = exerciseData[selectedExercises[currentExerciseIndex]];
+        if (currentExercise) {
+            const exerciseElapsed = (currentExercise.duration * 60) - timeRemaining;
+            totalElapsedTime += Math.max(exerciseElapsed / 60, 0.5); // Minimum 0.5 minutes
+        }
+        
+        // Move to next exercise
+        currentExerciseIndex++;
+        updateSessionDisplay();
+        
+        // Continue if session is active
+        if (isSessionActive && !isPaused) {
+            sessionTimer = setInterval(updateTimer, 1000);
+        }
+    }
+
+    function updateTimer() {
+        if (timeRemaining <= 0) {
+            // Exercise completed, move to next
+            const currentExercise = exerciseData[selectedExercises[currentExerciseIndex]];
+            if (currentExercise) {
+                totalElapsedTime += currentExercise.duration;
+            }
+            
+            skipExercise();
+            return;
+        }
+
+        timeRemaining--;
+        updateTimeDisplay();
+        updateClockAnimation();
+    }
+
+    function updateTimeDisplay() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function updateClockAnimation() {
+        const currentExercise = exerciseData[selectedExercises[currentExerciseIndex]];
+        if (!currentExercise) return;
+
+        const totalDuration = currentExercise.duration * 60; // in seconds
+        const elapsed = totalDuration - timeRemaining;
+        const progress = elapsed / totalDuration;
+
+        // Update minute hand (360 degree rotation over the duration)
+        const handRotation = progress * 360;
+        minuteHand.style.transform = `rotate(${handRotation}deg)`;
+
+        // Update progress ring (SVG circle)
+        const circumference = 2 * Math.PI * 166; // 2πr where r=166
+        const strokeDashoffset = circumference - (progress * circumference);
+        progressRing.style.strokeDashoffset = strokeDashoffset;
+    }
+
+    function completeSession() {
+        // Stop any running timer
+        clearInterval(sessionTimer);
+        isSessionActive = false;
+
+        // Calculate final stats
+        if (totalElapsedTime === 0) {
+            // If no time was tracked, calculate based on completed exercises
+            totalElapsedTime = selectedExercises.reduce((total, exerciseId, index) => {
+                if (index < currentExerciseIndex) {
+                    return total + (exerciseData[exerciseId]?.duration || 5);
+                }
+                return total;
+            }, 0);
+        }
+
+        // Hide active session, show completion screen
+        activeSession.style.display = 'none';
+        sessionComplete.style.display = 'block';
+
+        // Update completion stats
+        document.getElementById('totalDuration').textContent = Math.round(totalElapsedTime);
+        document.getElementById('exercisesCompleted').textContent = Math.min(currentExerciseIndex, selectedExercises.length);
+
+        // Clear session storage
+        sessionStorage.removeItem('selectedExercises');
+
+        // Add some celebration effects
+        setTimeout(() => {
+            confettiEffect();
+        }, 500);
+    }
+
+    function endSession() {
+        const confirmation = confirm('Are you sure you want to end your session early? Your progress will be saved.');
+        if (confirmation) {
+            // Add current exercise time to total if partially completed
+            if (isSessionActive && timeRemaining > 0) {
+                const currentExercise = exerciseData[selectedExercises[currentExerciseIndex]];
+                if (currentExercise) {
+                    const exerciseElapsed = (currentExercise.duration * 60) - timeRemaining;
+                    totalElapsedTime += Math.max(exerciseElapsed / 60, 0.5);
+                }
+            }
+            completeSession();
+        }
+    }
+
+    // Simple confetti effect for celebration
+    function confettiEffect() {
+        const colors = ['#2E8B57', '#3CB371', '#66CDAA', '#90EE90', '#98FB98'];
+        const confettiContainer = document.createElement('div');
+        confettiContainer.style.position = 'fixed';
+        confettiContainer.style.top = '0';
+        confettiContainer.style.left = '0';
+        confettiContainer.style.width = '100%';
+        confettiContainer.style.height = '100%';
+        confettiContainer.style.pointerEvents = 'none';
+        confettiContainer.style.zIndex = '9999';
+        document.body.appendChild(confettiContainer);
+
+        for (let i = 0; i < 50; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.borderRadius = '50%';
+                confetti.style.animation = 'fall 3s linear forwards';
+                confettiContainer.appendChild(confetti);
+
+                // Remove confetti after animation
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, 3000);
+            }, i * 100);
+        }
+
+        // Remove container after all confetti has fallen
+        setTimeout(() => {
+            if (confettiContainer.parentNode) {
+                confettiContainer.parentNode.removeChild(confettiContainer);
+            }
+        }, 8000);
+    }
+
+    // Event listeners
+    playPauseBtn.addEventListener('click', () => {
+        if (!isSessionActive || isPaused) {
+            startExercise();
+        } else {
+            pauseExercise();
+        }
+    });
+
+    skipBtn.addEventListener('click', skipExercise);
+    endSessionBtn.addEventListener('click', endSession);
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !sessionComplete.style.display) {
+            e.preventDefault();
+            playPauseBtn.click();
+        } else if (e.code === 'ArrowRight' && skipBtn.style.display !== 'none') {
+            e.preventDefault();
+            skipBtn.click();
+        } else if (e.code === 'Escape') {
+            e.preventDefault();
+            endSessionBtn.click();
+        }
+    });
+
+    // Visibility API - pause when tab becomes hidden
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isSessionActive && !isPaused) {
+            pauseExercise();
+        }
+    });
+
+    // Initialize the session when page loads
+    initializeSession();
+});
+
+// CSS for confetti animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fall {
+        to {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

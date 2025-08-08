@@ -7,6 +7,9 @@ from django.utils import timezone
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_id = models.CharField(max_length=20)
+    referral_code = models.CharField(max_length=12, unique=True, blank=True)
+    referred_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals')
+    points = models.PositiveIntegerField(default=0)
     
     class Meta:
         verbose_name = 'Student'
@@ -27,13 +30,14 @@ class Vendor(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    order_number = models.CharField(max_length=50, unique=True)  # Add this line
+    order_number = models.CharField(max_length=50, unique=True)
     payment_method = models.CharField(max_length=50)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     platform_fee = models.DecimalField(max_digits=10, decimal_places=2)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product_name = models.CharField(max_length=200)
@@ -104,7 +108,6 @@ class Specialization(models.Model):
         return self.name
 
 class Doctor(models.Model):
-    """Model representing a doctor"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor_profile')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -124,7 +127,6 @@ class Doctor(models.Model):
         ordering = ['last_name', 'first_name']
 
 class PatientProfile(models.Model):
-    """Model representing additional patient information"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     date_of_birth = models.DateField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
@@ -137,7 +139,6 @@ class PatientProfile(models.Model):
         return f"{self.user.username}'s Profile"
 
 class InsuranceInfo(models.Model):
-    """Model representing patient insurance information"""
     patient = models.OneToOneField(User, on_delete=models.CASCADE, related_name='insurance_info')
     provider = models.CharField(max_length=100)
     policy_number = models.CharField(max_length=100)
@@ -149,7 +150,6 @@ class InsuranceInfo(models.Model):
         return f"{self.patient.username}'s Insurance"
 
 class Appointment(models.Model):
-    """Model representing a doctor appointment"""
     STATUS_CHOICES = (
         ('SCHEDULED', 'Scheduled'),
         ('CONFIRMED', 'Confirmed'),
@@ -166,11 +166,11 @@ class Appointment(models.Model):
     patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
     appointment_date = models.DateField()
-    appointment_time = models.CharField(max_length=5)  # Format: "HH:MM"
+    appointment_time = models.CharField(max_length=5)
     reason = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SCHEDULED')
     consultation_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='in_person')
-    meeting_link = models.URLField(blank=True, null=True)  # For virtual appointments
+    meeting_link = models.URLField(blank=True, null=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -180,11 +180,9 @@ class Appointment(models.Model):
     
     class Meta:
         ordering = ['appointment_date', 'appointment_time']
-        # Ensure no double bookings
         unique_together = ['doctor', 'appointment_date', 'appointment_time']
     
     def is_upcoming(self):
-        """Check if appointment is in the future"""
         appointment_datetime = timezone.make_aware(
             timezone.datetime.combine(
                 self.appointment_date, 
@@ -194,7 +192,6 @@ class Appointment(models.Model):
         return appointment_datetime > timezone.now()
         
     def get_formatted_time(self):
-        """Format the time for display"""
         try:
             hour, minute = self.appointment_time.split(':')
             hour = int(hour)
@@ -210,17 +207,19 @@ class Appointment(models.Model):
             return self.appointment_time
 
 class InsurancePurchase(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to user
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     plan_name = models.CharField(max_length=100)
     coverage_amount = models.DecimalField(max_digits=10, decimal_places=2)
     monthly_premium = models.DecimalField(max_digits=10, decimal_places=2)
     purchase_date = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
+    # FIX: Corrected __str__ method
+    def __str__(self):
         return f"{self.user.username} - {self.plan_name}"
-    
-from django.db import models
-class PatientProfile(models.Model):
+
+# FIX: Renamed from PatientProfile to avoid conflict
+class MedicalRecord(models.Model):
+    patient_profile = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='medical_records')
     name = models.CharField(max_length=100)
     age = models.IntegerField()
     gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')])
@@ -233,5 +232,27 @@ class PatientProfile(models.Model):
     emergency_contact = models.CharField(max_length=15)
     last_checkup_date = models.DateField()
 
-    def _str_(self):
+    # FIX: Corrected __str__ method
+    def __str__(self):
         return self.name
+
+class ConsultancyRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    preferred_date = models.DateField(null=True, blank=True)
+    preferred_time = models.TimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled')
+    ], default='pending')
+    
+    # FIX: Corrected __str__ method
+    def __str__(self):
+        return f"{self.name} - {self.subject}"

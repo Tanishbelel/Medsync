@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Print',
     'main',
-    'ocr',
 ]
 
 MIDDLEWARE = [

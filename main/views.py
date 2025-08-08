@@ -35,6 +35,7 @@ from django.views.decorators.csrf import csrf_protect
 from datetime import datetime, timedelta
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
+from django.db import transaction 
 
 
 # Configure Gemini API
@@ -114,55 +115,88 @@ def home(request):
     return render(request, 'index.html', {'products': products})
 
 def login_page(request):
-    if request.method== "POST":
+    if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        if not User.objects.filter(username = username).exists():
-             messages.info(request, 'Invalid Data')
-             return redirect('/login/')
-        user = authenticate(username = username, password = password)
+        user = authenticate(request, username=username, password=password)
 
-        if user is None:
-             messages.info(request, 'Invalid Data')
-             return redirect('/login/')
-        else :
+        if user is not None:
             login(request, user)
             return redirect('main')
+        else:
+            messages.error(request, 'Invalid username or password.')
+            return redirect('login')
 
     return render(request, 'login.html')
-    
-def register_page(request):
 
-    if request.method== "POST":
+def register_page(request):
+    if request.method == "POST":
+        # Get data from the form
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         username = request.POST.get('username')
         password = request.POST.get('password')
+        referral_code = request.POST.get('referral_code')
 
-        user = User.objects.filter(username = username)
-        if user.exists():
-            messages.info(request, 'Username already Taken')
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already taken.')
             return redirect('/register/')
 
-        user=User.objects.create(
-            first_name = first_name,
-            last_name = last_name,
-            username = username,
+        referrer_user = None 
+        
+        # This block checks the referral code
+        if referral_code:
+            try:
+                # -----------------------------------------------------------
+                # >> THE FIX IS ON THIS LINE <<
+                # It now correctly queries the 'Student' model, not 'User'.
+                referrer_profile = Student.objects.get(referral_code=referral_code)
+                # -----------------------------------------------------------
+                
+                referrer_user = referrer_profile.user
+                messages.info(request, f"Referral from {referrer_user.username} applied!")
+
+            except Student.DoesNotExist:
+                messages.error(request, "The referral code is invalid.")
+                return redirect('/register/')
+        
+        # Create the new user
+        new_user = User.objects.create_user(
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
         )
-        user.set_password(password)
-        user.save()
 
+        # Create the 'Student' profile for the new user
+        new_student_profile = Student.objects.create(
+            user=new_user,
+            student_id=f"STUDENT_{new_user.id}", # Example ID
+            referred_by=referrer_user # Assign the referrer if one was found
+        )
+        
+        # Create the 'PatientProfile' for the new user
+        PatientProfile.objects.create(user=new_user)
+        
+        # Optional: Give points to the referrer
+        if referrer_user:
+            try:
+                referrer_student_profile = Student.objects.get(user=referrer_user)
+                referrer_student_profile.points += 100
+                referrer_student_profile.save()
+            except Student.DoesNotExist:
+                pass # Should not happen if code was valid, but good practice
 
-        messages.info(request, 'Account Created Successfully')
-
-        return redirect("/login/")
+        messages.success(request, f"Welcome, {username}! Your account has been created.")
+        return redirect('/login/')
 
     return render(request, 'register.html')
 
 def logout_page(request):
     logout(request)
-    return redirect('/login/')
+    messages.info(request, "You have been logged out.")
+    return redirect('login')
 
 @login_required(login_url = '/login/')
 def main(request):
@@ -1036,33 +1070,9 @@ def edit_appointment(request, appointment_id):
 
 from django.shortcuts import render
 import json
-
-def upload_prescription(request):
-    if request.method == "POST":
-        image = request.FILES["prescription"]
-        medicine_data = process_prescription(image)
-
-        # Convert queryset to dictionary
-        medicine_dict = {med.name: f"{med.dosage} {med.description}" for med in medicine_data}
-
-        return render(request, "result.html", {"medicines": medicine_dict})
-
-    return render(request, "upload.html")
-
 from django.shortcuts import render
 import json
 
-def upload_prescription(request):
-    if request.method == "POST":
-        image = request.FILES["prescription"]
-        medicine_data = process_prescription(image)
-
-        # Convert queryset to dictionary
-        medicine_dict = {med.name: f"{med.dosage} {med.description}" for med in medicine_data}
-
-        return render(request, "result.html", {"medicines": medicine_dict})
-
-    return render(request, "upload.html")
 
 def map_view(request):
     # List of 20 medical stores in Andheri with details
@@ -1091,14 +1101,46 @@ def map_view(request):
 
     return render(request, 'map.html', {'medical_stores': json.dumps(medical_stores)})
 
-def upload_prescription(request):
-    if request.method == "POST":
-        image = request.FILES["prescription"]
-        medicine_data = process_prescription(image)
 
-        # Convert queryset to dictionary
-        medicine_dict = {med.name: f"{med.dosage} {med.description}" for med in medicine_data}
+@login_required
+def consultancy(request):
+    if request.method == 'POST':
+        form = ConsultancyRequestForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            # You can save to database or send email etc.
+            
+            # Example: Save to database
+            # consultancy_request = ConsultancyRequest(
+            #     user=request.user,
+            #     name=form.cleaned_data['name'],
+            #     email=form.cleaned_data['email'],
+            #     phone=form.cleaned_data['phone'],
+            #     subject=form.cleaned_data['subject'],
+            #     message=form.cleaned_data['message'],
+            #     preferred_date=form.cleaned_data['preferred_date'],
+            #     preferred_time=form.cleaned_data['preferred_time']
+            # )
+            # consultancy_request.save()
+            
+            messages.success(request, 'Your consultancy request has been submitted successfully! We will contact you shortly.')
+            return redirect('request_consultancy')
+    else:
+        # Pre-fill name and email if user is logged in
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data = {
+                'name': f"{request.user.first_name} {request.user.last_name}".strip(),
+                'email': request.user.email
+            }
+        form = ConsultancyRequestForm(initial=initial_data)
+    
+    return render(request, 'consultancy.html', {'form': form})
 
-        return render(request, "result.html", {"medicines": medicine_dict})
+@login_required
+def meditate(request):
+    return render(request,'meditate.html')
 
-    return render(request, "result.html")
+@login_required
+def clock(request):
+    return render(request,'medClock.html')

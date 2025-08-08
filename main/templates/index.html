@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{%load static%}
 {% block start %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedSync - Simplifying Healthcare, Enhancing Lives</title>
+    <title>Mann - Simplifying Healthcare, Enhancing Lives</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     <style>
         * {
@@ -53,7 +54,7 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
             margin-bottom: 2rem;
         }
-        iframe {
+        img {
             width: 100%;
             height: 100%;
             border: none;
@@ -126,13 +127,13 @@
     <div class="main-container">
         <!-- Full-screen Spline Model Container -->
         <div class="spline-container">
-            <iframe src="https://my.spline.design/pillanddnaanimation-1312b8dab64af0cebbb8e91646ce732b/" allowfullscreen></iframe>
+            <img src="{%static 'images/brain.jpg'%}" allowfullscreen></img>
         </div>
         
         <!-- Content Overlay (Centered on top of Spline) -->
         <div class="content-overlay">
-            <h1 class="header-text">MedSync</h1>
-            <p class="tagline">Simplifying Healthcare, Enhancing Lives</p>
+            <h1 class="header-text">Mann</h1>
+            <p class="tagline">Simplifying Mental Health, Enhancing Lives</p>
         </div>
     </div>
     
@@ -235,14 +236,11 @@
 </head>
 <body>
 
-    <!-- Container with height and width -->
-    <div class="custom-container"></div>
-
 </body>
     <!-- Chatbot Button -->
     <a href="chatbot/">
         <div class="chatbot-button" id="chatbotButton"> 
-            <span class="chatbot-text">MedSync</span>
+            <span class="chatbot-text">Mann</span>
         </div>
     </a>
     <!-- Emergency SOS Button - Moved to overlay on top of Spline -->

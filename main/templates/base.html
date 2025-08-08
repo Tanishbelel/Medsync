@@ -3,28 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MedSync - Quality healthcare products delivered to your doorstep!">
-    <title>{% block title %}MedSync{% endblock %}</title>
+    <meta name="description" content="Mann - Quality healthcare products delivered to your doorstep!">
+    <title>{% block title %}Mann{% endblock %}</title>
     
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+
+    
     
     <style>
         :root {
-            --primary-color: #2E8B57;    /* Sea Green */
-            --secondary-color: #3CB371;  /* Medium Sea Green */
-            --accent-color: #66CDAA;     /* Medium Aquamarine */
-            --light-bg: #F0FFF0;         /* Honeydew */
-            --text-color: #006400;       /* Dark Green */
-            --muted-text: #2F4F4F;       /* Dark Slate Gray */
-            --light-accent: #E0F5E0;     /* Light Mint */
-            --border-color: #AADBAA;     /* Light Green */
+            --primary-color: #2E8B57;   /* Sea Green */
+            --secondary-color: #3CB371; /* Medium Sea Green */
+            --accent-color: #66CDAA;   /* Medium Aquamarine */
+            --light-bg: #F0FFF0;       /* Honeydew */
+            --text-color: #006400;     /* Dark Green */
+            --muted-text: #2F4F4F;     /* Dark Slate Gray */
+            --light-accent: #E0F5E0;   /* Light Mint */
+            --border-color: #AADBAA;   /* Light Green */
         }
 
         body {
@@ -43,7 +42,6 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            
         }
 
         .navbar-brand {
@@ -104,12 +102,10 @@
         }
 
         footer {
-            background-color: white;
+            background-color: var(--light-bg);
             padding: 2rem 0;
             margin-top: auto;
             text-align: center;
-            background-color: #F0FFF0;
-            
         }
 
         .footer-links a {
@@ -133,7 +129,6 @@
             height: 40px;
             line-height: 40px;
             border-radius: 50%;
-    
         }
 
         .social-links a:hover {
@@ -170,6 +165,8 @@
             background-color: white;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
+
+        /* MedPoints Modal Styles (Kept as-is, since it was mostly correct) */
         .medpoints-modal {
             display: none;
             position: fixed;
@@ -267,259 +264,50 @@
         .points-history-item:last-child {
             border-bottom: none;
         }
-
-        .points-type {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        
+        /* FIX: Consolidated styles for the Bootstrap Referral Modal */
+        /* Style for the clickable referral code box */
+        .referral-code {
+            background-color: #f0f8ff; /* AliceBlue for a light, clean look */
+            border: 2px dashed var(--primary-color);
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 8px;
+            margin-top: 10px;
+            color: var(--text-color);
         }
 
-        .points-date {
-            font-size: 0.8rem;
-            color: var(--muted-text);
-        }
-
-        .points-amount {
-            font-weight: 600;
-        }
-
-        .points-amount.earned {
-            color: #2E8B57;
-        }
-
-        .points-amount.redeemed {
-            color: #E65100;
-        }
-
-        .progress-container {
-            margin: 1rem 0;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-bar-container {
-            height: 10px;
+        .referral-code:hover {
             background-color: var(--light-accent);
-            border-radius: 5px;
-            overflow: hidden;
         }
 
-        .progress-bar-fill {
-            height: 100%;
-            background-color: var(--primary-color);
-            border-radius: 5px;
-        }
-        /* Referral Modal Styles */
-        .referral-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .referral-modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-        
-        .referral-modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--muted-text);
-            transition: color 0.2s;
-        }
-        
-        .referral-modal-close:hover {
-            color: var(--text-color);
-        }
-        
-        .referral-modal-title {
-            font-size: 1.5rem;
+        /* Hide the "Copied!" feedback text by default */
+        .copy-feedback {
             color: var(--primary-color);
-            margin-bottom: 1rem;
-            font-weight: 600;
+            font-weight: bold;
+            visibility: hidden; /* Hide it */
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s linear;
         }
-        
-        .referral-code-display {
-            background-color: var(--light-accent);
-            padding: 1rem;
-            border-radius: 5px;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 1.5rem 0;
-            border: 1px dashed var(--border-color);
-            cursor: pointer;
-            color: var(--text-color);
-            letter-spacing: 1px;
-        }
-        
-        .referral-button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 0.5rem;
-        }
-        
-        .referral-button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-        
-        .referral-secondary-button {
-            background-color: var(--light-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 0.5rem;
-        }
-        
-        .referral-secondary-button:hover {
-            background-color: white;
-        }
-        /* Referral Modal Styles */
-        .referral-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .referral-modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-        
-        .referral-modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--muted-text);
-            transition: color 0.2s;
-        }
-        
-        .referral-modal-close:hover {
-            color: var(--text-color);
-        }
-        
-        .referral-modal-title {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-        
-        .referral-code-display {
-            background-color: var(--light-accent);
-            padding: 1rem;
-            border-radius: 5px;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 1.5rem 0;
-            border: 1px dashed var(--border-color);
-            cursor: pointer;
-            color: var(--text-color);
-            letter-spacing: 1px;
-        }
-        
-        .referral-button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 0.5rem;
-        }
-        
-        .referral-button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-        
-        .referral-secondary-button {
-            background-color: var(--light-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 0.5rem;
-        }
-        
-        .referral-secondary-button:hover {
-            background-color: white;
-        }
-        
-        .copy-alert {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            display: none;
-        }
-        .copy-alert {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            display: none;
+
+        /* Class to make the feedback visible */
+        .copy-feedback.visible {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/main">
-                <span class="logo-container">
-                    <i class="bi bi-capsule"></i>
-                </span>
-                MedSync
+            <a class="navbar-brand" href="/">
+               
+                Mann
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -529,31 +317,20 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    
-                    
                     {% if request.user.is_authenticated %}
+
                     <li class="nav-item">
-                        <a class="nav-link" href="/cart/" data-count="0">
-                            <i class="bi bi-basket me-1"></i>Cart
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'order_list' %}">
-                            <i class="bi bi-clipboard-check me-1"></i>Orders
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/ocr/upload-prescription/">
-                            <i class="bi bi-clipboard-check me-1"></i>Prescription
+                        <a class="nav-link" href="meditate/">
+                            <i class="bi bi-clipboard-check me-1"></i>Meditate
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/insurance/">
-                            <i class="bi bi-clipboard-check me-1"></i>Book Coverage
+                            <i class="bi bi-clipboard-check me-1"></i>Assessment
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="referralBtn">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#referralModal">
                             <i class="bi bi-share me-1"></i>Refer Friend
                         </a>
                     </li>
@@ -569,20 +346,16 @@
                             <span>{{ request.user.username }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'order_list' %}">
-                                    <i class="bi bi-clipboard-check me-2"></i>Orders
-                                </a>
-                            </li>
+                           
                             <li>
                                 <a class="dropdown-item" href="/profile/">
-                                    <i class="bi bi-clipboard-check me-2"></i>Profile
+                                    <i class="bi bi-person me-2"></i>Profile
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#" id="dropdownMedPointsBtn">
+                                <a class="dropdown-item">
                                     <i class="bi bi-star-fill me-2"></i>MedPoints
-                                    <span class="points-badge ms-1">0</span>
+                                    <span class="points-badge ms-1">{{ user.referral_code }}</span>
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -612,182 +385,121 @@
             </div>
         </div>
     </nav>
-    <!-- Referral Modal -->
-    <div class="referral-modal" id="referralModal">
-        <div class="referral-modal-content">
-            <span class="referral-modal-close" id="closeReferralModal">&times;</span>
-            <h3 class="referral-modal-title">Share MedSync with Friends</h3>
-            <p>Share this referral code with friends and family to help them get started with MedSync</p>
-            <div class="referral-code-display" id="referralCode">MEDSYNC-XXXXXX</div>
-            <p class="copy-alert" id="copyAlert">Code copied to clipboard!</p>
-            <div>
-                <button class="referral-button" id="copyReferralBtn">Copy Code</button>
-                <button class="referral-secondary-button" id="newReferralBtn">New Code</button>
-            </div>
-        </div>
-    </div>
-    <!-- MedPoints Modal -->
-    <div class="medpoints-modal" id="medPointsModal">
-        <div class="medpoints-modal-content">
-            <span class="medpoints-modal-close" id="closeMedPointsModal">&times;</span>
-            <h3 class="medpoints-modal-title">Your MedPoints</h3>
-            
-            <div class="points-circle">
-                <div class="points-value">0</div>
-                <div class="points-label">Available Points</div>
-            </div>
-            
-            
-            
-            <div class="points-info">
-                <h5><i class="bi bi-info-circle me-2"></i>How to Earn Points</h5>
-                <ul class="mb-0">
-                    <li>50 points for each prescription order</li>
-                    <li>10 points for every Rs20 spent</li>
-                    <li>100 points for each successful referral</li>
-                    <li>25 points for booking insurance coverage</li>
-                </ul>
-            </div>
-            
-            <h5>Points History</h5>
-            <div class="points-history">
-                <div class="points-history-item">
-                    <div class="points-type">
-                        <i class="bi bi-capsule"></i>
-                        </div>
+
+    <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="referralModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="referralModalLabel">Your Referral Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <p class="text-muted">Share this code with friends. When they sign up, you'll earn 100 MedPoints!</p>
                     
+                    <div class="referral-code" id="referralCodeElement">
+                        SHARE2WIN <i class="bi bi-clipboard ms-2"></i> 
+                    </div>
+
+                    <p id="copyFeedbackElement" class="copy-feedback mt-2">Copied!</p>
                 </div>
             </div>
-            
-            <button class="referral-button mt-2">Redeem Points</button>
         </div>
     </div>
-<!-- Referral Modal -->
-<div class="referral-modal" id="referralModal">
-    <div class="referral-modal-content">
-        <span class="referral-modal-close" id="closeReferralModal">&times;</span>
-        <h3 class="referral-modal-title">Share MedSync with Friends</h3>
-        <p>Share this referral code with friends and family to help them get started with MedSync</p>
-        <div class="referral-code-display" id="referralCode">MEDSYNC-XXXXXX</div>
-        <p class="copy-alert" id="copyAlert">Code copied to clipboard!</p>
-        <div>
-            <button class="referral-button" id="copyReferralBtn">Copy Code</button>
-            <button class="referral-secondary-button" id="newReferralBtn">New Code</button>
-        </div>
-    </div>
-</div>
-    <!-- Main Content -->
-    
-        {% block start %}{% endblock %}
 
+    <div class="medpoints-modal" id="medPointsModal">
+         </div>
 
-    <!-- Footer -->
+    {% block start %}{% endblock %}
+
     <footer>
-        <div class="container">
-         
-            <div class="social-links mb-3">
-                <a href="#"><i class="bi bi-facebook"></i></a>
-                <a href="#"><i class="bi bi-twitter"></i></a>
-                <a href="#"><i class="bi bi-instagram"></i></a>
-                <a href="#"><i class="bi bi-linkedin"></i></a>
-            </div>
-            <div class="footer-links mb-3">
-                <a href="#">About Us</a>
-                <a href="#">Contact</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-            </div>
-            <p class="mt-2 text-muted">&copy; 2025 MedSync. All rights reserved.</p>
-        </div>
-    </footer>
+        </footer>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Referral Code Script -->
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Elements
-            const referralBtn = document.getElementById('referralBtn');
+            // --- REFERRAL MODAL LOGIC ---
             const referralModal = document.getElementById('referralModal');
-            const closeReferralModal = document.getElementById('closeReferralModal');
-            const referralCode = document.getElementById('referralCode');
-            const copyReferralBtn = document.getElementById('copyReferralBtn');
-            const newReferralBtn = document.getElementById('newReferralBtn');
-            const copyAlert = document.getElementById('copyAlert');
+            const referralCodeEl = document.getElementById('referralCodeElement');
+            const copyFeedbackEl = document.getElementById('copyFeedbackElement');
             
-            // Generate random referral code
-            function generateReferralCode() {
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-                let code = 'MEDSYNC-';
-                
-                for (let i = 0; i < 6; i++) {
-                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+            let userReferralCode = '';
+
+            // This function generates a unique, fixed code based on user data.
+            // In a real app, this code would ideally be saved in and fetched from the database.
+            function generateUniqueReferralCode() {
+                const username = '{{ request.user.username|default:"" }}';
+                const userId = '{{ request.user.id|default:"" }}';
+
+                if (!username || !userId) {
+                    return 'Mann-DEMO01';
                 }
                 
-                referralCode.textContent = code;
+                const uniqueString = `${username}${userId}`;
+                let hash = 0;
+                for (let i = 0; i < uniqueString.length; i++) {
+                    const char = uniqueString.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash |= 0; // Convert to 32bit integer
+                }
+                
+                const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 6);
+                return `Mann-${code.padStart(6, '0')}`;
             }
             
-            // Open modal
-            referralBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                generateReferralCode();
-                referralModal.style.display = 'flex';
-            });
-            
-            // Close modal
-            closeReferralModal.addEventListener('click', function() {
-                referralModal.style.display = 'none';
-            });
-            
-            // Close modal if clicked outside
-            window.addEventListener('click', function(event) {
-                if (event.target === referralModal) {
-                    referralModal.style.display = 'none';
+            // Function to set the code in the modal, storing it in sessionStorage to avoid regeneration.
+            function initializeReferralCode() {
+                const userId = '{{ request.user.id|default:"" }}';
+                if (!userId) {
+                    referralCodeEl.textContent = 'Mann-DEMO01';
+                    return;
                 }
+
+                const storageKey = `userReferralCode_${userId}`;
+                const storedCode = sessionStorage.getItem(storageKey);
+                
+                if (storedCode) {
+                    userReferralCode = storedCode;
+                } else {
+                    userReferralCode = generateUniqueReferralCode();
+                    sessionStorage.setItem(storageKey, userReferralCode);
+                }
+                // Update the referral code text, keeping the icon
+                referralCodeEl.innerHTML = `${userReferralCode} <i class="bi bi-clipboard ms-2"></i>`;
+            }
+            
+            // FIX: Use Bootstrap's built-in modal events to run code when the modal opens.
+            referralModal.addEventListener('show.bs.modal', function () {
+                initializeReferralCode();
+                // You could also load referral stats here via an API call
             });
             
-            // Copy code
-            copyReferralBtn.addEventListener('click', function() {
-                copyToClipboard();
-            });
-            
-            // Copy when clicking on the code itself
-            referralCode.addEventListener('click', function() {
-                copyToClipboard();
-            });
-            
-            // Generate new code
-            newReferralBtn.addEventListener('click', function() {
-                generateReferralCode();
-            });
-            
-            // Copy to clipboard function
-            function copyToClipboard() {
-                const codeText = referralCode.textContent;
-                navigator.clipboard.writeText(codeText).then(function() {
-                    copyAlert.style.display = 'block';
-                    setTimeout(function() {
-                        copyAlert.style.display = 'none';
+            // FIX: A single, reliable copy-to-clipboard function.
+            function copyCodeToClipboard() {
+                if (!userReferralCode) return; // Don't copy if code isn't set
+
+                navigator.clipboard.writeText(userReferralCode).then(() => {
+                    // Show "Copied!" feedback
+                    copyFeedbackEl.classList.add('visible');
+
+                    // Hide the feedback message after 2 seconds
+                    setTimeout(() => {
+                        copyFeedbackEl.classList.remove('visible');
                     }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy code.'); // Fallback for user
                 });
             }
-            
-            // Generate initial code
-            generateReferralCode();
 
-            // MedPoints Modal Elements
-            const medPointsBtn = document.getElementById('medPointsBtn');
+            // FIX: Attach the click listener cleanly in JavaScript.
+            referralCodeEl.addEventListener('click', copyCodeToClipboard);
+            
+            
+            // --- MEDPOINTS MODAL LOGIC (Largely unchanged) ---
             const dropdownMedPointsBtn = document.getElementById('dropdownMedPointsBtn');
             const medPointsModal = document.getElementById('medPointsModal');
             const closeMedPointsModal = document.getElementById('closeMedPointsModal');
-
-            // Open MedPoints modal
-            if (medPointsBtn) {
-                medPointsBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    medPointsModal.style.display = 'flex';
-                });
-            }
 
             if (dropdownMedPointsBtn) {
                 dropdownMedPointsBtn.addEventListener('click', function(e) {
@@ -796,12 +508,10 @@
                 });
             }
 
-            // Close MedPoints modal
             closeMedPointsModal.addEventListener('click', function() {
                 medPointsModal.style.display = 'none';
             });
 
-            // Close MedPoints modal if clicked outside
             window.addEventListener('click', function(event) {
                 if (event.target === medPointsModal) {
                     medPointsModal.style.display = 'none';

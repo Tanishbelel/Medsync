@@ -1,687 +1,1065 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Profile</title>
-    <style>
-        :root {
-            --primary-green: #10b981;
-            --primary-green-dark: #059669;
-            --primary-green-light: #d1fae5;
-            --green-bg: #ecfdf5;
-            --green-border: #a7f3d0;
-            --text-dark: #064e3b;
-            --text-body: #065f46;
-            --text-light: #047857;
-            --white: #ffffff;
-            --shadow: rgba(5, 150, 105, 0.15);
-            --progress-bg: #e2e8f0;
-            --progress-low: #ef4444;
-            --progress-medium: #064e06;
-            --progress-high: #10b981;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--green-bg);
-            margin: 0;
-            padding: 20px;
-            color: var(--text-body);
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 700px;
-            background: var(--white);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 6px 24px var(--shadow);
-            margin: 20px auto;
-            border-top: 5px solid var(--primary-green);
-        }
-        
-        h2 {
-            color: var(--primary-green-dark);
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-            position: relative;
-            padding-bottom: 12px;
-        }
-        
-        h2:after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 4px;
-            background-color: var(--primary-green);
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-        
-        h3 {
-            color: var(--text-dark);
-            margin-top: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--green-border);
-        }
-        
-        form {
-            text-align: left;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .section-header {
-            color: var(--primary-green-dark);
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            padding-bottom: 5px;
-            border-bottom: 1px solid var(--green-border);
-        }
-        
-        label {
-            font-weight: 600;
-            color: var(--text-dark);
-            display: block;
-            margin-bottom: 6px;
-            font-size: 15px;
-        }
-        
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 1px solid var(--green-border);
-            border-radius: 8px;
-            background-color: var(--green-bg);
-            color: var(--text-body);
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-        
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-        }
-        
-        button {
-            background: var(--primary-green);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        button:hover {
-            background: var(--primary-green-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
-        }
-        
-        .patient-list {
-            margin-top: 30px;
-            text-align: left;
-        }
-        
-        .patient {
-            border: 1px solid var(--green-border);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            background-color: var(--green-bg);
-            transition: all 0.3s ease;
-        }
-        
-        .patient:hover {
-            box-shadow: 0 4px 12px var(--shadow);
-            transform: translateY(-2px);
-        }
-        
-        .patient p {
-            margin: 8px 0;
-        }
-        
-        .patient strong {
-            color: var(--text-dark);
-            font-weight: 600;
-            min-width: 150px;
-            display: inline-block;
-        }
-        
-        .patient-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--green-border);
-        }
-        
-        .patient-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-green-dark);
-            margin: 0;
-        }
-        
-        .badge {
-            background-color: var(--primary-green-light);
-            color: var(--primary-green-dark);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .no-patients {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-light);
-            font-style: italic;
-        }
-        
-        .emergency-contact {
-            background-color: var(--primary-green-light);
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 15px;
-        }
-        
-        /* Completeness Bar Styles */
-        .completeness-container {
-            margin-bottom: 30px;
-            background-color: var(--white);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(5, 150, 105, 0.1);
-        }
-        
-        .completeness-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .completeness-title {
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 16px;
-            margin: 0;
-        }
-        
-        .completeness-percentage {
-            font-weight: 700;
-            font-size: 18px;
-            color: var(--primary-green-dark);
-        }
-        
-        .progress-bar {
-            height: 12px;
-            background-color: var(--progress-bg);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .progress-value {
-            height: 100%;
-            border-radius: 6px;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .section-progress {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-        }
-        
-        .section-item {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            padding-top: 10px;
-        }
-        
-        .section-item:not(:last-child):after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            right: 0;
-            height: 70%;
-            width: 1px;
-            background-color: var(--green-border);
-        }
-        
-        .section-label {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 4px;
-        }
-        
-        .section-value {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-dark);
-        }
-        
-        /* QR Code Modal Styles */
-        .qr-button {
-            background: var(--primary-green-light);
-            color: var(--primary-green-dark);
-            border: 1px solid var(--green-border);
-            margin-top: 30px;
-        }
-        
-        .qr-button:hover {
-            background: var(--primary-green-light);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            overflow: auto;
-        }
-        
-        .modal-content {
-            background-color: var(--white);
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 16px;
-            width: 300px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-            text-align: center;
-        }
-        
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: var(--text-light);
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .close-button:hover {
-            color: var(--text-dark);
-        }
-        
-        .qr-container {
-            margin: 15px 0;
-            background-color: var(--white);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-        }
-        
-        .qr-title {
-            color: var(--text-dark);
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .qr-description {
-            color: var(--text-light);
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            button {
-                padding: 10px;
-            }
-            
-            .patient strong {
-                min-width: auto;
-                display: block;
-                margin-bottom: 4px;
-            }
-            
-            .section-progress {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .section-item:not(:last-child):after {
-                display: none;
-            }
-            
-            .modal-content {
-                width: 85%;
-                margin: 20% auto;
-            }
-        }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
-<div class="container">
-    <h2>Patient Profile</h2>
+{% block title %}Mental Health Assessment - Mann{% endblock %}
+
+{% block start %}
+<style>
+    /* Override base styles for mental health profile */
+    body {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+    }
     
-    <!-- Profile Completeness Bar -->
-    <div class="completeness-container">
-        <div class="completeness-header">
-            <h4 class="completeness-title">Profile Completeness</h4>
-            <div class="completeness-percentage">0%</div>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-value" style="width: 0%; background-color: var(--progress-low);"></div>
-        </div>
-        <div class="section-progress">
-            <div class="section-item">
-                <div class="section-label">Personal</div>
-                <div class="section-value personal-complete">0/4</div>
-            </div>
-            <div class="section-item">
-                <div class="section-label">Emergency</div>
-                <div class="section-value emergency-complete">0/3</div>
-            </div>
-            <div class="section-item">
-                <div class="section-label">Medical</div>
-                <div class="section-value medical-complete">0/5</div>
-            </div>
-        </div>
+    .profile-container {
+        max-width: 900px;
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(46, 139, 87, 0.1);
+        margin: 30px auto;
+        border-top: 6px solid var(--primary-color);
+    }
+    
+    .profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .profile-title {
+        color: var(--primary-color);
+        font-size: 32px;
+        margin-bottom: 10px;
+        position: relative;
+        padding-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .profile-title:after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+    }
+    
+    .profile-subtitle {
+        color: var(--muted-text);
+        font-size: 18px;
+        margin: 0;
+        font-weight: 400;
+    }
+    
+    .section-header {
+        color: var(--primary-color);
+        margin-top: 35px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 600;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--accent-color);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .section-icon {
+        font-size: 24px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    label {
+        font-weight: 600;
+        color: var(--text-color);
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+    
+    .field-description {
+        font-size: 14px;
+        color: var(--muted-text);
+        margin-bottom: 10px;
+        font-style: italic;
+    }
+    
+    input, textarea, select {
+        width: 100%;
+        padding: 14px;
+        box-sizing: border-box;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        background-color: white;
+        color: var(--text-color);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(46, 139, 87, 0.1);
+        background-color: var(--light-bg);
+    }
+    
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+    }
+    
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        background-color: var(--light-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .checkbox-item:hover {
+        background-color: var(--light-accent);
+        border-color: var(--accent-color);
+        transform: translateY(-1px);
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+        accent-color: var(--primary-color);
+    }
+    
+    .checkbox-item label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    
+    .rating-scale {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        padding: 15px;
+        background-color: var(--light-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .rating-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .rating-option:hover {
+        background-color: white;
+    }
+    
+    .rating-option input[type="radio"] {
+        width: auto;
+        margin: 0;
+        accent-color: var(--primary-color);
+    }
+    
+    .rating-label {
+        font-size: 13px;
+        text-align: center;
+        color: var(--muted-text);
+        font-weight: 500;
+        line-height: 1.3;
+    }
+    
+    .btn-analyze {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 16px 32px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 18px;
+        font-family: 'Montserrat', sans-serif;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(46, 139, 87, 0.2);
+    }
+    
+    .btn-analyze:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(46, 139, 87, 0.3);
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    }
+    
+    /* Analysis Results Styles */
+    .analysis-container {
+        display: none;
+        margin-top: 40px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(46, 139, 87, 0.1);
+        border-top: 6px solid var(--accent-color);
+        overflow: hidden;
+    }
+    
+    .analysis-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .analysis-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+    }
+    
+    .analysis-subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin: 10px 0 0 0;
+    }
+    
+    .analysis-content {
+        padding: 40px;
+    }
+    
+    .risk-level {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+    
+    .risk-low {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+    }
+    
+    .risk-moderate {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        color: white;
+    }
+    
+    .risk-high {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .analysis-section {
+        margin-bottom: 35px;
+        padding: 25px;
+        background: var(--light-bg);
+        border-radius: 15px;
+        border-left: 5px solid var(--primary-color);
+    }
+    
+    .analysis-section h3 {
+        color: var(--primary-color);
+        margin: 0 0 15px 0;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .condition-item {
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border-left: 4px solid var(--accent-color);
+    }
+    
+    .condition-name {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 16px;
+    }
+    
+    .condition-description {
+        color: var(--muted-text);
+        font-size: 14px;
+        margin-top: 5px;
+    }
+    
+    .recommendation-item {
+        background: white;
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .recommendation-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 16px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .recommendation-desc {
+        color: var(--text-color);
+        line-height: 1.6;
+    }
+    
+    .emergency-notice {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px 0;
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .emergency-notice h4 {
+        margin: 0 0 10px 0;
+    }
+    
+    .contact-professional {
+        background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 30px;
+        text-align: center;
+    }
+    
+    .contact-professional h4 {
+        margin: 0 0 15px 0;
+        font-size: 20px;
+    }
+    
+    .btn-contact {
+        background: white;
+        color: var(--primary-color);
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-contact:hover {
+        background: var(--light-bg);
+        transform: translateY(-1px);
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .spinner {
+        border: 3px solid var(--light-accent);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-container, .analysis-container {
+            padding: 25px;
+            margin: 15px;
+        }
+        
+        .analysis-content {
+            padding: 25px;
+        }
+        
+        .profile-title, .analysis-title {
+            font-size: 24px;
+        }
+        
+        .checkbox-group {
+            grid-template-columns: 1fr;
+        }
+        
+        .rating-scale {
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .rating-option {
+            flex-direction: row;
+            justify-content: center;
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">Mental Health Assessment</h1>
+        <p class="profile-subtitle">Complete this assessment to receive personalized insights and recommendations</p>
     </div>
     
-    <form method="POST" id="patientForm">
-        {% csrf_token %}
-        
-        <div class="section-header">Personal Information</div>
-        
-        <div class="form-group">
-            <label for="id_name">Full Name</label>
-            <input type="text" name="name" id="id_name" required placeholder="Enter patient's full name" class="track-field" data-section="personal">
+    <!-- Privacy Notice -->
+    <div class="privacy-notice">
+        <h4>🔒 Confidential Assessment</h4>
+        <p>This assessment is for informational purposes only and does not replace professional medical advice. Your responses are private and will only be used to generate personalized recommendations.</p>
+    </div>
+    
+    <form id="mentalHealthAssessment">
+        <!-- Personal Information Section -->
+        <div class="section-header">
+            <span class="section-icon">👤</span>
+            Personal Information
         </div>
         
         <div class="form-group">
-            <label for="id_age">Age</label>
-            <input type="number" name="age" id="id_age" required min="0" max="120" placeholder="Enter age" class="track-field" data-section="personal">
+            <label for="id_name">First Name *</label>
+            <input type="text" name="name" id="id_name" required placeholder="Enter your first name">
         </div>
         
         <div class="form-group">
-            <label for="id_gender">Gender</label>
-            <select name="gender" id="id_gender" required class="track-field" data-section="personal">
-                <option value="">Select gender</option>
+            <label for="id_age">Age *</label>
+            <input type="number" name="age" id="id_age" required min="13" max="120" placeholder="Enter your age">
+        </div>
+        
+        <div class="form-group">
+            <label for="id_gender">Gender Identity</label>
+            <select name="gender" id="id_gender">
+                <option value="">Select gender identity</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Transgender">Transgender</option>
+                <option value="Prefer not to say">Prefer not to say</option>
                 <option value="Other">Other</option>
             </select>
         </div>
         
+        <!-- Mental Health Information Section -->
+        <div class="section-header">
+            <span class="section-icon">🧠</span>
+            Current Symptoms & Concerns
+        </div>
+        
         <div class="form-group">
-            <label for="id_blood_group">Blood Group</label>
-            <select name="blood_group" id="id_blood_group" class="track-field" data-section="personal">
-                <option value="">Select blood group</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
+            <label>What symptoms are you currently experiencing?</label>
+            <div class="field-description">Select all that currently apply to your situation</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="anxiety" id="symptom_anxiety">
+                    <label for="symptom_anxiety">Excessive worry or anxiety</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="depression" id="symptom_depression">
+                    <label for="symptom_depression">Persistent sadness or hopelessness</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="panic" id="symptom_panic">
+                    <label for="symptom_panic">Panic attacks or intense fear</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="sleep" id="symptom_sleep">
+                    <label for="symptom_sleep">Sleep difficulties (insomnia/oversleeping)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="concentration" id="symptom_concentration">
+                    <label for="symptom_concentration">Trouble concentrating or focusing</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="irritability" id="symptom_irritability">
+                    <label for="symptom_irritability">Increased irritability or anger</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="energy" id="symptom_energy">
+                    <label for="symptom_energy">Low energy or fatigue</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="appetite" id="symptom_appetite">
+                    <label for="symptom_appetite">Changes in appetite or weight</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="social" id="symptom_social">
+                    <label for="symptom_social">Social withdrawal or isolation</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="symptoms" value="thoughts" id="symptom_thoughts">
+                    <label for="symptom_thoughts">Intrusive or racing thoughts</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>How long have you been experiencing these symptoms?</label>
+            <select name="duration" id="id_duration" required>
+                <option value="">Select duration</option>
+                <option value="recent">Less than 2 weeks</option>
+                <option value="short">2 weeks to 2 months</option>
+                <option value="medium">2-6 months</option>
+                <option value="long">6 months to 2 years</option>
+                <option value="chronic">More than 2 years</option>
             </select>
         </div>
         
-        <div class="section-header">Emergency Contact</div>
-        
         <div class="form-group">
-            <label for="id_emergency_name">Emergency Contact Name</label>
-            <input type="text" name="emergency_name" id="id_emergency_name" placeholder="Enter emergency contact name" class="track-field" data-section="emergency">
+            <label>How severely are these symptoms affecting your daily life?</label>
+            <div class="rating-scale">
+                <div class="rating-option">
+                    <input type="radio" name="severity" value="1" id="severity_1" required>
+                    <label for="severity_1" class="rating-label">Minimal<br>Impact</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="severity" value="2" id="severity_2" required>
+                    <label for="severity_2" class="rating-label">Mild<br>Impact</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="severity" value="3" id="severity_3" required>
+                    <label for="severity_3" class="rating-label">Moderate<br>Impact</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="severity" value="4" id="severity_4" required>
+                    <label for="severity_4" class="rating-label">Significant<br>Impact</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="severity" value="5" id="severity_5" required>
+                    <label for="severity_5" class="rating-label">Severe<br>Impact</label>
+                </div>
+            </div>
         </div>
         
         <div class="form-group">
-            <label for="id_emergency_relation">Relationship</label>
-            <input type="text" name="emergency_relation" id="id_emergency_relation" placeholder="Enter relationship to patient" class="track-field" data-section="emergency">
+            <label for="id_triggers">What situations or events tend to make your symptoms worse?</label>
+            <textarea name="triggers" id="id_triggers" rows="3" placeholder="Describe your triggers (e.g., work stress, social situations, specific thoughts)"></textarea>
         </div>
         
         <div class="form-group">
-            <label for="id_emergency_phone">Phone Number</label>
-            <input type="tel" name="emergency_phone" id="id_emergency_phone" placeholder="Enter emergency contact phone" class="track-field" data-section="emergency">
+            <label for="id_previous_help">Have you sought help for mental health concerns before?</label>
+            <select name="previous_help" id="id_previous_help">
+                <option value="">Select your experience</option>
+                <option value="never">Never sought help</option>
+                <option value="therapy_positive">Yes, therapy was helpful</option>
+                <option value="therapy_mixed">Yes, therapy had mixed results</option>
+                <option value="medication_positive">Yes, medication was helpful</option>
+                <option value="medication_mixed">Yes, medication had mixed results</option>
+                <option value="both_positive">Yes, both therapy and medication helped</option>
+                <option value="unhelpful">Yes, but previous help wasn't effective</option>
+            </select>
         </div>
         
-        <div class="section-header">Medical Information</div>
-        
-        <div class="form-group">
-            <label for="id_allergies">Allergies</label>
-            <textarea name="allergies" id="id_allergies" rows="3" placeholder="List any allergies (separated by commas)" class="track-field" data-section="medical"></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="id_chronic_conditions">Medical Conditions</label>
-            <textarea name="chronic_conditions" id="id_chronic_conditions" rows="3" placeholder="List any chronic conditions (separated by commas)" class="track-field" data-section="medical"></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="id_medical_history">Medical History</label>
-            <textarea name="medical_history" id="id_medical_history" rows="4" placeholder="Enter significant past medical history, surgeries, hospitalizations, etc." class="track-field" data-section="medical"></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="id_medications">Current Medications</label>
-            <textarea name="medications" id="id_medications" rows="3" placeholder="List current medications with dosage" class="track-field" data-section="medical"></textarea>
+        <!-- Support and Lifestyle -->
+        <div class="section-header">
+            <span class="section-icon">🏠</span>
+            Lifestyle & Support
         </div>
         
         <div class="form-group">
-            <label for="id_last_checkup_date">Last Checkup Date</label>
-            <input type="date" name="last_checkup_date" id="id_last_checkup_date" class="track-field" data-section="medical">
+            <label>How would you rate your current support system?</label>
+            <div class="rating-scale">
+                <div class="rating-option">
+                    <input type="radio" name="support" value="1" id="support_1" required>
+                    <label for="support_1" class="rating-label">Very<br>Limited</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="support" value="2" id="support_2" required>
+                    <label for="support_2" class="rating-label">Limited</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="support" value="3" id="support_3" required>
+                    <label for="support_3" class="rating-label">Moderate</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="support" value="4" id="support_4" required>
+                    <label for="support_4" class="rating-label">Good</label>
+                </div>
+                <div class="rating-option">
+                    <input type="radio" name="support" value="5" id="support_5" required>
+                    <label for="support_5" class="rating-label">Excellent</label>
+                </div>
+            </div>
         </div>
         
-        <button type="submit">Save Profile</button>
+        <div class="form-group">
+            <label>Current lifestyle factors affecting your mental health:</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" name="lifestyle" value="stress_work" id="lifestyle_work">
+                    <label for="lifestyle_work">High work/school stress</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="lifestyle" value="relationship_issues" id="lifestyle_relationship">
+                    <label for="lifestyle_relationship">Relationship problems</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="lifestyle" value="financial_stress" id="lifestyle_financial">
+                    <label for="lifestyle_financial">Financial stress</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="lifestyle" value="health_issues" id="lifestyle_health">
+                    <label for="lifestyle_health">Physical health problems</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="lifestyle" value="substance_use" id="lifestyle_substance">
+                    <label for="lifestyle_substance">Substance use concerns</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="lifestyle" value="major_change" id="lifestyle_change">
+                    <label for="lifestyle_change">Recent major life changes</label>
+                </div>
+            </div>
+        </div>
         
-        <!-- QR Code Button -->
-        <button type="button" id="showQrButton" class="qr-button">Show QR Code</button>
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: var(--muted-text);">Analyzing your responses...</p>
+        </div>
+        
+        <button type="submit" class="btn-analyze" id="analyzeBtn">
+            <i class="bi bi-search me-2"></i>Analyze My Mental Health
+        </button>
     </form>
 </div>
 
-<!-- QR Code Modal -->
-<!-- QR Modal -->
-<!-- QR Code Modal -->
-<div id="qrModal" class="modal">
-    <div class="modal-content">
-        <span id="closeModal" class="close-button">&times;</span>
-        <h4 class="qr-title">Patient Profile QR Code</h4>
-        <p class="qr-description">Scan this QR code to complete your profile!</p>
-        <div class="qr-container">
-            <img src="../static/images/qr1.jpg" alt="QR Code" class="qr-code">
-        </div>
+<!-- Analysis Results Container -->
+<div class="analysis-container" id="analysisResults">
+    <div class="analysis-header">
+        <h2 class="analysis-title">Your Mental Health Analysis</h2>
+        <p class="analysis-subtitle">Based on your responses, here are your personalized insights</p>
+    </div>
+    
+    <div class="analysis-content">
+        <div id="riskLevel"></div>
+        <div id="identifiedConditions"></div>
+        <div id="recommendations"></div>
+        <div id="professionalHelp"></div>
     </div>
 </div>
-<!-- Add script for QR Code generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configuration and initial setup
-        const sections = {
-            personal: { fields: 4, completed: 0 },
-            emergency: { fields: 3, completed: 0 },
-            medical: { fields: 5, completed: 0 }
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mentalHealthAssessment');
+    const analysisContainer = document.getElementById('analysisResults');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        performAnalysis();
+    });
+    
+    function performAnalysis() {
+        // Show loading spinner
+        loadingSpinner.style.display = 'block';
+        analyzeBtn.style.display = 'none';
+        
+        // Simulate analysis delay
+        setTimeout(() => {
+            const formData = new FormData(form);
+            const analysis = analyzeSymptoms(formData);
+            displayResults(analysis);
+            
+            loadingSpinner.style.display = 'none';
+            analysisContainer.style.display = 'block';
+            analysisContainer.scrollIntoView({ behavior: 'smooth' });
+        }, 2000);
+    }
+    
+    function analyzeSymptoms(formData) {
+        const symptoms = formData.getAll('symptoms');
+        const severity = parseInt(formData.get('severity'));
+        const duration = formData.get('duration');
+        const support = parseInt(formData.get('support'));
+        const lifestyle = formData.getAll('lifestyle');
+        const name = formData.get('name');
+        
+        let analysis = {
+            name: name,
+            riskLevel: 'low',
+            conditions: [],
+            recommendations: [],
+            urgency: false
         };
-        const totalFields = Object.values(sections).reduce((sum, section) => sum + section.fields, 0);
-        let completedFields = 0;
         
-        // Get all form fields to track
-        const trackFields = document.querySelectorAll('.track-field');
-        const progressBar = document.querySelector('.progress-value');
-        const percentageDisplay = document.querySelector('.completeness-percentage');
+        // Calculate risk level
+        let riskScore = 0;
+        if (severity >= 4) riskScore += 3;
+        else if (severity >= 3) riskScore += 2;
+        else riskScore += 1;
         
-        // Initialize from any pre-filled values
-        trackFields.forEach(field => {
-            const hasValue = field.value.trim() !== '' && 
-                            (field.tagName !== 'SELECT' || field.value !== '');
-            
-            if (hasValue) {
-                completedFields++;
-                const section = field.dataset.section;
-                sections[section].completed++;
-            }
-        });
+        if (duration === 'chronic' || duration === 'long') riskScore += 2;
+        if (support <= 2) riskScore += 1;
+        if (lifestyle.length >= 3) riskScore += 1;
         
-        // Update counters on page load
-        updateCompleteness();
+        if (riskScore >= 5) analysis.riskLevel = 'high';
+        else if (riskScore >= 3) analysis.riskLevel = 'moderate';
         
-        // Add event listeners to all tracked fields
-        trackFields.forEach(field => {
-            ['input', 'change'].forEach(event => {
-                field.addEventListener(event, function() {
-                    const section = this.dataset.section;
-                    const wasFilled = sections[section].completed;
-                    
-                    // Reset section counts
-                    Object.keys(sections).forEach(key => {
-                        sections[key].completed = 0;
-                    });
-                    completedFields = 0;
-                    
-                    // Recount all filled fields
-                    trackFields.forEach(f => {
-                        const hasValue = f.value.trim() !== '' && 
-                                        (f.tagName !== 'SELECT' || f.value !== '');
-                        
-                        if (hasValue) {
-                            completedFields++;
-                            const s = f.dataset.section;
-                            sections[s].completed++;
-                        }
-                    });
-                    
-                    updateCompleteness();
-                });
-            });
-        });
-        
-        // Update the completeness UI elements
-        function updateCompleteness() {
-            const percentage = Math.round((completedFields / totalFields) * 100);
-            
-            // Update percentage text
-            percentageDisplay.textContent = percentage + '%';
-            
-            // Update progress bar width and color
-            progressBar.style.width = percentage + '%';
-            if (percentage < 33) {
-                progressBar.style.backgroundColor = 'var(--progress-low)';
-            } else if (percentage < 66) {
-                progressBar.style.backgroundColor = 'var(--progress-medium)';
-            } else {
-                progressBar.style.backgroundColor = 'var(--progress-high)';
-            }
-            
-            // Update section counters
-            document.querySelector('.personal-complete').textContent = 
-                sections.personal.completed + '/' + sections.personal.fields;
-            document.querySelector('.emergency-complete').textContent = 
-                sections.emergency.completed + '/' + sections.emergency.fields;
-            document.querySelector('.medical-complete').textContent = 
-                sections.medical.completed + '/' + sections.medical.fields;
+        // Check for high-risk symptoms
+        const highRiskSymptoms = ['thoughts', 'panic', 'depression', 'social'];
+        const hasHighRiskSymptoms = symptoms.some(s => highRiskSymptoms.includes(s));
+        if (hasHighRiskSymptoms && severity >= 4) {
+            analysis.urgency = true;
+            analysis.riskLevel = 'high';
         }
         
-        // QR Code Modal functionality
-        const modal = document.getElementById('qrModal');
-        const showQrButton = document.getElementById('showQrButton');
-        const closeModal = document.getElementById('closeModal');
-        
-        showQrButton.addEventListener('click', function() {
-            // Generate QR code with form data
-            const patientData = collectPatientData();
-            const qrCodeContainer = document.getElementById('qrCode');
-            qrCodeContainer.innerHTML = ''; // Clear previous QR code
-            
-            // Create QR code
-            new QRCode(qrCodeContainer, {
-                text: JSON.stringify(patientData),
-                width: 200,
-                height: 200,
-                colorDark: '#059669',
-                colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.H
+        // Identify potential conditions
+        if (symptoms.includes('anxiety') || symptoms.includes('panic')) {
+            analysis.conditions.push({
+                name: 'Anxiety Disorder',
+                description: 'You may be experiencing symptoms consistent with anxiety disorders, including generalized anxiety or panic disorder.'
             });
-            
-            // Show modal
-            modal.style.display = 'block';
+        }
+        
+        if (symptoms.includes('depression') || (symptoms.includes('energy') && symptoms.includes('social'))) {
+            analysis.conditions.push({
+                name: 'Depression',
+                description: 'Your symptoms suggest possible depression, characterized by persistent low mood and loss of interest in activities.'
+            });
+        }
+        
+        if (symptoms.includes('sleep') || symptoms.includes('concentration') || symptoms.includes('irritability')) {
+            analysis.conditions.push({
+                name: 'Stress-Related Symptoms',
+                description: 'You may be experiencing stress-related symptoms that can affect sleep, concentration, and mood regulation.'
+            });
+        }
+        
+        if (symptoms.includes('thoughts') || symptoms.includes('concentration')) {
+            analysis.conditions.push({
+                name: 'Cognitive Difficulties',
+                description: 'You may be experiencing cognitive symptoms that affect thinking patterns and mental clarity.'
+            });
+        }
+        
+        // Generate recommendations
+        analysis.recommendations = generateRecommendations(symptoms, severity, analysis.conditions, lifestyle, support);
+        
+        return analysis;
+    }
+    
+    function generateRecommendations(symptoms, severity, conditions, lifestyle, support) {
+        let recommendations = [];
+        
+        // Professional help recommendations
+        if (severity >= 4) {
+            recommendations.push({
+                title: '🏥 Seek Professional Help Immediately',
+                description: 'Given the severity of your symptoms, it\'s important to consult with a mental health professional as soon as possible. Consider scheduling an appointment with a psychiatrist or psychologist.'
+            });
+        } else if (severity >= 3) {
+            recommendations.push({
+                title: '👨‍⚕️ Consider Professional Support',
+                description: 'Your symptoms warrant professional attention. Consider therapy (CBT, counseling) or consulting with your primary care doctor about your mental health.'
+            });
+        }
+        
+        // Specific symptom management
+        if (symptoms.includes('anxiety') || symptoms.includes('panic')) {
+            recommendations.push({
+                title: '🧘 Anxiety Management Techniques',
+                description: 'Practice deep breathing exercises, progressive muscle relaxation, and mindfulness meditation. Try the 4-7-8 breathing technique during anxiety episodes.'
+            });
+        }
+        
+        if (symptoms.includes('depression')) {
+            recommendations.push({
+                title: '🌟 Depression Support Strategies',
+                description: 'Maintain a daily routine, engage in regular physical activity, practice gratitude journaling, and stay connected with supportive people. Consider light therapy if seasonal.'
+            });
+        }
+        
+        if (symptoms.includes('sleep')) {
+            recommendations.push({
+                title: '😴 Sleep Hygiene Improvement',
+                description: 'Establish a consistent bedtime routine, avoid screens 1 hour before bed, keep your bedroom cool and dark, and avoid caffeine after 2 PM.'
+            });
+        }
+        
+        if (symptoms.includes('concentration')) {
+            recommendations.push({
+                title: '🎯 Improve Focus & Concentration',
+                description: 'Try the Pomodoro Technique (25-min focus sessions), eliminate distractions, practice mindfulness exercises, and ensure adequate sleep and nutrition.'
+            });
+        }
+        
+        if (symptoms.includes('social')) {
+            recommendations.push({
+                title: '🤝 Social Connection Building',
+                description: 'Start with small social interactions, join interest-based groups or activities, practice self-compassion, and consider social anxiety techniques if needed.'
+            });
+        }
+        
+        // Lifestyle recommendations
+        if (lifestyle.includes('stress_work')) {
+            recommendations.push({
+                title: '💼 Work-Life Balance',
+                description: 'Set clear boundaries between work and personal time, practice saying no to excessive demands, take regular breaks, and consider discussing workload with your supervisor.'
+            });
+        }
+        
+        if (lifestyle.includes('relationship_issues')) {
+            recommendations.push({
+                title: '💕 Relationship Support',
+                description: 'Consider couples or family therapy, practice healthy communication techniques, set boundaries, and work on conflict resolution skills. Individual therapy can also help with relationship patterns.'
+            });
+        }
+        
+        if (lifestyle.includes('financial_stress')) {
+            recommendations.push({
+                title: '💰 Financial Stress Management',
+                description: 'Create a budget and financial plan, seek financial counseling if needed, explore assistance programs, and focus on what you can control rather than worrying about uncertainties.'
+            });
+        }
+        
+        // Support system recommendations
+        if (support <= 2) {
+            recommendations.push({
+                title: '🌐 Build Your Support Network',
+                description: 'Join support groups (online or in-person), volunteer for causes you care about, reconnect with old friends, or participate in community activities to build meaningful connections.'
+            });
+        }
+        
+        // General wellness recommendations
+        recommendations.push({
+            title: '🏃 Physical Wellness',
+            description: 'Regular exercise (even 20-30 minutes of walking) can significantly improve mood. Also focus on nutrition, staying hydrated, and limiting alcohol/substance use.'
         });
         
-        closeModal.addEventListener('click', function() {
-            modal.style.display = 'none';
+        recommendations.push({
+            title: '📱 Digital Wellness',
+            description: 'Consider limiting social media use, especially comparison-heavy platforms. Use apps for guided meditation, mood tracking, or mental health support like Headspace, Calm, or Sanvello.'
         });
         
-        // Close modal when clicking outside the modal content
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
+        recommendations.push({
+            title: '📚 Self-Help Resources',
+            description: 'Read books on mental health like "Feeling Good" by David Burns, "The Anxiety and Worry Workbook" by David Clark, or explore online therapy platforms like BetterHelp or Talkspace.'
+        });
+        
+        return recommendations;
+    }
+    
+    function displayResults(analysis) {
+        const name = analysis.name || 'there';
+        
+        // Display risk level
+        const riskLevelHtml = `
+            <div class="risk-level risk-${analysis.riskLevel}">
+                <span style="font-size: 24px;">
+                    ${analysis.riskLevel === 'low' ? '🟢' : analysis.riskLevel === 'moderate' ? '🟡' : '🔴'}
+                </span>
+                <span>Risk Level: ${analysis.riskLevel.charAt(0).toUpperCase() + analysis.riskLevel.slice(1)}</span>
+            </div>
+        `;
+        document.getElementById('riskLevel').innerHTML = riskLevelHtml;
+        
+        // Emergency notice for high risk
+        let emergencyNotice = '';
+        if (analysis.urgency) {
+            emergencyNotice = `
+                <div class="emergency-notice">
+                    <h4>⚠️ Immediate Attention Recommended</h4>
+                    <p>Your responses indicate symptoms that warrant immediate professional attention. Please consider contacting a mental health professional, your doctor, or a crisis helpline today.</p>
+                    <p><strong>Crisis Resources:</strong><br>
+                    • National Suicide Prevention Lifeline: 988<br>
+                    • Crisis Text Line: Text HOME to 741741<br>
+                    • Emergency Services: 911</p>
+                </div>
+            `;
+        }
+        
+        // Display identified conditions
+        let conditionsHtml = `
+            <div class="analysis-section">
+                <h3><span>🎯</span> Potential Areas of Concern</h3>
+                <p>Hello ${name}, based on your responses, here are some areas that may need attention:</p>
+                ${emergencyNotice}
+        `;
+        
+        if (analysis.conditions.length > 0) {
+            analysis.conditions.forEach(condition => {
+                conditionsHtml += `
+                    <div class="condition-item">
+                        <div class="condition-name">${condition.name}</div>
+                        <div class="condition-description">${condition.description}</div>
+                    </div>
+                `;
+            });
+        } else {
+            conditionsHtml += `
+                <div class="condition-item">
+                    <div class="condition-name">General Stress Response</div>
+                    <div class="condition-description">While you may not meet criteria for specific conditions, you're experiencing stress responses that can benefit from self-care and coping strategies.</div>
+                </div>
+            `;
+        }
+        conditionsHtml += '</div>';
+        document.getElementById('identifiedConditions').innerHTML = conditionsHtml;
+        
+        // Display recommendations
+        let recommendationsHtml = `
+            <div class="analysis-section">
+                <h3><span>💡</span> Personalized Recommendations</h3>
+                <p>Here are evidence-based strategies tailored to your specific situation:</p>
+        `;
+        
+        analysis.recommendations.forEach(rec => {
+            recommendationsHtml += `
+                <div class="recommendation-item">
+                    <div class="recommendation-title">${rec.title}</div>
+                    <div class="recommendation-desc">${rec.description}</div>
+                </div>
+            `;
+        });
+        recommendationsHtml += '</div>';
+        document.getElementById('recommendations').innerHTML = recommendationsHtml;
+        
+        // Professional help section
+        const professionalHelpHtml = `
+            <div class="contact-professional">
+                <h4>🩺 Next Steps for Professional Care</h4>
+                <p>While self-help strategies are valuable, professional support can provide personalized treatment and faster recovery.</p>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn-contact" onclick="window.open('https://www.psychologytoday.com/us/therapists', '_blank')">
+                        Find a Therapist
+                    </button>
+                    <button class="btn-contact" onclick="window.open('https://www.nami.org/help', '_blank')">
+                        Local Mental Health Resources
+                    </button>
+                    <button class="btn-contact" onclick="window.open('https://www.betterhelp.com', '_blank')">
+                        Online Therapy Options
+                    </button>
+                </div>
+                
+                <div style="margin-top: 25px; font-size: 14px; opacity: 0.9;">
+                    <p><strong>Remember:</strong> This analysis is for informational purposes only and doesn't replace professional medical advice. If you're in crisis or having thoughts of self-harm, please seek immediate help.</p>
+                </div>
+            </div>
+        `;
+        document.getElementById('professionalHelp').innerHTML = professionalHelpHtml;
+    }
+    
+    // Form validation
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+        field.addEventListener('change', function() {
+            if (this.value) {
+                this.style.borderColor = 'var(--border-color)';
             }
         });
-        
-        // Collect patient data from the form
-        function collectPatientData() {
-            const form = document.getElementById('patientForm');
-            const formData = {};
-            
-            trackFields.forEach(field => {
-                formData[field.name] = field.value;
-            });
-            
-            return formData;
+    });
+    
+    // Add click handlers to checkbox items for better UX
+    document.querySelectorAll('.checkbox-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (e.target.type !== 'checkbox') {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+            }
+        });
+    });
+    
+    // Add click handlers to rating options for better UX
+    document.querySelectorAll('.rating-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            if (e.target.type !== 'radio') {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+            }
+        });
+    });
+    
+    // Smooth scrolling for form sections
+    document.querySelectorAll('.section-header').forEach(header => {
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', function() {
+            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
+});
+
+// Additional utility functions
+function validateForm() {
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    const requiredRadios = ['severity', 'support'];
+    let isValid = true;
+    
+    // Check text inputs and selects
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.style.borderColor = '#ef4444';
+            isValid = false;
+        } else {
+            field.style.borderColor = 'var(--border-color)';
         }
     });
-    // QR Code Modal functionality
-const modal = document.getElementById('qrModal');
-const showQrButton = document.getElementById('showQrButton');
-const closeModal = document.getElementById('closeModal');
+    
+    // Check radio button groups
+    requiredRadios.forEach(name => {
+        const radios = document.querySelectorAll(`input[name="${name}"]`);
+        const isChecked = Array.from(radios).some(radio => radio.checked);
+        if (!isChecked) {
+            radios.forEach(radio => {
+                radio.closest('.rating-scale').style.borderColor = '#ef4444';
+            });
+            isValid = false;
+        } else {
+            radios.forEach(radio => {
+                radio.closest('.rating-scale').style.borderColor = 'var(--border-color)';
+            });
+        }
+    });
+    
+    return isValid;
+}
 
-showQrButton.addEventListener('click', function() {
-    // Show modal
-    modal.style.display = 'block';
-});
-
-closeModal.addEventListener('click', function() {
-    modal.style.display = 'none';
-});
-
-// Close modal when clicking outside the modal content
-window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-        modal.style.display = 'none';
+// Update the form submission to include validation
+document.getElementById('mentalHealthAssessment').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (validateForm()) {
+        performAnalysis();
+    } else {
+        alert('Please complete all required fields marked with *');
+        
+        // Scroll to first error
+        const firstError = document.querySelector('input[style*="#ef4444"], select[style*="#ef4444"], .rating-scale[style*="#ef4444"]');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 });
 </script>
-
-</body>
-</html>
+{% endblock %}
