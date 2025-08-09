@@ -7,9 +7,6 @@ from django.utils import timezone
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_id = models.CharField(max_length=20)
-    referral_code = models.CharField(max_length=12, unique=True, blank=True)
-    referred_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals')
-    points = models.PositiveIntegerField(default=0)
     
     class Meta:
         verbose_name = 'Student'

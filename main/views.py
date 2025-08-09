@@ -72,7 +72,7 @@ def login_page(request):
 
         if user is not None:
             login(request, user)
-            return redirect('main')
+            return redirect('/')
         else:
             messages.error(request, 'Invalid username or password.')
             return redirect('login')
@@ -86,29 +86,11 @@ def register_page(request):
         last_name = request.POST.get('last_name')
         username = request.POST.get('username')
         password = request.POST.get('password')
-        referral_code = request.POST.get('referral_code')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already taken.')
             return redirect('/register/')
 
-        referrer_user = None 
-        
-        # This block checks the referral code
-        if referral_code:
-            try:
-                # -----------------------------------------------------------
-                # >> THE FIX IS ON THIS LINE <<
-                # It now correctly queries the 'Student' model, not 'User'.
-                referrer_profile = Student.objects.get(referral_code=referral_code)
-                # -----------------------------------------------------------
-                
-                referrer_user = referrer_profile.user
-                messages.info(request, f"Referral from {referrer_user.username} applied!")
-
-            except Student.DoesNotExist:
-                messages.error(request, "The referral code is invalid.")
-                return redirect('/register/')
         
         # Create the new user
         new_user = User.objects.create_user(
@@ -117,25 +99,6 @@ def register_page(request):
             first_name=first_name,
             last_name=last_name
         )
-
-        # Create the 'Student' profile for the new user
-        new_student_profile = Student.objects.create(
-            user=new_user,
-            student_id=f"STUDENT_{new_user.id}", # Example ID
-            referred_by=referrer_user # Assign the referrer if one was found
-        )
-        
-        # Create the 'PatientProfile' for the new user
-        PatientProfile.objects.create(user=new_user)
-        
-        # Optional: Give points to the referrer
-        if referrer_user:
-            try:
-                referrer_student_profile = Student.objects.get(user=referrer_user)
-                referrer_student_profile.points += 100
-                referrer_student_profile.save()
-            except Student.DoesNotExist:
-                pass # Should not happen if code was valid, but good practice
 
         messages.success(request, f"Welcome, {username}! Your account has been created.")
         return redirect('/login/')
