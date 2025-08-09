@@ -1,0 +1,1047 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block start %}
+<style>
+    /* Hero Section */
+    .subscription-hero {
+        background: linear-gradient(
+  135deg,
+  #1a1a2e 0%,     /* Dark Navy */
+  #16213e 25%,    /* Midnight Blue */
+  #1E90FF 75%,    /* Dodger Blue */
+  #4682B4 100%    /* Steel Blue */
+);
+
+        padding: 120px 0 80px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .subscription-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 80%, rgba(102, 205, 170, 0.2) 0%, transparent 50%);
+        animation: shimmer 8s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(45deg, #ffffff, #e0f2e7, #66CDAA);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+        from { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); }
+        to { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6)); }
+    }
+
+    .hero-subtitle {
+        font-size: 1.4rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 3rem;
+        line-height: 1.6;
+    }
+
+    /* Pricing Cards */
+    .pricing-section {
+        padding: 100px 0;
+        background: linear-gradient(180deg, #f8fffe 0%, white 50%, var(--light-bg) 100%);
+    }
+
+    .pricing-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .pricing-card {
+        background: white;
+        border-radius: 25px;
+        padding: 3rem 2rem;
+        margin: 1rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        border: 2px solid transparent;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pricing-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 60px rgba(46, 139, 87, 0.2);
+        border-color: var(--accent-color);
+    }
+
+    .pricing-card.featured {
+        border: 2px solid var(--primary-color);
+        transform: scale(1.05);
+        background: linear-gradient(135deg, white 0%, #f0fff0 100%);
+    }
+
+    .pricing-card.featured::before {
+        height: 6px;
+        background: linear-gradient(90deg, #FFD700, var(--primary-color), var(--accent-color));
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: -1px;
+        right: 30px;
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 0 0 15px 15px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .plan-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .plan-price {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .price-amount {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }
+
+    .price-period {
+        font-size: 1.1rem;
+        color: var(--muted-text);
+        vertical-align: bottom;
+    }
+
+    .plan-description {
+        text-align: center;
+        color: var(--muted-text);
+        margin-bottom: 2.5rem;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 2.5rem;
+    }
+
+    .features-list li {
+        padding: 0.8rem 0;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+        color: var(--text-color);
+        border-bottom: 1px solid rgba(46, 139, 87, 0.1);
+    }
+
+    .features-list li:last-child {
+        border-bottom: none;
+    }
+
+    .features-list li i {
+        color: var(--primary-color);
+        margin-right: 15px;
+        font-size: 1.2rem;
+        width: 20px;
+    }
+
+    .premium-feature {
+        background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin: 0.5rem 0;
+        border-left: 3px solid #FFD700;
+    }
+
+    .premium-feature i {
+        color: #FFD700;
+    }
+
+    .subscribe-btn {
+        width: 100%;
+        padding: 18px;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .subscribe-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .subscribe-btn:hover::before {
+        left: 100%;
+    }
+
+    .btn-basic {
+        background: linear-gradient(45deg, var(--muted-text), #708090);
+        color: white;
+    }
+
+    .btn-basic:hover {
+        background: linear-gradient(45deg, #708090, var(--muted-text));
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(112, 128, 144, 0.3);
+        color: white;
+    }
+
+    .btn-premium {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+
+    .btn-premium:hover {
+        background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(46, 139, 87, 0.4);
+        color: white;
+    }
+
+    .btn-pro {
+        background: linear-gradient(45deg, #FFD700, #FFA500);
+        color: var(--text-color);
+    }
+
+    .btn-pro:hover {
+        background: linear-gradient(45deg, #FFA500, #FF8C00);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
+        color: var(--text-color);
+    }
+
+    /* Features Showcase */
+    .features-showcase {
+        padding: 100px 0;
+        background: white;
+    }
+
+    .feature-highlight {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5rem;
+        padding: 0 2rem;
+    }
+
+    .feature-highlight:nth-child(even) {
+        flex-direction: row-reverse;
+    }
+
+    .feature-visual {
+        flex: 1;
+        padding: 2rem;
+    }
+
+    .feature-mockup {
+        background: linear-gradient(135deg, var(--light-bg), white);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-mockup::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 30px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        border-radius: 20px 20px 0 0;
+    }
+
+    .mockup-content {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 10px;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .feature-info {
+        flex: 1;
+        padding: 2rem;
+    }
+
+    .feature-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-description {
+        font-size: 1.2rem;
+        color: var(--muted-text);
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .feature-benefits {
+        list-style: none;
+        padding: 0;
+    }
+
+    .feature-benefits li {
+        padding: 0.5rem 0;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .feature-benefits li i {
+        color: var(--primary-color);
+        margin-right: 10px;
+        font-size: 1.1rem;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, var(--light-bg), #f0fff0);
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        box-shadow: 0 10px 25px rgba(46, 139, 87, 0.15);
+    }
+
+    .faq-question {
+        padding: 1.5rem 2rem;
+        background: white;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: var(--primary-color);
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .faq-answer {
+        padding: 0 2rem 2rem;
+        color: var(--muted-text);
+        line-height: 1.6;
+        display: none;
+    }
+
+    .faq-answer.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Trust Indicators */
+    .trust-section {
+        padding: 80px 0;
+        background: white;
+        text-align: center;
+    }
+
+    .trust-badges {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .trust-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem;
+        border-radius: 15px;
+        background: var(--light-bg);
+        transition: all 0.3s ease;
+        min-width: 150px;
+    }
+
+    .trust-badge:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(46, 139, 87, 0.1);
+    }
+
+    .trust-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .trust-text {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .trust-subtext {
+        font-size: 0.9rem;
+        color: var(--muted-text);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .pricing-card {
+            margin: 1rem 0;
+        }
+        
+        .feature-highlight {
+            flex-direction: column !important;
+            text-align: center;
+        }
+        
+        .feature-highlight:nth-child(even) {
+            flex-direction: column !important;
+        }
+        
+        .trust-badges {
+            gap: 1.5rem;
+        }
+    }
+
+    /* Animation delays for staggered entrance */
+    .pricing-card:nth-child(1) { animation: slideInLeft 0.6s ease-out; }
+    .pricing-card:nth-child(2) { animation: slideInUp 0.6s ease-out 0.2s both; }
+    .pricing-card:nth-child(3) { animation: slideInRight 0.6s ease-out 0.4s both; }
+
+    @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(50px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="subscription-hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="bi bi-stars me-2"></i>Unlock Premium Mental Health AI
+            </div>
+            <h1 class="hero-title">Choose Your Plan</h1>
+            <p class="hero-subtitle">
+                Unlock advanced AI-driven mental health features, personalized dashboards, and premium support designed to accelerate your wellness journey.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="pricing-section">
+    <div class="container">
+        <div class="pricing-container">
+            <div class="row justify-content-center">
+                
+                <!-- Basic Plan -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card">
+                        <h3 class="plan-name">
+                            <i class="bi bi-heart me-2"></i>Basic Care
+                        </h3>
+                        <div class="plan-price">
+                            <span class="price-amount">Free</span>
+                        </div>
+                        <p class="plan-description">
+                            Essential mental health tools to get you started on your wellness journey.
+                        </p>
+                        
+                        <ul class="features-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Basic mental health assessment</li>
+                            <li><i class="bi bi-check-circle-fill"></i> 5 guided meditation sessions</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Emergency SOS feature</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Basic chatbot support</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Community access</li>
+                            <li><i class="bi bi-check-circle-fill"></i> MedPoints rewards</li>
+                        </ul>
+                        
+                        {% if not request.user.is_authenticated %}
+                            <a href="/register/" class="subscribe-btn btn-basic">Get Started Free</a>
+                        {% else %}
+                            <button class="subscribe-btn btn-basic" disabled>Current Plan</button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card featured">
+                        <div class="featured-badge">
+                            <i class="bi bi-star-fill me-1"></i>Most Popular
+                        </div>
+                        <h3 class="plan-name">
+                            <i class="bi bi-brain me-2"></i>AI Premium
+                        </h3>
+                        <div class="plan-price">
+                            <span class="price-amount">₹499</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="plan-description">
+                            Advanced AI-powered mental health insights with personalized recommendations.
+                        </p>
+                        
+                        <ul class="features-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Everything in Basic</li>
+                            <li class="premium-feature"><i class="bi bi-cpu-fill"></i> AI-Driven Mental Health Analysis</li>
+                            <li class="premium-feature"><i class="bi bi-graph-up-arrow"></i> Personalized Dashboard</li>
+                            <li class="premium-feature"><i class="bi bi-infinity"></i> Unlimited meditation sessions</li>
+                            <li class="premium-feature"><i class="bi bi-robot"></i> Advanced AI Chatbot (GPT-4)</li>
+                            <li class="premium-feature"><i class="bi bi-calendar-week"></i> Weekly progress reports</li>
+                            <li class="premium-feature"><i class="bi bi-bell-fill"></i> Smart mood tracking</li>
+                            <li class="premium-feature"><i class="bi bi-headset"></i> Priority support</li>
+                        </ul>
+                        
+                        <button class="subscribe-btn btn-premium" onclick="subscribeToPlan('premium')">
+                            <i class="bi bi-crown me-2"></i>Upgrade to Premium
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card">
+                        <h3 class="plan-name">
+                            <i class="bi bi-gem me-2"></i>Pro Wellness
+                        </h3>
+                        <div class="plan-price">
+                            <span class="price-amount">₹999</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <p class="plan-description">
+                            Complete mental wellness suite with advanced AI and professional support.
+                        </p>
+                        
+                        <ul class="features-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Everything in AI Premium</li>
+                            <li class="premium-feature"><i class="bi bi-person-video3"></i> 1-on-1 therapist consultations</li>
+                            <li class="premium-feature"><i class="bi bi-clipboard-data"></i> Advanced analytics & insights</li>
+                            <li class="premium-feature"><i class="bi bi-calendar-event"></i> Personalized therapy scheduling</li>
+                            <li class="premium-feature"><i class="bi bi-journal-medical"></i> Detailed mental health reports</li>
+                            <li class="premium-feature"><i class="bi bi-phone"></i> 24/7 crisis intervention</li>
+                            <li class="premium-feature"><i class="bi bi-award"></i> Certified wellness programs</li>
+                            <li class="premium-feature"><i class="bi bi-shield-lock"></i> HIPAA-compliant data</li>
+                        </ul>
+                        
+                        <button class="subscribe-btn btn-pro" onclick="subscribeToPlan('pro')">
+                            <i class="bi bi-rocket me-2"></i>Go Pro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Showcase -->
+<section class="features-showcase">
+    <div class="container">
+        <h2 class="section-title">Premium Features That Transform Lives</h2>
+        
+        <!-- AI Dashboard Feature -->
+        <div class="feature-highlight">
+            <div class="feature-visual">
+                <div class="feature-mockup">
+                    <div class="mockup-content">
+                        <div style="text-align: left; width: 100%;">
+                            <h5 style="color: var(--primary-color); margin-bottom: 1rem;">
+                                <i class="bi bi-graph-up me-2"></i>Your AI Dashboard
+                            </h5>
+                            <div style="background: var(--light-accent); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Stress Level</span>
+                                    <span style="color: var(--primary-color); font-weight: 600;">Low</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px;">
+                                    <div style="background: var(--primary-color); height: 8px; width: 30%; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            <div style="background: var(--light-accent); padding: 1rem; border-radius: 10px;">
+                                <div style="font-size: 0.9rem; color: var(--muted-text);">
+                                    <i class="bi bi-lightbulb me-1"></i>AI Insight: Your meditation consistency has improved by 40% this week!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-info">
+                <h3 class="feature-title">Personalized AI Dashboard</h3>
+                <p class="feature-description">
+                    Get real-time insights into your mental health patterns with our advanced AI analytics. Track mood trends, stress levels, and receive personalized recommendations.
+                </p>
+                <ul class="feature-benefits">
+                    <li><i class="bi bi-graph-up"></i> Real-time mood tracking and analysis</li>
+                    <li><i class="bi bi-robot"></i> AI-powered pattern recognition</li>
+                    <li><i class="bi bi-calendar-check"></i> Personalized activity suggestions</li>
+                    <li><i class="bi bi-award"></i> Achievement tracking and milestones</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- AI Analysis Feature -->
+        <div class="feature-highlight">
+            <div class="feature-visual">
+                <div class="feature-mockup">
+                    <div class="mockup-content">
+                        <div style="text-align: left; width: 100%;">
+                            <h5 style="color: var(--primary-color); margin-bottom: 1rem;">
+                                <i class="bi bi-cpu me-2"></i>AI Mental Health Analysis
+                            </h5>
+                            <div style="background: linear-gradient(135deg, #f0f8ff, #e6f3ff); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;">Today's Analysis</div>
+                                <div style="font-size: 0.95rem; color: var(--muted-text); line-height: 1.5;">
+                                    "Based on your responses, you're showing positive progress in managing stress. Consider increasing your meditation frequency for optimal results."
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-info">
+                <h3 class="feature-title">Advanced AI Analysis</h3>
+                <p class="feature-description">
+                    Our cutting-edge AI analyzes your responses, behaviors, and progress to provide deep insights and personalized mental health recommendations.
+                </p>
+                <ul class="feature-benefits">
+                    <li><i class="bi bi-brain"></i> Deep learning pattern analysis</li>
+                    <li><i class="bi bi-shield-check"></i> Evidence-based recommendations</li>
+                    <li><i class="bi bi-speedometer2"></i> Risk assessment and early intervention</li>
+                    <li><i class="bi bi-clipboard-data"></i> Comprehensive progress tracking</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Professional Support Feature -->
+        <div class="feature-highlight">
+            <div class="feature-visual">
+                <div class="feature-mockup">
+                    <div class="mockup-content">
+                        <div style="text-align: center; width: 100%;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(45deg, var(--primary-color), var(--accent-color)); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-person-video3" style="font-size: 2rem; color: white;"></i>
+                            </div>
+                            <h6 style="color: var(--primary-color); margin-bottom: 0.5rem;">Dr. Sarah Johnson</h6>
+                            <div style="color: var(--muted-text); font-size: 0.9rem; margin-bottom: 1rem;">Licensed Therapist</div>
+                            <button style="background: var(--primary-color); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-size: 0.9rem;">
+                                <i class="bi bi-calendar-plus me-1"></i>Schedule Session
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-info">
+                <h3 class="feature-title">Professional Support Network</h3>
+                <p class="feature-description">
+                    Connect with licensed mental health professionals through our platform. Get expert guidance when you need it most.
+                </p>
+                <ul class="feature-benefits">
+                    <li><i class="bi bi-people"></i> Licensed therapist network</li>
+                    <li><i class="bi bi-calendar-week"></i> Flexible scheduling options</li>
+                    <li><i class="bi bi-shield-lock-fill"></i> Secure, confidential sessions</li>
+                    <li><i class="bi bi-clock-history"></i> Session history and notes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Indicators -->
+<section class="trust-section">
+    <div class="container">
+        <h2 class="section-title">Trusted by Thousands</h2>
+        <div class="trust-badges">
+            <div class="trust-badge">
+                <i class="bi bi-shield-check trust-icon"></i>
+                <div class="trust-text">HIPAA Compliant</div>
+                <div class="trust-subtext">Your data is secure</div>
+            </div>
+            <div class="trust-badge">
+                <i class="bi bi-award trust-icon"></i>
+                <div class="trust-text">ISO Certified</div>
+                <div class="trust-subtext">Quality standards</div>
+            </div>
+            <div class="trust-badge">
+                <i class="bi bi-people trust-icon"></i>
+                <div class="trust-text">10,000+ Users</div>
+                <div class="trust-subtext">Growing community</div>
+            </div>
+            <div class="trust-badge">
+                <i class="bi bi-star-fill trust-icon"></i>
+                <div class="trust-text">4.9/5 Rating</div>
+                <div class="trust-subtext">User satisfaction</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        How does the AI-driven analysis work?
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Our AI uses advanced machine learning algorithms to analyze your responses, mood patterns, and behavioral data. It identifies trends, predicts potential mental health challenges, and provides personalized recommendations based on evidence-based therapeutic approaches.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What makes the personalized dashboard special?
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Your personalized dashboard adapts to your unique mental health profile. It displays relevant metrics, tracks your progress over time, suggests activities based on your current state, and provides AI-generated insights that help you understand your mental health patterns better.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Is my data secure and private?
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Absolutely. We follow HIPAA compliance standards and use end-to-end encryption for all sensitive data. Your mental health information is never shared with third parties without your explicit consent, and you have full control over your data privacy settings.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Can I cancel my subscription anytime?
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Yes, you can cancel your subscription at any time with no cancellation fees. Your premium features will remain active until the end of your current billing period, and you can always reactivate your subscription later.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        How accurate is the AI mental health assessment?
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Our AI assessment tool has been trained on thousands of validated psychological assessments and shows 92% accuracy in identifying mental health patterns. However, it's designed to complement, not replace, professional mental health care.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What's included in the professional support network?
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        Pro subscribers get access to our network of licensed therapists, psychologists, and mental health counselors. You can schedule video sessions, get professional assessments, and receive personalized treatment plans all within the Mann platform.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA Section -->
+<section class="subscription-hero" style="padding: 80px 0;">
+    <div class="container text-center">
+        <h2 style="font-size: 3rem; margin-bottom: 1.5rem; font-weight: 700; color: white;">
+            Start Your Mental Wellness Journey Today
+        </h2>
+        <p style="font-size: 1.3rem; margin-bottom: 3rem; opacity: 0.9; color: white;">
+            Join thousands who have already transformed their mental health with Mann's AI-powered platform.
+        </p>
+        
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="/register/" class="cta-btn cta-primary" style="font-size: 1.2rem; padding: 18px 35px;">
+                <i class="bi bi-rocket-takeoff me-2"></i>Start Free Trial
+            </a>
+            <a href="#pricing" class="cta-btn cta-secondary" style="font-size: 1.2rem; padding: 18px 35px;">
+                <i class="bi bi-info-circle me-2"></i>Learn More
+            </a>
+        </div>
+        
+        <div style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8; color: white;">
+            <i class="bi bi-shield-check me-1"></i>
+            No commitment • Cancel anytime • 30-day money-back guarantee
+        </div>
+    </div>
+</section>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // FAQ Toggle Function
+        window.toggleFAQ = function(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            const isActive = answer.classList.contains('active');
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-answer.active').forEach(activeAnswer => {
+                if (activeAnswer !== answer) {
+                    activeAnswer.classList.remove('active');
+                    activeAnswer.previousElementSibling.querySelector('i').classList.remove('bi-chevron-up');
+                    activeAnswer.previousElementSibling.querySelector('i').classList.add('bi-chevron-down');
+                }
+            });
+            
+            // Toggle current FAQ
+            if (isActive) {
+                answer.classList.remove('active');
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
+            } else {
+                answer.classList.add('active');
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
+            }
+        };
+
+        // Subscription Function
+        window.subscribeToPlan = function(planType) {
+            const planDetails = {
+                premium: {
+                    name: 'AI Premium',
+                    price: '₹499/month',
+                    features: 'AI-driven analysis, personalized dashboard, unlimited meditation'
+                },
+                pro: {
+                    name: 'Pro Wellness',
+                    price: '₹999/month',
+                    features: 'Everything in Premium + professional consultations, advanced analytics'
+                }
+            };
+
+            const plan = planDetails[planType];
+            
+            if (confirm(`Subscribe to ${plan.name} (${plan.price})?\n\nFeatures: ${plan.features}\n\nYou'll be redirected to secure payment.`)) {
+                // In a real application, this would redirect to a payment processor
+                // For now, we'll show a success message
+                showSubscriptionSuccess(plan.name);
+            }
+        };
+
+        function showSubscriptionSuccess(planName) {
+            // Create success modal
+            const successModal = document.createElement('div');
+            successModal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 3rem; border-radius: 20px; text-align: center; max-width: 500px; margin: 2rem;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); border-radius: 50%; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-check-lg" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Subscription Activated!</h3>
+                        <p style="color: var(--muted-text); margin-bottom: 2rem;">Welcome to ${planName}! Your premium features are now active.</p>
+                        <button onclick="this.closest('div').parentElement.remove()" style="background: var(--primary-color); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: 600;">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+        }
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Pricing card hover effects
+        const pricingCards = document.querySelectorAll('.pricing-card');
+        pricingCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                if (this.classList.contains('featured')) {
+                    this.style.transform = 'scale(1.05)';
+                } else {
+                    this.style.transform = 'translateY(0) scale(1)';
+                }
+            });
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for scroll animations
+        document.querySelectorAll('.feature-highlight, .trust-badge, .faq-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Add pricing card selection effect
+        const subscribeButtons = document.querySelectorAll('.subscribe-btn');
+        subscribeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Add click animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // Add floating animation to trust badges
+        const trustBadges = document.querySelectorAll('.trust-badge');
+        trustBadges.forEach((badge, index) => {
+            setTimeout(() => {
+                badge.style.animation = `float 4s ease-in-out infinite ${index * 0.5}s`;
+            }, index * 200);
+        });
+
+        // Enhanced scroll indicator functionality
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+            lastScrollTop = scrollTop;
+
+            // Add scroll-based effects to elements
+            const heroSection = document.querySelector('.subscription-hero');
+            if (heroSection) {
+                const heroHeight = heroSection.offsetHeight;
+                const scrollPercent = Math.min(scrollTop / heroHeight, 1);
+                heroSection.style.transform = `translateY(${scrollPercent * 50}px)`;
+                heroSection.style.opacity = 1 - scrollPercent * 0.3;
+            }
+        });
+    });
+
+    // Add CSS animation for floating effect
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+
+{% endblock %}

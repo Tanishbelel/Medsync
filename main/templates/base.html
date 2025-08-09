@@ -16,16 +16,293 @@
     
     <style>
         :root {
-            --primary-color: #2E8B57;   /* Sea Green */
-            --secondary-color: #3CB371; /* Medium Sea Green */
-            --accent-color: #66CDAA;   /* Medium Aquamarine */
-            --light-bg: #F0FFF0;       /* Honeydew */
-            --text-color: #006400;     /* Dark Green */
-            --muted-text: #2F4F4F;     /* Dark Slate Gray */
-            --light-accent: #E0F5E0;   /* Light Mint */
-            --border-color: #AADBAA;   /* Light Green */
+            --primary-color: #1E90FF;   /* Dodger Blue */
+--secondary-color: #4682B4; /* Steel Blue */
+--accent-color: #5F9EA0;    /* Cadet Blue */
+--light-bg: #F0F8FF;        /* Alice Blue */
+--text-color: #003366;      /* Dark Midnight Blue */
+--muted-text: #2F4F4F;      /* Dark Slate Gray (kept for contrast) */
+--light-accent: #E0F0FF;    /* Light Powder Blue */
+--border-color: #A3C1DA;    /* Light Steel Blue */
+
         }
 
+        /* Loading Screen Styles */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1a3f8c 25%, #0f2d6b 50%, #082159 75%, var(--primary-color) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #loadingScreen.fade-out {
+            opacity: 0;
+        }
+
+        .neural-network {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .neuron {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: neuronPulse 3s ease-in-out infinite;
+        }
+
+        .neuron.accent {
+            background-color: rgba(130, 236, 177, 0.8);
+            animation: neuronPulse 2.5s ease-in-out infinite;
+        }
+
+        .connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform-origin: left center;
+            animation: connectionPulse 4s ease-in-out infinite;
+        }
+
+        .loading-container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .brand-name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+            animation: pulse 2s ease-in-out infinite;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #d7dfff;
+            font-weight: 500;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .spinner-ring {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .inner-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: #82ecb1;
+            border-radius: 50%;
+            animation: innerPulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(130, 236, 177, 0.5);
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1s forwards;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin: 0 auto;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.2s forwards;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, white, #82ecb1);
+            border-radius: 3px;
+            width: 0%;
+            animation: progressFill 3s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.3);
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(130, 236, 177, 0.4);
+            top: 70%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(214, 248, 248, 0.2);
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .floating-element:nth-child(4) {
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.25);
+            top: 30%;
+            right: 25%;
+            animation-delay: 1s;
+        }
+
+        /* Loading animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes innerPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes progressFill {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(90deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(180deg);
+            }
+            75% {
+                transform: translateY(-30px) rotate(270deg);
+            }
+        }
+
+        @keyframes neuronPulse {
+            0%, 100% {
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @keyframes connectionPulse {
+            0%, 100% {
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Main content initially hidden */
+        #mainContent {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        #mainContent.visible {
+            opacity: 1;
+        }
+
+        /* Existing base.html styles */
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--light-bg);
@@ -148,7 +425,6 @@
             margin-right: 8px;
         }
         
-        /* Common pharmacy-like elements */
         .pill-badge {
             background-color: var(--accent-color);
             color: white;
@@ -166,7 +442,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        /* MedPoints Modal Styles (Kept as-is, since it was mostly correct) */
         .medpoints-modal {
             display: none;
             position: fixed;
@@ -265,10 +540,8 @@
             border-bottom: none;
         }
         
-        /* FIX: Consolidated styles for the Bootstrap Referral Modal */
-        /* Style for the clickable referral code box */
         .referral-code {
-            background-color: #f0f8ff; /* AliceBlue for a light, clean look */
+            background-color: #f0f8ff;
             border: 2px dashed var(--primary-color);
             padding: 15px;
             font-size: 1.5rem;
@@ -285,135 +558,262 @@
             background-color: var(--light-accent);
         }
 
-        /* Hide the "Copied!" feedback text by default */
         .copy-feedback {
             color: var(--primary-color);
             font-weight: bold;
-            visibility: hidden; /* Hide it */
+            visibility: hidden;
             opacity: 0;
             transition: visibility 0s, opacity 0.5s linear;
         }
 
-        /* Class to make the feedback visible */
         .copy-feedback.visible {
             visibility: visible;
             opacity: 1;
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .brand-name {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .loading-spinner {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .inner-circle {
+                width: 30px;
+                height: 30px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <!-- Neural Network Background -->
+        <div class="neural-network" id="neuralNetwork"></div>
 
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-               
-                Mann
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    {% if request.user.is_authenticated %}
+        <!-- Floating background elements -->
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="meditate/">
-                            <i class="bi bi-clipboard-check me-1"></i>Meditate
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/assessment/">
-                            <i class="bi bi-clipboard-check me-1"></i>Assessment
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#referralModal">
-                            <i class="bi bi-share me-1"></i>Refer Friend
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-                
-                <ul class="navbar-nav align-items-center">
-                    {% if request.user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-badge"></i>
-                            <span>{{ request.user.username }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                           
-                            <li>
-                                <a class="dropdown-item" href="/profile/">
-                                    <i class="bi bi-person me-2"></i>Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item">
-                                    <i class="bi bi-star-fill me-2"></i>MedPoints
-                                    <span class="points-badge ms-1">{{ user.referral_code }}</span>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="/logout/">
-                                    <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login/">
-                            <i class="bi bi-person me-1"></i>Login
-                        </a>
-                    </li>
-                   
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-order" href="/register/">Sign Up</a>
-                    </li>
-                    {% endif %}
-                </ul>
+        <div class="loading-container">
+            <div class="logo-container">
+                <h1 class="brand-name">Mann</h1>
+                <p class="tagline">Quality mental healthcare delivered at a click</p>
             </div>
-        </div>
-    </nav>
 
-    <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="referralModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="referralModalLabel">Your Referral Code</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <p class="text-muted">Share this code with friends. When they sign up, you'll earn 100 MedPoints!</p>
-                    
-                    <div class="referral-code" id="referralCodeElement">
-                        SHARE2WIN <i class="bi bi-clipboard ms-2"></i> 
-                    </div>
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="inner-circle"></div>
+            </div>
 
-                    <p id="copyFeedbackElement" class="copy-feedback mt-2">Copied!</p>
-                </div>
+            <div class="loading-text">Preparing your wellness journey...</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
             </div>
         </div>
     </div>
 
-    <div class="medpoints-modal" id="medPointsModal">
-         </div>
+    <!-- Main Content -->
+    <div id="mainContent">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                   
+                    Mann
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        {% if request.user.is_authenticated %}
 
-    {% block start %}{% endblock %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{%url 'meditate'%}">
+                                <i class="bi bi-clipboard-check me-1"></i>Meditate
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{%url 'assessment'%}">
+                                <i class="bi bi-clipboard-check me-1"></i>Assessment
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{%url 'subscription'%}">
+                                    Subscription
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#referralModal">
+                                <i class="bi bi-share me-1"></i>Refer Friend
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    
+                    <ul class="navbar-nav align-items-center">
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" 
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-badge"></i>
+                                <span>{{ request.user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                               
+                                <li>
+                                    <a class="dropdown-item" href="/profile/">
+                                        <i class="bi bi-person me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item">
+                                        <i class="bi bi-star-fill me-2"></i>MedPoints
+                                        <span class="points-badge ms-1">{{ user.referral_code }}</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="/logout/">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login/">
+                                <i class="bi bi-person me-1"></i>Login
+                            </a>
+                        </li>
+                       
+                        <li class="nav-item ms-2">
+                            <a class="btn btn-order" href="/register/">Sign Up</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-    <footer>
-        </footer>
+        <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="referralModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="referralModalLabel">Your Referral Code</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-4">
+                        <p class="text-muted">Share this code with friends. When they sign up, you'll earn 100 MedPoints!</p>
+                        
+                        <div class="referral-code" id="referralCodeElement">
+                            SHARE2WIN <i class="bi bi-clipboard ms-2"></i> 
+                        </div>
+
+                        <p id="copyFeedbackElement" class="copy-feedback mt-2">Copied!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="medpoints-modal" id="medPointsModal">
+             </div>
+
+        {% block start %}{% endblock %}
+
+        <footer>
+            </footer>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- LOADING SCREEN LOGIC ---
+            const loadingScreen = document.getElementById('loadingScreen');
+            const mainContent = document.getElementById('mainContent');
+            
+            // Create neural network background
+            function createNeuralNetwork() {
+                const network = document.getElementById('neuralNetwork');
+                const neurons = [];
+                const numNeurons = 15;
+                
+                // Create neurons
+                for (let i = 0; i < numNeurons; i++) {
+                    const neuron = document.createElement('div');
+                    neuron.className = Math.random() > 0.7 ? 'neuron accent' : 'neuron';
+                    
+                    // Random position
+                    const x = Math.random() * 100;
+                    const y = Math.random() * 100;
+                    
+                    neuron.style.left = x + '%';
+                    neuron.style.top = y + '%';
+                    neuron.style.animationDelay = Math.random() * 3 + 's';
+                    
+                    network.appendChild(neuron);
+                    neurons.push({ element: neuron, x, y });
+                }
+                
+                // Create connections between nearby neurons
+                for (let i = 0; i < neurons.length; i++) {
+                    for (let j = i + 1; j < neurons.length; j++) {
+                        const distance = Math.sqrt(
+                            Math.pow(neurons[i].x - neurons[j].x, 2) + 
+                            Math.pow(neurons[i].y - neurons[j].y, 2)
+                        );
+                        
+                        // Only connect neurons that are reasonably close
+                        if (distance < 35) {
+                            const connection = document.createElement('div');
+                            connection.className = 'connection';
+                            
+                            const angle = Math.atan2(
+                                neurons[j].y - neurons[i].y, 
+                                neurons[j].x - neurons[i].x
+                            ) * 180 / Math.PI;
+                            
+                            connection.style.left = neurons[i].x + '%';
+                            connection.style.top = neurons[i].y + '%';
+                            connection.style.width = distance + 'vw';
+                            connection.style.transform = `rotate(${angle}deg)`;
+                            connection.style.animationDelay = Math.random() * 4 + 's';
+                            
+                            network.appendChild(connection);
+                        }
+                    }
+                }
+            }
+            
+            createNeuralNetwork();
+            
+            // Show loading screen for 3 seconds
+            setTimeout(function() {
+                loadingScreen.classList.add('fade-out');
+                
+                // After fade out completes, show main content
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none';
+                    mainContent.classList.add('visible');
+                }, 500);
+            }, 3000);
+            
             // --- REFERRAL MODAL LOGIC ---
             const referralModal = document.getElementById('referralModal');
             const referralCodeEl = document.getElementById('referralCodeElement');
@@ -421,8 +821,6 @@
             
             let userReferralCode = '';
 
-            // This function generates a unique, fixed code based on user data.
-            // In a real app, this code would ideally be saved in and fetched from the database.
             function generateUniqueReferralCode() {
                 const username = '{{ request.user.username|default:"" }}';
                 const userId = '{{ request.user.id|default:"" }}';
@@ -436,14 +834,13 @@
                 for (let i = 0; i < uniqueString.length; i++) {
                     const char = uniqueString.charCodeAt(i);
                     hash = ((hash << 5) - hash) + char;
-                    hash |= 0; // Convert to 32bit integer
+                    hash |= 0;
                 }
                 
                 const code = Math.abs(hash).toString(36).toUpperCase().substring(0, 6);
                 return `Mann-${code.padStart(6, '0')}`;
             }
             
-            // Function to set the code in the modal, storing it in sessionStorage to avoid regeneration.
             function initializeReferralCode() {
                 const userId = '{{ request.user.id|default:"" }}';
                 if (!userId) {
@@ -460,39 +857,31 @@
                     userReferralCode = generateUniqueReferralCode();
                     sessionStorage.setItem(storageKey, userReferralCode);
                 }
-                // Update the referral code text, keeping the icon
                 referralCodeEl.innerHTML = `${userReferralCode} <i class="bi bi-clipboard ms-2"></i>`;
             }
             
-            // FIX: Use Bootstrap's built-in modal events to run code when the modal opens.
             referralModal.addEventListener('show.bs.modal', function () {
                 initializeReferralCode();
-                // You could also load referral stats here via an API call
             });
             
-            // FIX: A single, reliable copy-to-clipboard function.
             function copyCodeToClipboard() {
-                if (!userReferralCode) return; // Don't copy if code isn't set
+                if (!userReferralCode) return;
 
                 navigator.clipboard.writeText(userReferralCode).then(() => {
-                    // Show "Copied!" feedback
                     copyFeedbackEl.classList.add('visible');
 
-                    // Hide the feedback message after 2 seconds
                     setTimeout(() => {
                         copyFeedbackEl.classList.remove('visible');
                     }, 2000);
                 }).catch(err => {
                     console.error('Failed to copy text: ', err);
-                    alert('Failed to copy code.'); // Fallback for user
+                    alert('Failed to copy code.');
                 });
             }
 
-            // FIX: Attach the click listener cleanly in JavaScript.
             referralCodeEl.addEventListener('click', copyCodeToClipboard);
             
-            
-            // --- MEDPOINTS MODAL LOGIC (Largely unchanged) ---
+            // --- MEDPOINTS MODAL LOGIC ---
             const dropdownMedPointsBtn = document.getElementById('dropdownMedPointsBtn');
             const medPointsModal = document.getElementById('medPointsModal');
             const closeMedPointsModal = document.getElementById('closeMedPointsModal');
@@ -504,9 +893,11 @@
                 });
             }
 
-            closeMedPointsModal.addEventListener('click', function() {
-                medPointsModal.style.display = 'none';
-            });
+            if (closeMedPointsModal) {
+                closeMedPointsModal.addEventListener('click', function() {
+                    medPointsModal.style.display = 'none';
+                });
+            }
 
             window.addEventListener('click', function(event) {
                 if (event.target === medPointsModal) {

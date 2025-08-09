@@ -78,6 +78,10 @@ urlpatterns = [
     path('meditate/',meditate,name = "meditate"),
     path('clock/',clock,name = "clock"),
     path('assessment/',assessment,name = "assessment"),
+    path('subscription/',subscription,name = "subscription"),
+    path('mannai/',mannai,name = "mannai"),
+
+
 
    
     

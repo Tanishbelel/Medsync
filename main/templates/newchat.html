@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mann - AI Mental Health Companion - 24/7 support">
+    <title>AI Mental Health Chat - Mann</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-color: #2E8B57;
+            --secondary-color: #1E90FF;
+            --accent-color: #4682B4;
+            --light-bg: #f8fffe;
+            --muted-text: #6c757d;
+            --border-color: #e0e6ed;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #2E8B57 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Base template navbar styles */
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--primary-color) !important;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(46, 139, 87, 0.1);
+            color: var(--primary-color) !important;
+        }
+
+        .btn-order {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-order:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Floating particles background */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 60px; height: 60px; top: 20%; left: 80%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 40px; height: 40px; top: 60%; left: 70%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 100px; height: 100px; top: 80%; left: 20%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 50px; height: 50px; top: 40%; left: 90%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+        }
+
+        /* Main container */
+        .chat-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bot-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ffffff, #e0f2e7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            to { box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+        }
+
+        .bot-avatar i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .bot-details h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .bot-details p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            padding: 20px 30px;
+            background: rgba(46, 139, 87, 0.05);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .quick-actions h5 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+        }
+
+        /* Chat messages area */
+        .chat-messages {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .user .message-content {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot .message-content {
+            background: white;
+            color: var(--muted-text);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            flex-shrink: 0;
+        }
+
+        .user .message-avatar {
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            order: 1;
+        }
+
+        .bot .message-avatar {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .bot .message-time {
+            text-align: left;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 20px;
+            border-bottom-left-radius: 5px;
+            border: 1px solid var(--border-color);
+            max-width: 70%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        /* Chat input */
+        .chat-input {
+            padding: 20px 30px;
+            background: rgba(46, 139, 87, 0.02);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-container {
+            display: flex;
+            align-items: end;
+            gap: 15px;
+            background: white;
+            border-radius: 25px;
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .input-container:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(46, 139, 87, 0.1);
+        }
+
+        #messageInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px 5px;
+            font-size: 16px;
+            background: transparent;
+            resize: none;
+            min-height: 20px;
+            max-height: 100px;
+            font-family: inherit;
+        }
+
+        #messageInput::placeholder {
+            color: var(--muted-text);
+        }
+
+        .send-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Welcome message styling */
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted-text);
+            background: rgba(46, 139, 87, 0.02);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .welcome-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .welcome-text h4 {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        /* Resource cards */
+        .resource-card {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .resource-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resource-description {
+            font-size: 0.9rem;
+            color: var(--muted-text);
+            line-height: 1.4;
+        }
+
+        .resource-description p {
+            margin-bottom: 8px;
+        }
+
+        .resource-description strong {
+            color: var(--primary-color);
+        }
+
+        /* Crisis warning */
+        .crisis-warning {
+            background: linear-gradient(45deg, rgba(220, 53, 69, 0.1), rgba(255, 193, 7, 0.1));
+            border: 2px solid #dc3545;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            animation: emergencyGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes emergencyGlow {
+            from { box-shadow: 0 0 10px rgba(220, 53, 69, 0.3); }
+            to { box-shadow: 0 0 20px rgba(220, 53, 69, 0.5); }
+        }
+
+        /* Emergency SOS button */
+        .emergency-sos {
+            position: fixed;
+            bottom: 140px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background-color: #dc3545;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1001;
+            animation: pulseRed 2s infinite;
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .emergency-sos:hover {
+            width: 200px;
+            border-radius: 30px;
+            justify-content: flex-start;
+            padding-left: 20px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .emergency-sos .emergency-icon {
+            font-size: 24px;
+            transition: margin-right 0.3s ease;
+        }
+
+        .emergency-sos .emergency-text {
+            white-space: nowrap;
+            opacity: 0;
+            width: 0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0;
+        }
+
+        .emergency-sos:hover .emergency-icon {
+            margin-right: 10px;
+        }
+
+        .emergency-sos:hover .emergency-text {
+            opacity: 1;
+            width: auto;
+            font-size: 14px;
+        }
+
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+        /* Back button */
+        .back-to-main {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .back-to-main:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(46, 139, 87, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 10px;
+                height: calc(100vh - 120px);
+                border-radius: 15px;
+            }
+
+            .chat-header, .chat-input, .quick-actions {
+                padding: 15px 20px;
+            }
+
+            .chat-messages {
+                padding: 15px 20px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .bot-details h3 {
+                font-size: 1.2rem;
+            }
+
+            .emergency-sos {
+                bottom: 100px;
+                left: 15px;
+            }
+
+            .back-to-main {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        footer {
+            background-color: var(--light-bg);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--muted-text);
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    
+
+    <!-- Floating Particles -->
+    <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <div class="bot-details">
+                    <h3>Mann AI Companion</h3>
+                    <p>Your 24/7 mental health support assistant</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Online</span>
+                </div>
+                <a href="/assessment/" class="header-btn">
+                    <i class="bi bi-clipboard-check me-1"></i>Assessment
+                </a>
+                <a href="/meditate/" class="header-btn">
+                    <i class="bi bi-peace me-1"></i>Meditate
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h5><i class="bi bi-lightning-fill"></i>Quick Support Options</h5>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="sendQuickMessage('I need help with anxiety')">
+                    <i class="bi bi-heart"></i>Anxiety Support
+                </button>
+                <button class="action-btn" onclick="sendQuickMessage('I am feeling stressed')">
+                    <i class="bi bi-cloud-rain"></i>Stress Relief
+                </button>
+                <button class="action-btn" onclick="sendQuickMessage('I need breathing exercises')">
+                    <i class="bi bi-wind"></i>Breathing Exercise
+                </button>
+                <button class="action-btn" onclick="sendQuickMessage('I am having trouble sleeping')">
+                    <i class="bi bi-moon"></i>Sleep Help
+                </button>
+                <button class="action-btn" onclick="sendQuickMessage('I need motivation')">
+                    <i class="bi bi-star"></i>Motivation
+                </button>
+                <button class="action-btn" onclick="sendQuickMessage('resources')">
+                    <i class="bi bi-book"></i>Resources
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <div class="welcome-icon">
+                    <i class="bi bi-chat-heart"></i>
+                </div>
+                <div class="welcome-text">
+                    <h4>Welcome to Mann AI Companion</h4>
+                    <p>I'm here to provide mental health support, guidance, and resources 24/7. You can share your thoughts, concerns, or simply chat about how you're feeling. Everything you share is confidential and I'm here to help.</p>
+                    <p style="margin-top: 15px;"><strong>I can help with:</strong></p>
+                    <p>• Managing stress and anxiety • Coping strategies • Mindfulness techniques • Sleep improvement • Building resilience • Crisis support</p>
+                </div>
+            </div>
+
+            <div class="message bot">
+                <div class="message-avatar">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <div class="message-content">
+                    <p>Hello! I'm Mann, your AI mental health companion. How are you feeling today? I'm here to listen and provide support whenever you need it. 💙</p>
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+
+            <!-- Typing indicator (hidden by default) -->
+            <div class="message bot" style="margin-bottom: 0;">
+                <div class="message-avatar">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <span style="color: var(--muted-text); font-size: 0.9rem;">Mann is typing</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    placeholder="Share what's on your mind... I'm here to help with whatever you're going through."
+                    rows="1"
+                    onkeypress="handleKeyPress(event)"
+                    oninput="autoResize(this)"
+                ></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency SOS Button -->
+
+    <!-- Back to Main Button -->
+    <a href="/" class="back-to-main">
+        <i class="bi bi-house-fill"></i>
+    </a>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mann - Mental Health Companion. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Mental health responses database
+        const mentalHealthResponses = {
+            anxiety: [
+                "I understand you're feeling anxious. Let's try a quick grounding technique: Name 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste. This can help bring you back to the present moment.",
+                "Anxiety can feel overwhelming, but remember that these feelings will pass. Try taking slow, deep breaths - in for 4 counts, hold for 4, out for 6. Would you like me to guide you through a longer breathing exercise?",
+                "It's completely normal to feel anxious sometimes. Here's a helpful technique: Write down what you're worried about, then ask yourself 'Is this within my control?' Focus your energy only on what you can actually influence.",
+                "Anxiety often makes us think about worst-case scenarios. Try this: Ask yourself 'What's the evidence for this worry?' and 'What would I tell a friend in this situation?' This can help provide perspective."
+            ],
+            stress: [
+                "Stress is your body's natural response to challenges. Let's work on managing it together. First, take three deep breaths with me. In... hold... out... You're doing great.",
+                "When stress builds up, our body needs release. Try this: Tense all your muscles for 5 seconds, then completely relax them. This progressive muscle relaxation can help reduce physical tension.",
+                "I hear that you're stressed. Remember, it's okay to take breaks. Sometimes the most productive thing you can do is pause, breathe, and give yourself permission to rest.",
+                "Stress can cloud our judgment and make everything feel urgent. Try prioritizing: What absolutely must be done today? What can wait? Focus on one task at a time."
+            ],
+            depression: [
+                "Thank you for sharing how you're feeling. Depression can make everything feel heavy and difficult. Please know that you're not alone, and what you're experiencing is valid.",
+                "I'm concerned about how you're feeling. While I can provide support, it's important to connect with a mental health professional who can offer personalized care. Would you like help finding resources?",
+                "Depression often lies to us, making us believe negative thoughts about ourselves. Try to remember: You matter, your feelings are valid, and there is hope for feeling better.",
+                "When depression hits, even small tasks can feel impossible. That's okay. Start with the tiniest step - even just drinking water or taking a shower counts as self-care."
+            ],
+            sleep: [
+                "Sleep troubles can really impact how we feel. Let's create a calming bedtime routine: Try dimming lights 1 hour before bed, avoiding screens, and practicing gentle stretches or meditation.",
+                "Good sleep hygiene is crucial for mental health. Consider keeping your bedroom cool (65-68°F), dark, and quiet. A consistent sleep schedule also helps regulate your body's clock.",
+                "Racing thoughts keeping you awake? Try the '4-7-8' breathing technique: Inhale for 4, hold for 7, exhale for 8. This activates your body's relaxation response.",
+                "Sleep and mental health are deeply connected. If you're having ongoing sleep issues, it might be worth discussing with a healthcare provider to rule out underlying conditions."
+            ],
+            motivation: [
+                "Sometimes motivation feels impossible to find, and that's okay. Start with the smallest possible step - even just making your bed or drinking a glass of water counts as progress.",
+                "Remember: You don't have to feel motivated to take action. Sometimes we act first, and motivation follows. What's one tiny thing you could do right now that would feel good?",
+                "Every day you're here, you're already succeeding at the most important thing - surviving and continuing forward. That takes incredible strength, even when it doesn't feel like it.",
+                "Motivation often comes after action, not before. Try the '2-minute rule' - commit to doing something for just 2 minutes. Often you'll find yourself continuing once you start."
+            ],
+            breathing: [
+                "Let's practice breathing together. I'll guide you through a calming exercise that can help reset your nervous system.",
+                "Here's a simple breathing technique: Place one hand on your chest, one on your belly. Breathe so only the hand on your belly moves. This activates your calm response.",
+                "Box breathing is very effective for anxiety: Breathe in for 4 counts, hold for 4, breathe out for 4, hold empty for 4. Repeat this cycle 4-6 times.",
+                "When we're stressed, our breathing becomes shallow. Deep, intentional breathing tells your brain that you're safe and can help reduce stress hormones."
+            ]
+        };
+
+        const emergencyKeywords = [
+            'suicide', 'kill myself', 'end it all', 'hurt myself', 'self-harm', 'die', 
+            'ending it', 'can\'t go on', 'want to die', 'better off dead', 'no point', 
+            'cut myself', 'overdose', 'jump off', 'hang myself'
+        ];
+        
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            messageInput.value = '';
+            autoResize(messageInput);
+
+            // Check for emergency keywords
+            const hasEmergency = checkEmergencyKeywords(message);
+
+            // Show typing indicator and generate response
+            showTypingIndicator();
+            setTimeout(() => {
+                const response = generateResponse(message);
+                hideTypingIndicator();
+                addMessage(response, 'bot');
+                
+                // If emergency detected, show additional resources after response
+                if (hasEmergency) {
+                    setTimeout(() => {
+                        showEmergencyResources();
+                    }, 1000);
+                }
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function sendQuickMessage(message) {
+            messageInput.value = message;
+            sendMessage();
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            avatarDiv.innerHTML = sender === 'user' ? 
+                '<i class="bi bi-person-fill"></i>' : 
+                '<i class="bi bi-heart-pulse"></i>';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            // Process message content for HTML/markdown-like formatting
+            let processedText = text;
+            
+            // Convert **text** to bold
+            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert bullet points to proper list items
+            processedText = processedText.replace(/^• (.+)$/gm, '<li>$1</li>');
+            processedText = processedText.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            // Replace newlines with breaks but preserve HTML
+            processedText = processedText.replace(/\n/g, '<br>');
+            
+            contentDiv.innerHTML = processedText;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            contentDiv.appendChild(timeDiv);
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function checkEmergencyKeywords(message) {
+            const lowerMessage = message.toLowerCase();
+            return emergencyKeywords.some(keyword => lowerMessage.includes(keyword));
+        }
+
+        function showEmergencyResources() {
+            const emergencyHtml = `
+            <div class="crisis-warning">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 1.5rem; color: #dc3545;"></i>
+                    <strong style="color: #dc3545;">CRISIS SUPPORT RESOURCES</strong>
+                </div>
+                
+                <div class="resource-description">
+                    <p><strong style="color: #dc3545;">IMMEDIATE HELP:</strong></p>
+                    <p>🚨 <strong>Emergency Services:</strong> 911 (US) | 112 (EU) | 000 (AU) | 999 (UK)</p>
+                    <p>📞 <strong>Crisis Hotlines:</strong></p>
+                    <p>• US: 988 (Suicide & Crisis Lifeline) - Available 24/7</p>
+                    <p>• UK: 116 123 (Samaritans) - Free, confidential support</p>
+                    <p>• Crisis Text Line: Text HOME to 741741</p>
+                    <p>• International: <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" style="color: #dc3545;">Find your local crisis center</a></p>
+                    
+                    <p><strong>Online Support:</strong></p>
+                    <p>• Crisis Chat: <a href="https://suicidepreventionlifeline.org/chat/" target="_blank" style="color: #dc3545;">suicidepreventionlifeline.org/chat</a></p>
+                    <p>• Crisis Text Line: <a href="https://www.crisistextline.org/" target="_blank" style="color: #dc3545;">crisistextline.org</a></p>
+                    
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(220, 53, 69, 0.1); border-radius: 10px;">
+                        <p style="margin: 0; font-weight: 600; color: #dc3545;">
+                            🫂 You are not alone. Your life has value. People care about you and want to help.
+                        </p>
+                    </div>
+                </div>
+            </div>`;
+            
+            addMessage(emergencyHtml, 'bot');
+        }
+
+        function createBreathingExercise() {
+            return `
+            <div class="resource-card">
+                <div class="resource-title">
+                    <i class="bi bi-wind"></i>Guided Breathing Exercise
+                </div>
+                <div class="resource-description">
+                    <p><strong>4-7-8 Calming Technique:</strong></p>
+                    <p>1. 🫁 Inhale through your nose for 4 seconds</p>
+                    <p>2. ⏸️ Hold your breath for 7 seconds</p>
+                    <p>3. 💨 Exhale through your mouth for 8 seconds</p>
+                    <p>4. 🔄 Repeat 3-4 times</p>
+                    <button class="action-btn" onclick="startBreathingTimer()" style="margin-top: 10px;">
+                        <i class="bi bi-play-circle"></i>Start Guided Session
+                    </button>
+                    <p style="font-size: 0.8rem; margin-top: 8px; opacity: 0.8;">
+                        This technique activates your parasympathetic nervous system, promoting calm and relaxation.
+                    </p>
+                </div>
+            </div>`;
+        }
+
+        function startBreathingTimer() {
+            addMessage("🫁 Starting your personalized breathing session... Find a comfortable position and let's breathe together.", 'bot');
+            
+            const breathingSteps = [
+                "Close your eyes if you feel comfortable, or soften your gaze downward... 🧘‍♀️",
+                "Now, breathe in slowly through your nose... 1... 2... 3... 4... ✨ Feel your lungs filling with calm air.",
+                "Hold this breath gently... 1... 2... 3... 4... 5... 6... 7... 💙 Let the oxygen nourish your body.",
+                "Exhale slowly through your mouth... 1... 2... 3... 4... 5... 6... 7... 8... 🌊 Release any tension or worry.",
+                "Beautiful! Let's do that again. Breathe in slowly... 1... 2... 3... 4... ✨ You're doing wonderfully.",
+                "Hold... 1... 2... 3... 4... 5... 6... 7... 💙 Notice how your body feels more relaxed.",
+                "And exhale... 1... 2... 3... 4... 5... 6... 7... 8... 🌊 Let go of anything that doesn't serve you.",
+                "One more beautiful breath. In... 1... 2... 3... 4... ✨ You're giving yourself a gift of peace.",
+                "Hold... 1... 2... 3... 4... 5... 6... 7... 💙 Feel the stillness and calm within you.",
+                "And release... 1... 2... 3... 4... 5... 6... 7... 8... 🌊 Perfect. You did amazing.",
+                "🌟 Excellent work! Take a moment to notice how you feel now. What changes do you notice in your body, mind, or emotions? This calm feeling is always available to you through your breath."
+            ];
+            
+            breathingSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    addMessage(step, 'bot');
+                }, (index + 1) * 4000);
+            });
+        }
+
+        function showMentalHealthResources() {
+            const resourcesHtml = `
+            <div class="resource-card">
+                <div class="resource-title">
+                    <i class="bi bi-book"></i>Mental Health Resources & Tools
+                </div>
+                <div class="resource-description">
+                    <p><strong>🏥 Professional Help:</strong></p>
+                    <p>• <a href="https://www.psychologytoday.com/" target="_blank" style="color: var(--primary-color);">Psychology Today</a>: Find therapists in your area</p>
+                    <p>• <a href="https://www.betterhelp.com/" target="_blank" style="color: var(--primary-color);">BetterHelp</a>: Online therapy platform</p>
+                    <p>• <a href="https://findtreatment.samhsa.gov/" target="_blank" style="color: var(--primary-color);">SAMHSA</a>: Treatment locator service</p>
+                    
+                    <p><strong>📱 Self-Help Apps:</strong></p>
+                    <p>• Headspace: Meditation and mindfulness</p>
+                    <p>• Calm: Sleep stories and relaxation</p>
+                    <p>• Sanvello: Anxiety and mood tracking</p>
+                    <p>• Insight Timer: Free meditation library</p>
+                    
+                    <p><strong>📚 Educational Resources:</strong></p>
+                    <p>• <a href="https://www.nimh.nih.gov/" target="_blank" style="color: var(--primary-color);">National Institute of Mental Health (NIMH)</a></p>
+                    <p>• <a href="https://www.mhanational.org/" target="_blank" style="color: var(--primary-color);">Mental Health America</a></p>
+                    <p>• <a href="https://www.who.int/health-topics/mental-disorders" target="_blank" style="color: var(--primary-color);">WHO Mental Health Resources</a></p>
+                    
+                    <p><strong>💡 Quick Coping Strategies:</strong></p>
+                    <p>• 5-4-3-2-1 grounding technique for anxiety</p>
+                    <p>• Progressive muscle relaxation for stress</p>
+                    <p>• Gratitude journaling for mood improvement</p>
+                    <p>• Mindful walking for clarity and calm</p>
+                </div>
+            </div>`;
+            
+            addMessage(resourcesHtml, 'bot');
+        }
+
+        function handleSpecialCommands(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage === 'resources' || lowerMessage.includes('mental health resources')) {
+                setTimeout(() => showMentalHealthResources(), 1000);
+                return "Let me share some valuable mental health resources with you...";
+            }
+            
+            if (lowerMessage === 'emergency' || lowerMessage === 'crisis') {
+                setTimeout(() => showEmergencyResources(), 1000);
+                return "I'm providing you with emergency crisis resources right away...";
+            }
+            
+            if (lowerMessage.includes('breathing') || lowerMessage.includes('panic') || lowerMessage.includes('calm down')) {
+                setTimeout(() => addMessage(createBreathingExercise(), 'bot'), 1000);
+                return "Let me help you with a calming breathing exercise...";
+            }
+            
+            if (lowerMessage.includes('grounding') || lowerMessage.includes('5-4-3-2-1')) {
+                setTimeout(() => {
+                    const groundingHtml = `
+                    <div class="resource-card">
+                        <div class="resource-title">
+                            <i class="bi bi-geo-alt"></i>5-4-3-2-1 Grounding Technique
+                        </div>
+                        <div class="resource-description">
+                            <p><strong>This technique helps anchor you to the present moment:</strong></p>
+                            <p>👀 <strong>5 things you can SEE:</strong> Look around and name 5 things you can see</p>
+                            <p>🤚 <strong>4 things you can TOUCH:</strong> Feel the texture of 4 different objects</p>
+                            <p>👂 <strong>3 things you can HEAR:</strong> Listen for 3 different sounds</p>
+                            <p>👃 <strong>2 things you can SMELL:</strong> Notice 2 different scents</p>
+                            <p>👅 <strong>1 thing you can TASTE:</strong> Focus on one taste in your mouth</p>
+                            
+                            <div style="margin-top: 15px; padding: 10px; background: rgba(46, 139, 87, 0.1); border-radius: 10px;">
+                                <p style="margin: 0; font-style: italic;">
+                                    💡 <strong>Why it works:</strong> This technique engages all your senses to bring your attention back to the present moment, interrupting anxious thoughts and grounding you in reality.
+                                </p>
+                            </div>
+                        </div>
+                    </div>`;
+                    addMessage(groundingHtml, 'bot');
+                }, 1000);
+                return "The 5-4-3-2-1 grounding technique is excellent for anxiety. Let me walk you through it...";
+            }
+            
+            return false;
+        }
+
+        function generateResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Handle special commands first
+            const commandResponse = handleSpecialCommands(message);
+            if (commandResponse) {
+                return commandResponse;
+            }
+            
+            // Emergency keyword detection
+            if (emergencyKeywords.some(keyword => lowerMessage.includes(keyword))) {
+                return "I'm very concerned about what you've shared. Please know that you matter deeply and help is available. 🚨 **Your life has value** and there are people who want to support you through this difficult time. I'm providing crisis resources above - please consider reaching out immediately.";
+            }
+            
+            // Specific mental health topics with enhanced responses
+            if (lowerMessage.includes('anxiety') || lowerMessage.includes('anxious') || lowerMessage.includes('worried') || lowerMessage.includes('panic')) {
+                return getRandomResponse('anxiety') + "<br><br>💡 **Quick tip**: Remember that anxiety often feels worse than the actual situation. You're stronger than your anxiety, and this feeling will pass.";
+            }
+            
+            if (lowerMessage.includes('stress') || lowerMessage.includes('overwhelmed') || lowerMessage.includes('pressure')) {
+                return getRandomResponse('stress') + "<br><br>🌿 **Stress relief**: Try the STOP technique - **S**top what you're doing, **T**ake a breath, **O**bserve your thoughts and feelings, **P**roceed mindfully.";
+            }
+            
+            if (lowerMessage.includes('depress') || lowerMessage.includes('sad') || lowerMessage.includes('hopeless') || lowerMessage.includes('empty') || lowerMessage.includes('worthless')) {
+                return getRandomResponse('depression') + "<br><br>💙 **Hope reminder**: Even in the darkest moments, remember that feelings change and tomorrow can be different. You matter more than you know.";
+            }
+            
+            if (lowerMessage.includes('sleep') || lowerMessage.includes('insomnia') || lowerMessage.includes('tired') || lowerMessage.includes('can\'t sleep')) {
+                return getRandomResponse('sleep') + "<br><br>😴 **Sleep tip**: Your bedroom should be your sanctuary - cool, dark, and peaceful. Consider a digital sunset 1 hour before bed.";
+            }
+            
+            if (lowerMessage.includes('motivation') || lowerMessage.includes('unmotivated') || lowerMessage.includes('give up') || lowerMessage.includes('lazy')) {
+                return getRandomResponse('motivation') + "<br><br>⭐ **Daily reminder**: You've survived 100% of your difficult days so far. That's an incredible track record of resilience.";
+            }
+
+            // Relationship and social support
+            if (lowerMessage.includes('lonely') || lowerMessage.includes('alone') || lowerMessage.includes('isolated')) {
+                return "Feeling lonely is one of the most human experiences we can have, and I want you to know that you're not truly alone. 💙 I'm here with you right now, and there are others who care about you. Sometimes loneliness is our heart's way of telling us we need connection.<br><br>🤝 **Connection ideas**: Consider reaching out to someone today - even a simple text to check in can help both of you feel less alone.";
+            }
+
+            // Greeting responses
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey') || lowerMessage === 'hi there') {
+                const greetings = [
+                    "Hello! I'm so glad you decided to reach out today. 💙 How are you feeling right now? I'm here to listen, support, and help you navigate whatever you're experiencing.",
+                    "Hi there! Welcome to our safe space. 🌟 I'm here to provide support, encouragement, and resources for your mental health journey. What's on your mind today?",
+                    "Hey! It's wonderful that you're here. 💚 I'm Mann, your AI mental health companion. Whether you're having a great day or a difficult one, I'm here to chat and support you."
+                ];
+                return greetings[Math.floor(Math.random() * greetings.length)];
+            }
+
+            if (lowerMessage.includes('thank you') || lowerMessage.includes('thanks')) {
+                return "You're so very welcome! 💚 It truly means the world to me that I could help, even in a small way. Remember, reaching out for support shows incredible strength and self-awareness. I'm always here whenever you need someone to talk to. Take gentle care of yourself!";
+            }
+
+            // Default supportive responses
+            const supportiveResponses = [
+                "Thank you for sharing that with me. It takes real courage to open up about how you're feeling. 💙 Your feelings are completely valid, and I'm here to support you through whatever you're experiencing. What would be most helpful for you right now?",
+                "I hear you, and I want you to know that whatever you're going through, you don't have to face it alone. 🤗 Sometimes just having someone listen can make a real difference. I'm here to provide support, resources, or simply be a caring presence.",
+                "It sounds like you have a lot on your mind. 💚 I'm glad you chose to reach out today - that shows real self-awareness and strength. Let's work through this together, one step at a time.",
+                "Your feelings and experiences matter deeply. 🌟 I'm here to listen without judgment and help you navigate whatever challenges you're facing. What aspect of your situation would you like to explore first?",
+                "I appreciate you trusting me with what's going on in your life. 💙 Mental health is just as important as physical health, and seeking support is a sign of wisdom, not weakness. How can I best support you today?"
+            ];
+            
+            return supportiveResponses[Math.floor(Math.random() * supportiveResponses.length)];
+        }
+
+        function getRandomResponse(category) {
+            const responses = mentalHealthResponses[category];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'flex';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+        }
+
+        // Initialize chat
+        document.addEventListener('DOMContentLoaded', function() {
+            messageInput.focus();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    </script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% load static %}
 
@@ -123,7 +124,7 @@
     }
 
     .cta-primary {
-        background: linear-gradient(45deg, #2E8B57, #3CB371);
+        background: linear-gradient(45deg, #1E90FF, #4682B4);
         color: white;
         box-shadow: 0 10px 25px rgba(46, 139, 87, 0.3);
     }
@@ -276,12 +277,12 @@
     /* Enhanced Emergency SOS and Chatbot positioning */
     .emergency-sos {
         position: fixed;
-        bottom: 120px;
+        bottom: 90px;
         left: 20px;
         width: 60px;
         height: 60px;
         border-radius: 30px;
-        background-color: #FF0000;
+        background-color: #0000ff;
         color: white;
         display: flex;
         align-items: center;
@@ -667,10 +668,6 @@
                     <div class="feature-icon">
                         <i class="bi bi-chat-dots me-2"></i>
                     </div>
-                    <h3 class="feature-title">24/7 Emergency Support</h3>
-                    <p class="feature-description">
-                        Round-the-clock emergency assistance with our SOS feature, ensuring help is always just one click away when you need it most.
-                    </p>
                 </div>
             </div>
             
@@ -869,7 +866,7 @@
 </section>
 
 <!-- Emergency SOS Button -->
-<a href="/ambulance/" class="emergency-sos">
+<a href="{%url 'mannai'%}" class="emergency-sos">
     <i class="bi bi-chat-dots me-1"></i>
     <span class="emergency-text">Chat With Mann</span>
 </a>
@@ -974,8 +971,8 @@
             }, 300);
             
             // You can replace this with actual emergency functionality
-            if (confirm('🚨 Emergency assistance requested. Do you want to contact emergency services?')) {
-                window.location.href = '/ambulance/';
+            if (confirm('Do you wish to be redirected to mannAi?')) {
+                window.location.href = '/mannai/';
             }
         });
 

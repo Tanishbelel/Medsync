@@ -1148,3 +1148,12 @@ def clock(request):
 @login_required
 def assessment(request):
     return render(request,'assessment.html')
+
+@login_required
+def subscription(request):
+    return render(request,'subscription.html')
+
+@login_required
+def mannai(request):
+    return render(request,'newchat.html')
+
