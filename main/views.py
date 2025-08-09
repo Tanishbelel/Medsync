@@ -11,7 +11,6 @@ from django.db.models import Count
 from django.http import JsonResponse
 from decimal import Decimal
 from .models import CartItem
-import razorpay
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -487,7 +486,6 @@ def create_order(request):
             # Create order with a unique order number
             order = Order.objects.create(
                 user=request.user,
-                payment_method='Razorpay',
                 subtotal=subtotal,
                 platform_fee=platform_fee,
                 total_amount=total_amount,
