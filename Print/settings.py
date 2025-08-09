@@ -13,7 +13,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-ttwmlr#3%sj!wzuk07brmd7+sy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = [
+    'mann-rdus.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 # Application definition
 INSTALLED_APPS = [
