@@ -63,7 +63,6 @@ urlpatterns = [
     path('confirmation/<int:appointment_id>/', appointment_confirmation, name='appointment_confirmation'),
     path('doctor-availability/<int:doctor_id>/', get_doctor_availability, name='doctor_availability'),
     path('cancel/<int:appointment_id>/', cancel_appointment, name='cancel_appointment'),
-     path('chatbot/', chatbot_view, name='chatbot'),
     path('admin/', admin.site.urls),
     path('insurance/', insurance_page, name='insurance_page'),
     path('insurance/success/', insurance_success, name='insurance_success'),
