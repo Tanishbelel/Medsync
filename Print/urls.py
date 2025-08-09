@@ -77,6 +77,8 @@ urlpatterns = [
     path('consultancy/', consultancy, name='request_consultancy'),
     path('meditate/',meditate,name = "meditate"),
     path('clock/',clock,name = "clock"),
+    path('assessment/',assessment,name = "assessment"),
+
    
     
    

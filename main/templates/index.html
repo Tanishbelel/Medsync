@@ -1,289 +1,994 @@
 {% extends "base.html" %}
-{%load static%}
+{% load static %}
+
 {% block start %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mann - Simplifying Healthcare, Enhancing Lives</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+<style>
+    /* Enhanced styles for the index page */
+    .hero-section {
+        position: relative;
+        height: 100vh;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #2E8B57 100%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('{% static "images/brain.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        opacity: 0.3;
+        filter: blur(2px);
+    }
+
+    .floating-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { width: 60px; height: 60px; top: 20%; left: 80%; animation-delay: 1s; }
+    .particle:nth-child(3) { width: 40px; height: 40px; top: 60%; left: 70%; animation-delay: 2s; }
+    .particle:nth-child(4) { width: 100px; height: 100px; top: 80%; left: 20%; animation-delay: 3s; }
+    .particle:nth-child(5) { width: 50px; height: 50px; top: 40%; left: 90%; animation-delay: 4s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+        50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        max-width: 800px;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: slideUp 1s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #ffffff, #e0f2e7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+        to { text-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .cta-btn {
+        padding: 15px 35px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    
+
+    .cta-btn:hover::before {
+        left: 100%;
+    }
+
+    .cta-primary {
+        background: linear-gradient(45deg, #2E8B57, #3CB371);
+        color: white;
+        box-shadow: 0 10px 25px rgba(46, 139, 87, 0.3);
+    }
+
+    .cta-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(46, 139, 87, 0.4);
+        color: white;
+    }
+
+    .cta-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .cta-secondary:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 100px 0;
+        background: linear-gradient(180deg, var(--light-bg) 0%, white 100%);
+        position: relative;
+    }
+
+    .features-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(46, 139, 87, 0.15);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+        animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .feature-description {
+        color: var(--muted-text);
+        text-align: center;
+        line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 80px 0;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        background-size: 30px 30px;
+        animation: move 20s linear infinite;
+    }
+
+    @keyframes move {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(30px, 30px); }
+    }
+
+    .stat-item {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        display: block;
+        animation: countUp 2s ease-out;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-top: 0.5rem;
+    }
+
+    @keyframes countUp {
+        from { opacity: 0; transform: scale(0.5); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Enhanced Emergency SOS and Chatbot positioning */
+    .emergency-sos {
+        position: fixed;
+        bottom: 120px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background-color: #FF0000;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        z-index: 1000;
+        animation: pulse 2s infinite;
+        transition: all 0.3s ease-in-out;
+        overflow: hidden;
+        text-decoration: none;
+    }
+
+    .emergency-sos:hover {
+        width: 200px;
+        border-radius: 30px;
+        justify-content: flex-start;
+        padding-left: 20px;
+        color: white;
+        text-decoration: none;
+    }
+
+    .emergency-sos .emergency-icon {
+        font-size: 24px;
+        transition: margin-right 0.3s ease;
+    }
+
+    .emergency-sos .emergency-text {
+        white-space: nowrap;
+        opacity: 0;
+        width: 0;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 0;
+    }
+
+    .emergency-sos:hover .emergency-icon {
+        margin-right: 10px;
+    }
+
+    .emergency-sos:hover .emergency-text {
+        opacity: 1;
+        width: auto;
+        font-size: 16px;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+    }
+
+    .chatbot-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 180px;
+        height: 70px;
+        border: 2px solid white;
+        border-radius: 35px;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .chatbot-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(46, 139, 87, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .chatbot-text {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        animation: bounce 2s infinite;
+    }
+
+    .scroll-indicator i {
+        font-size: 2rem;
+        color: white;
+        opacity: 0.8;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+        40% { transform: translateX(-50%) translateY(-10px); }
+        60% { transform: translateX(-50%) translateY(-5px); }
+    }
+
+    /* Services Preview Section */
+    .services-preview {
+        padding: 100px 0;
+        background: white;
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(46, 139, 87, 0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .service-card:hover::before {
+        left: 100%;
+    }
+
+    .service-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(46, 139, 87, 0.15);
+    }
+
+    .service-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .service-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .service-description {
+        color: var(--muted-text);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .service-btn {
+        background: var(--primary-color);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .service-btn:hover {
+        background: var(--secondary-color);
+        transform: scale(1.05);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, var(--light-bg), #f8fffe);
+        position: relative;
+    }
+
+    .testimonial-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin: 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .testimonial-quote {
+        font-style: italic;
+        font-size: 1.1rem;
+        color: var(--muted-text);
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .author-info h6 {
+        margin: 0;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .author-info span {
+        color: var(--muted-text);
+        font-size: 0.9rem;
+    }
+
+    /* Enhanced responsive design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 3rem;
         }
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
         }
-        .main-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
         }
-        .spline-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+        
+        .cta-btn {
+            width: 250px;
         }
-        .content-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 2;
-        }
-        .header-text {
-            font-size: 4rem;
-            font-weight: 700;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            margin-bottom: 1rem;
-        }
-        .tagline {
-            font-size: 2rem;
-            color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-            margin-bottom: 2rem;
-        }
-        img {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        /* Emergency SOS button styles */
+        
         .emergency-sos {
-            position: absolute;
-            top: 700px;
-            right: 1450px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #FF0000;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            z-index: 1000;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-            }
-        }
-        .emergency-icon {
-            font-size: 24px;
+            bottom: 100px;
+            left: 15px;
         }
         
-        /* Chatbot styles */
         .chatbot-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 180px; 
-            height: 70px;
-            border: 2px solid white;
-            border-radius: 35px;
-            background-color: rgb(0, 90, 34);
-            color: rgb(255, 255, 255);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s ease;
+            bottom: 15px;
+            right: 15px;
+            width: 160px;
+            height: 60px;
         }
-        .chatbot-button:hover {
-            color: #2E8B57;
-            border-color: #2E8B57;
-            background-color: rgb(207, 255, 207);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-        }
-        .chatbot-text {
-            font-size: 18px;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-    <div class="main-container">
-        <!-- Full-screen Spline Model Container -->
-        <div class="spline-container">
-            <img src="{%static 'images/brain.jpg'%}" allowfullscreen></img>
-        </div>
+    }
+
+    /* Section titles */
+    .section-title {
+        font-size: 3rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: var(--muted-text);
+        margin-bottom: 4rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-background"></div>
+    
+    <!-- Floating Particles -->
+    <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <div class="hero-content">
+        <h1 class="hero-title">Mann</h1>
+        <p class="hero-subtitle">
+            Revolutionizing mental healthcare with AI-powered solutions.<br>
+            Your mental wellness journey starts here.
+        </p>
         
-        <!-- Content Overlay (Centered on top of Spline) -->
-        <div class="content-overlay">
-            <h1 class="header-text">Mann</h1>
-            <p class="tagline">Simplifying Mental Health, Enhancing Lives</p>
+        <div class="cta-buttons">
+            {% if request.user.is_authenticated %}
+                <a href="/assessment/" class="cta-btn cta-primary">
+                    <i class="bi bi-clipboard-check me-2"></i>Start Assessment
+                </a>
+                <a href="/meditate/" class="cta-btn cta-secondary">
+                    <i class="bi bi-heart-pulse me-2"></i>Begin Meditation
+                </a>
+            {% else %}
+                <a href="/register/" class="cta-btn cta-primary">
+                    <i class="bi bi-person-plus me-2"></i>Get Started Free
+                </a>
+                <a href="/login/" class="cta-btn cta-secondary">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </a>
+            {% endif %}
         </div>
     </div>
     
-    <!-- Emergency SOS Button - Moved to overlay on top of Spline -->
-   
-    <!-- empty container -->
-    <style>
-        .custom-container {
-            position: absolute;
-            width: 300px;  /* Set width */
-            height: 100px; /* Set height */
-            background-color: #008D52; /* Green background */
-            margin: 20px auto; /* Centering */
-            z-index: 1000;
-            right: 10px;
-            top: 450px;
-        }
-        /* Emergency SOS button styles */
-.emergency-sos {
-    position: absolute;
-    top: 675px;
-    left: 20px; /* Changed from right: 1375px to left: 20px for better positioning */
-    width: 60px;
-    height: 60px;
-    border-radius: 30px;
-    background-color: #FF0000;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    z-index: 1000;
-    animation: pulse 2s infinite;
-    transition: all 0.3s ease-in-out;
-    overflow: hidden;
-}
+    <div class="scroll-indicator">
+        <i class="bi bi-chevron-down"></i>
+    </div>
+</section>
 
-.emergency-sos .emergency-icon {
-    font-size: 24px;
-    transition: margin-right 0.3s ease;
-}
-
-.emergency-sos .emergency-text {
-    white-space: nowrap;
-    opacity: 0;
-    width: 0;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 0;
-}
-
-.emergency-sos:hover {
-    width: 200px;
-    border-radius: 30px;
-    transform: translateX(30px); /* Shifts button to the right when hovered */
-    justify-content: flex-start;
-    padding-left: 20px;
-    animation: pulse-hover 1.5s infinite;
-}
-
-.emergency-sos:hover .emergency-icon {
-    margin-right: 10px;
-}
-
-.emergency-sos:hover .emergency-text {
-    opacity: 1;
-    width: auto;
-    font-size: 16px;
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-    }
-}
-
-@keyframes pulse-hover {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.9);
-    }
-    70% {
-        box-shadow: 0 0 0 15px rgba(255, 0, 0, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-    }
-}      
-  .emergency-icon {
-            font-size: 24px;
-        }
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Why Choose Mann?</h2>
+        <p class="section-subtitle">
+            Experience the future of mental healthcare with our comprehensive, AI-driven platform designed for your wellbeing.
+        </p>
         
-    </style>
-</head>
-<body>
-
-</body>
-    <!-- Chatbot Button -->
-    <a href="chatbot/">
-        <div class="chatbot-button" id="chatbotButton"> 
-            <span class="chatbot-text">Mann</span>
-        </div>
-    </a>
-    <!-- Emergency SOS Button - Moved to overlay on top of Spline -->
-    <a href="ambulance"><div class="emergency-sos" id="emergencySOS">
-      <i class="bi bi-bell-fill emergency-icon"></i>
-      <span class="emergency-text">Emergency SOS</span>
-  </div></a>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Emergency SOS button click handler
-            $('#emergencySOS').click(function() {
-                alert('Emergency assistance requested. Medical help is on the way.');
-                // Here you would typically trigger an emergency API call
-            });
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-brain"></i>
+                    </div>
+                    <h3 class="feature-title">AI-Powered Assessments</h3>
+                    <p class="feature-description">
+                        Advanced algorithms analyze your mental health patterns and provide personalized insights for better understanding of your wellbeing.
+                    </p>
+                </div>
+            </div>
             
-            // Add to cart functionality
-            $('.add-to-cart').click(function() {
-                const button = $(this);
-                const productName = button.data('product-name');
-                const price = button.data('price');
-                
-                $.ajax({
-                    url: '{% url "add_to_cart" %}',
-                    type: 'POST',
-                    data: {
-                        'product_name': productName,
-                        'price': price,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            $('#cart-count').text(response.cart_count);
-                            button.html('Added to Cart').addClass('btn-success').removeClass('btn-primary');
-                            setTimeout(() => {
-                                button.html('Book Now').addClass('btn-primary').removeClass('btn-success');
-                            }, 2000);
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <h3 class="feature-title">Guided Meditation</h3>
+                    <p class="feature-description">
+                        Personalized meditation sessions tailored to your stress levels and preferences, helping you find inner peace and balance.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-chat-dots me-2"></i>
+                    </div>
+                    <h3 class="feature-title">24/7 Emergency Support</h3>
+                    <p class="feature-description">
+                        Round-the-clock emergency assistance with our SOS feature, ensuring help is always just one click away when you need it most.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h3 class="feature-title">AI Chatbot Companion</h3>
+                    <p class="feature-description">
+                        Intelligent conversation partner available anytime to provide support, guidance, and resources for your mental health journey.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h3 class="feature-title">Progress Tracking</h3>
+                    <p class="feature-description">
+                        Monitor your mental health journey with detailed analytics and insights that help you understand your patterns and improvements.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="feature-title">Community Support</h3>
+                    <p class="feature-description">
+                        Connect with others on similar journeys through our referral system and build a supportive network for lasting wellness.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">10K+</span>
+                    <div class="stat-label">Users Helped</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <div class="stat-label">Meditation Sessions</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <div class="stat-label">Support Available</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview Section -->
+<section class="services-preview">
+    <div class="container">
+        <h2 class="section-title">Our Services</h2>
+        <p class="section-subtitle">
+            Comprehensive mental health solutions designed to support you at every step of your wellness journey.
+        </p>
+        
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <h3 class="service-title">Mental Health Assessment</h3>
+                    <p class="service-description">
+                        Comprehensive evaluation of your mental health status using scientifically-backed questionnaires and AI analysis to provide personalized recommendations.
+                    </p>
+                    {% if request.user.is_authenticated %}
+                        <a href="/assessment/" class="service-btn">Take Assessment</a>
+                    {% else %}
+                        <a href="/register/" class="service-btn">Sign Up to Start</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mb-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-peace"></i>
+                    </div>
+                    <h3 class="service-title">Guided Meditation</h3>
+                    <p class="service-description">
+                        Personalized meditation experiences designed to reduce stress, improve focus, and enhance your overall mental wellbeing through proven techniques.
+                    </p>
+                    {% if request.user.is_authenticated %}
+                        <a href="/meditate/" class="service-btn">Start Meditating</a>
+                    {% else %}
+                        <a href="/register/" class="service-btn">Join to Meditate</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">What Our Users Say</h2>
+        <p class="section-subtitle">
+            Real stories from people who have transformed their mental health journey with Mann.
+        </p>
+        
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">
+                        "Mann's AI assessment helped me understand my anxiety patterns better than years of traditional therapy. The personalized meditation sessions are incredible!"
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">S</div>
+                        <div class="author-info">
+                            <h6>Sarah M.</h6>
+                            <span>Software Developer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">
+                        "The emergency SOS feature gave me peace of mind during my darkest moments. Knowing help was just a click away made all the difference in my recovery."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">A</div>
+                        <div class="author-info">
+                            <h6>Alex K.</h6>
+                            <span>College Student</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-quote">
+                        "The chatbot companion feels like having a therapist available 24/7. It's helped me work through challenges and build better mental health habits."
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">M</div>
+                        <div class="author-info">
+                            <h6>Maya R.</h6>
+                            <span>Healthcare Worker</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="stats-section">
+    <div class="container text-center">
+        <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem; font-weight: 700;">Ready to Transform Your Mental Health?</h2>
+        <p style="font-size: 1.3rem; margin-bottom: 2.5rem; opacity: 0.9;">
+            Join thousands of others who have already started their journey to better mental wellness.
+        </p>
+        
+        {% if request.user.is_authenticated %}
+            <a href="/assessment/" class="cta-btn cta-primary" style="font-size: 1.2rem; padding: 18px 40px;">
+                <i class="bi bi-clipboard-check me-2"></i>Start Your Assessment
+            </a>
+        {% else %}
+            <a href="/register/" class="cta-btn cta-primary" style="font-size: 1.2rem; padding: 18px 40px;">
+                <i class="bi bi-person-plus me-2"></i>Get Started Today
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Emergency SOS Button -->
+<a href="/ambulance/" class="emergency-sos">
+    <i class="bi bi-chat-dots me-1"></i>
+    <span class="emergency-text">Chat With Mann</span>
+</a>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stats when they come into view
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        const finalValue = stat.textContent;
+                        const isNumber = !isNaN(parseInt(finalValue));
+                        
+                        if (isNumber) {
+                            const target = parseInt(finalValue.replace(/[^\d]/g, ''));
+                            animateValue(stat, 0, target, 2000, finalValue.includes('K') ? 'K+' : (finalValue.includes('%') ? '%' : '+'));
                         }
-                    }
-                });
+                    });
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        function animateValue(element, start, end, duration, suffix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentValue = Math.floor(progress * (end - start) + start);
+                
+                if (suffix.includes('K')) {
+                    element.textContent = Math.floor(currentValue / 1000) + 'K+';
+                } else {
+                    element.textContent = currentValue + suffix;
+                }
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Smooth scrolling for scroll indicator
+        document.querySelector('.scroll-indicator').addEventListener('click', function() {
+            document.querySelector('.features-section').scrollIntoView({
+                behavior: 'smooth'
             });
         });
-    </script>
-</body>
-</html>
+
+        // Add hover effects for service cards
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Parallax effect for hero background
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const heroBackground = document.querySelector('.hero-background');
+            if (heroBackground) {
+                heroBackground.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Add floating animation to particles
+        const particles = document.querySelectorAll('.particle');
+        particles.forEach((particle, index) => {
+            particle.style.animationDelay = `${index * 0.5}s`;
+            particle.style.animationDuration = `${6 + index * 2}s`;
+        });
+
+        // Emergency SOS click handler with enhanced feedback
+        document.querySelector('.emergency-sos').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Create a more dramatic alert effect
+            const originalBg = this.style.backgroundColor;
+            this.style.backgroundColor = '#FF6B6B';
+            this.style.transform = 'scale(1.1)';
+            
+            setTimeout(() => {
+                this.style.backgroundColor = originalBg;
+                this.style.transform = 'scale(1)';
+            }, 300);
+            
+            // You can replace this with actual emergency functionality
+            if (confirm('🚨 Emergency assistance requested. Do you want to contact emergency services?')) {
+                window.location.href = '/ambulance/';
+            }
+        });
+
+        // Enhanced chatbot button interaction
+        const chatbotButton = document.querySelector('.chatbot-button');
+        chatbotButton.addEventListener('mouseenter', function() {
+            this.querySelector('.chatbot-text').innerHTML = '<i class="bi bi-chat-heart me-2"></i>Talk to Mann';
+        });
+        
+        chatbotButton.addEventListener('mouseleave', function() {
+            this.querySelector('.chatbot-text').innerHTML = '<i class="bi bi-chat-dots me-2"></i>Chat with Mann';
+        });
+    });
+</script>
+
 {% endblock %}

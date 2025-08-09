@@ -1,0 +1,1213 @@
+{% extends "base.html" %}
+
+{% block title %}Mental Health Assessment - Mann{% endblock %}
+
+{% block start %}
+<style>
+    .assessment-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .assessment-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .assessment-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .assessment-subtitle {
+        color: var(--muted-text);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .question-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: none;
+    }
+
+    .question-card.active {
+        display: block;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .question-number {
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.4;
+    }
+
+    .answer-option {
+        background: var(--light-accent);
+        border: 2px solid transparent;
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .answer-option:hover {
+        border-color: var(--accent-color);
+        background: white;
+        transform: translateX(5px);
+    }
+
+    .answer-option.selected {
+        border-color: var(--primary-color);
+        background: white;
+        box-shadow: 0 2px 8px rgba(46, 139, 87, 0.2);
+    }
+
+    .answer-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--primary-color);
+    }
+
+    .answer-option label {
+        flex: 1;
+        cursor: pointer;
+        margin: 0;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin: 2rem 0;
+        gap: 1rem;
+    }
+
+    .btn-nav {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        min-width: 120px;
+    }
+
+    .btn-prev {
+        background: var(--light-accent);
+        color: var(--text-color);
+    }
+
+    .btn-prev:hover {
+        background: var(--accent-color);
+        color: white;
+    }
+
+    .btn-next {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-next:hover {
+        background: var(--secondary-color);
+        transform: translateY(-1px);
+    }
+
+    .btn-submit {
+        background: var(--secondary-color);
+        color: white;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3);
+    }
+
+    .progress-bar-container {
+        background: var(--light-accent);
+        height: 6px;
+        border-radius: 3px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        height: 100%;
+        transition: width 0.3s ease;
+        border-radius: 3px;
+    }
+
+    .results-container {
+        display: none;
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .results-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2.5rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .result-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .result-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .result-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--muted-text);
+        margin-bottom: 2rem;
+    }
+
+    .recommendations {
+        text-align: left;
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+
+    .recommendations h4 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .recommendation-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .recommendation-item i {
+        color: var(--accent-color);
+        margin-top: 0.2rem;
+    }
+
+    .severity-low { color: #28a745; }
+    .severity-moderate { color: var(--warning-color); }
+    .severity-high { color: var(--danger-color); }
+
+    .disclaimer {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        font-size: 0.9rem;
+        color: #856404;
+    }
+
+    .score-breakdown {
+        background: var(--light-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        text-align: left;
+    }
+
+    .score-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .score-item:last-child {
+        border-bottom: none;
+    }
+
+    .score-label {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .score-value {
+        font-weight: 600;
+        padding: 0.2rem 0.8rem;
+        border-radius: 12px;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .crisis-alert {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(238, 90, 111, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(238, 90, 111, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(238, 90, 111, 0); }
+    }
+
+    @media (max-width: 768px) {
+        .assessment-container {
+            margin: 1rem auto;
+        }
+
+        .question-card {
+            padding: 1.5rem;
+        }
+
+        .assessment-title {
+            font-size: 1.8rem;
+        }
+
+        .navigation-buttons {
+            flex-direction: column;
+        }
+
+        .btn-nav {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="assessment-container">
+    <div class="assessment-header">
+        <div class="assessment-title">
+            <i class="bi bi-heart-pulse me-2"></i>
+            Mental Health Assessment
+        </div>
+        <div class="assessment-subtitle">
+            This confidential assessment helps identify potential mental health concerns. 
+            Please answer honestly for the most accurate results.
+        </div>
+    </div>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+    </div>
+
+    <form id="assessmentForm">
+        <!-- Anxiety Questions -->
+        <div class="question-card active" data-question="1">
+            <div class="question-number">Question 1 of 18</div>
+            <div class="question-text">How often have you felt nervous, anxious, or on edge over the past 2 weeks?</div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety1" value="0" id="a1_0">
+                <label for="a1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety1" value="1" id="a1_1">
+                <label for="a1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety1" value="2" id="a1_2">
+                <label for="a1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety1" value="3" id="a1_3">
+                <label for="a1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="2">
+            <div class="question-number">Question 2 of 18</div>
+            <div class="question-text">How often have you been unable to stop or control worrying?</div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety2" value="0" id="a2_0">
+                <label for="a2_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety2" value="1" id="a2_1">
+                <label for="a2_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety2" value="2" id="a2_2">
+                <label for="a2_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety2" value="3" id="a2_3">
+                <label for="a2_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="3">
+            <div class="question-number">Question 3 of 18</div>
+            <div class="question-text">How often have you had trouble relaxing?</div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety3" value="0" id="a3_0">
+                <label for="a3_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety3" value="1" id="a3_1">
+                <label for="a3_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety3" value="2" id="a3_2">
+                <label for="a3_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="anxiety3" value="3" id="a3_3">
+                <label for="a3_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <!-- Depression Questions -->
+        <div class="question-card" data-question="4">
+            <div class="question-number">Question 4 of 18</div>
+            <div class="question-text">How often have you felt down, depressed, or hopeless?</div>
+            <div class="answer-option">
+                <input type="radio" name="depression1" value="0" id="d1_0">
+                <label for="d1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="depression1" value="1" id="d1_1">
+                <label for="d1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="depression1" value="2" id="d1_2">
+                <label for="d1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="depression1" value="3" id="d1_3">
+                <label for="d1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="5">
+            <div class="question-number">Question 5 of 18</div>
+            <div class="question-text">How often have you had little interest or pleasure in doing things?</div>
+            <div class="answer-option">
+                <input type="radio" name="depression2" value="0" id="d2_0">
+                <label for="d2_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="depression2" value="1" id="d2_1">
+                <label for="d2_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="depression2" value="2" id="d2_2">
+                <label for="d2_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="depression2" value="3" id="d2_3">
+                <label for="d2_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="6">
+            <div class="question-number">Question 6 of 18</div>
+            <div class="question-text">How often have you had trouble falling or staying asleep, or sleeping too much?</div>
+            <div class="answer-option">
+                <input type="radio" name="sleep" value="0" id="s1_0">
+                <label for="s1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="sleep" value="1" id="s1_1">
+                <label for="s1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="sleep" value="2" id="s1_2">
+                <label for="s1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="sleep" value="3" id="s1_3">
+                <label for="s1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <!-- Stress Questions -->
+        <div class="question-card" data-question="7">
+            <div class="question-number">Question 7 of 18</div>
+            <div class="question-text">How often have you felt overwhelmed by daily responsibilities?</div>
+            <div class="answer-option">
+                <input type="radio" name="stress1" value="0" id="st1_0">
+                <label for="st1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="stress1" value="1" id="st1_1">
+                <label for="st1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="stress1" value="2" id="st1_2">
+                <label for="st1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="stress1" value="3" id="st1_3">
+                <label for="st1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="8">
+            <div class="question-number">Question 8 of 18</div>
+            <div class="question-text">How often have you experienced physical symptoms like headaches or muscle tension?</div>
+            <div class="answer-option">
+                <input type="radio" name="stress2" value="0" id="st2_0">
+                <label for="st2_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="stress2" value="1" id="st2_1">
+                <label for="st2_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="stress2" value="2" id="st2_2">
+                <label for="st2_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="stress2" value="3" id="st2_3">
+                <label for="st2_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <!-- Social Anxiety Questions -->
+        <div class="question-card" data-question="9">
+            <div class="question-number">Question 9 of 18</div>
+            <div class="question-text">How often do you avoid social situations due to fear or anxiety?</div>
+            <div class="answer-option">
+                <input type="radio" name="social1" value="0" id="so1_0">
+                <label for="so1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="social1" value="1" id="so1_1">
+                <label for="so1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="social1" value="2" id="so1_2">
+                <label for="so1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="social1" value="3" id="so1_3">
+                <label for="so1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="10">
+            <div class="question-number">Question 10 of 18</div>
+            <div class="question-text">How often do you worry about being judged by others?</div>
+            <div class="answer-option">
+                <input type="radio" name="social2" value="0" id="so2_0">
+                <label for="so2_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="social2" value="1" id="so2_1">
+                <label for="so2_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="social2" value="2" id="so2_2">
+                <label for="so2_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="social2" value="3" id="so2_3">
+                <label for="so2_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <!-- Additional Mental Health Questions -->
+        <div class="question-card" data-question="11">
+            <div class="question-number">Question 11 of 18</div>
+            <div class="question-text">How often have you felt restless or had trouble sitting still?</div>
+            <div class="answer-option">
+                <input type="radio" name="restless" value="0" id="r1_0">
+                <label for="r1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="restless" value="1" id="r1_1">
+                <label for="r1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="restless" value="2" id="r1_2">
+                <label for="r1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="restless" value="3" id="r1_3">
+                <label for="r1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="12">
+            <div class="question-number">Question 12 of 18</div>
+            <div class="question-text">How often have you had difficulty concentrating on tasks?</div>
+            <div class="answer-option">
+                <input type="radio" name="concentration" value="0" id="c1_0">
+                <label for="c1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="concentration" value="1" id="c1_1">
+                <label for="c1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="concentration" value="2" id="c1_2">
+                <label for="c1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="concentration" value="3" id="c1_3">
+                <label for="c1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="13">
+            <div class="question-number">Question 13 of 18</div>
+            <div class="question-text">How often have you felt easily annoyed or irritable?</div>
+            <div class="answer-option">
+                <input type="radio" name="irritable" value="0" id="i1_0">
+                <label for="i1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="irritable" value="1" id="i1_1">
+                <label for="i1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="irritable" value="2" id="i1_2">
+                <label for="i1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="irritable" value="3" id="i1_3">
+                <label for="i1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="14">
+            <div class="question-number">Question 14 of 18</div>
+            <div class="question-text">How often have you felt afraid that something awful might happen?</div>
+            <div class="answer-option">
+                <input type="radio" name="fear" value="0" id="f1_0">
+                <label for="f1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="fear" value="1" id="f1_1">
+                <label for="f1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="fear" value="2" id="f1_2">
+                <label for="f1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="fear" value="3" id="f1_3">
+                <label for="f1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <!-- Additional Questions for Better Assessment -->
+        <div class="question-card" data-question="15">
+            <div class="question-number">Question 15 of 18</div>
+            <div class="question-text">How often have you had thoughts that you would be better off dead or hurting yourself?</div>
+            <div class="answer-option">
+                <input type="radio" name="selfharm" value="0" id="sh1_0">
+                <label for="sh1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="selfharm" value="1" id="sh1_1">
+                <label for="sh1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="selfharm" value="2" id="sh1_2">
+                <label for="sh1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="selfharm" value="3" id="sh1_3">
+                <label for="sh1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="16">
+            <div class="question-number">Question 16 of 18</div>
+            <div class="question-text">How often have you experienced panic attacks or sudden intense fear?</div>
+            <div class="answer-option">
+                <input type="radio" name="panic" value="0" id="p1_0">
+                <label for="p1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="panic" value="1" id="p1_1">
+                <label for="p1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="panic" value="2" id="p1_2">
+                <label for="p1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="panic" value="3" id="p1_3">
+                <label for="p1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="17">
+            <div class="question-number">Question 17 of 18</div>
+            <div class="question-text">How often have you felt that your eating habits are out of control?</div>
+            <div class="answer-option">
+                <input type="radio" name="eating" value="0" id="e1_0">
+                <label for="e1_0">Not at all</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="eating" value="1" id="e1_1">
+                <label for="e1_1">Several days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="eating" value="2" id="e1_2">
+                <label for="e1_2">More than half the days</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="eating" value="3" id="e1_3">
+                <label for="e1_3">Nearly every day</label>
+            </div>
+        </div>
+
+        <div class="question-card" data-question="18">
+            <div class="question-number">Question 18 of 18</div>
+            <div class="question-text">How would you rate your overall mental well-being in the past month?</div>
+            <div class="answer-option">
+                <input type="radio" name="overall" value="0" id="o1_0">
+                <label for="o1_0">Very good</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="overall" value="1" id="o1_1">
+                <label for="o1_1">Good</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="overall" value="2" id="o1_2">
+                <label for="o1_2">Fair</label>
+            </div>
+            <div class="answer-option">
+                <input type="radio" name="overall" value="3" id="o1_3">
+                <label for="o1_3">Poor</label>
+            </div>
+        </div>
+    </form>
+
+    <div class="navigation-buttons">
+        <button type="button" class="btn-nav btn-prev" id="prevBtn" onclick="changeQuestion(-1)">
+            <i class="bi bi-arrow-left me-2"></i>Previous
+        </button>
+        <button type="button" class="btn-nav btn-next" id="nextBtn" onclick="changeQuestion(1)">
+            Next<i class="bi bi-arrow-right ms-2"></i>
+        </button>
+        <button type="button" class="btn-nav btn-submit" id="submitBtn" onclick="calculateResults()" style="display: none;">
+            <i class="bi bi-check-circle me-2"></i>Get Results
+        </button>
+    </div>
+</div>
+
+<!-- Results Container -->
+<div class="results-container" id="resultsContainer">
+    <div class="results-card">
+        <div class="result-icon" id="resultIcon"></div>
+        <div class="result-title" id="resultTitle"></div>
+        <div class="result-description" id="resultDescription"></div>
+        
+        <div class="score-breakdown" id="scoreBreakdown">
+            <h4><i class="bi bi-bar-chart me-2"></i>Assessment Breakdown</h4>
+            <div id="scoresList"></div>
+        </div>
+        
+        <div class="recommendations" id="recommendations">
+            <h4><i class="bi bi-lightbulb me-2"></i>Personalized Recommendations</h4>
+            <div id="recommendationsList"></div>
+        </div>
+
+        <div class="disclaimer">
+            <strong><i class="bi bi-exclamation-triangle me-2"></i>Important Disclaimer:</strong>
+            This assessment is for informational purposes only and does not replace professional medical advice. 
+            If you're experiencing severe symptoms or having thoughts of self-harm, please contact a healthcare professional immediately.
+        </div>
+
+        <div class="text-center mt-3">
+            <button class="btn btn-order" onclick="restartAssessment()">
+                <i class="bi bi-arrow-repeat me-2"></i>Take Assessment Again
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentQuestion = 1;
+const totalQuestions = 18;
+
+// Initialize assessment
+document.addEventListener('DOMContentLoaded', function() {
+    updateProgressBar();
+    updateNavigationButtons();
+    
+    // Add click handlers for answer options
+    document.querySelectorAll('.answer-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Remove selected class from siblings
+            this.parentNode.querySelectorAll('.answer-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to this option
+            this.classList.add('selected');
+            
+            // Auto-advance after a short delay
+            setTimeout(() => {
+                if (currentQuestion < totalQuestions) {
+                    changeQuestion(1);
+                }
+            }, 500);
+        });
+    });
+});
+
+function changeQuestion(direction) {
+    const currentCard = document.querySelector(`.question-card[data-question="${currentQuestion}"]`);
+    
+    // Validate current question is answered before proceeding
+    if (direction > 0) {
+        const currentInputs = currentCard.querySelectorAll('input[type="radio"]');
+        const isAnswered = Array.from(currentInputs).some(input => input.checked);
+        
+        if (!isAnswered) {
+            alert('Please select an answer before proceeding.');
+            return;
+        }
+    }
+    
+    // Hide current question
+    currentCard.classList.remove('active');
+    
+    // Update question number
+    currentQuestion += direction;
+    
+    // Show new question
+    const newCard = document.querySelector(`.question-card[data-question="${currentQuestion}"]`);
+    if (newCard) {
+        newCard.classList.add('active');
+    }
+    
+    updateProgressBar();
+    updateNavigationButtons();
+}
+
+function updateProgressBar() {
+    const progress = (currentQuestion / totalQuestions) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+}
+
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    prevBtn.style.display = currentQuestion === 1 ? 'none' : 'block';
+    
+    if (currentQuestion === totalQuestions) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'block';
+    } else {
+        nextBtn.style.display = 'block';
+        submitBtn.style.display = 'none';
+    }
+}
+
+function calculateResults() {
+    const form = document.getElementById('assessmentForm');
+    const formData = new FormData(form);
+    
+    // Validate all questions are answered
+    const requiredFields = ['anxiety1', 'anxiety2', 'anxiety3', 'depression1', 'depression2', 
+                           'sleep', 'stress1', 'stress2', 'social1', 'social2', 
+                           'restless', 'concentration', 'irritable', 'fear', 'selfharm', 
+                           'panic', 'eating', 'overall'];
+    
+    for (let field of requiredFields) {
+        if (!formData.get(field)) {
+            alert('Please answer all questions before submitting.');
+            return;
+        }
+    }
+    
+    // Calculate individual category scores
+    const anxietyScore = parseInt(formData.get('anxiety1')) + parseInt(formData.get('anxiety2')) + 
+                        parseInt(formData.get('anxiety3')) + parseInt(formData.get('fear')) + 
+                        parseInt(formData.get('panic'));
+    
+    const depressionScore = parseInt(formData.get('depression1')) + parseInt(formData.get('depression2')) + 
+                           parseInt(formData.get('sleep')) + parseInt(formData.get('selfharm'));
+    
+    const stressScore = parseInt(formData.get('stress1')) + parseInt(formData.get('stress2')) + 
+                       parseInt(formData.get('overall')) + parseInt(formData.get('irritable'));
+    
+    const socialScore = parseInt(formData.get('social1')) + parseInt(formData.get('social2'));
+    
+    const additionalScore = parseInt(formData.get('restless')) + parseInt(formData.get('concentration')) + 
+                           parseInt(formData.get('eating'));
+    
+    const totalScore = anxietyScore + depressionScore + stressScore + socialScore + additionalScore;
+    
+    // Check for crisis indicators
+    const selfHarmScore = parseInt(formData.get('selfharm'));
+    const crisisIndicator = selfHarmScore > 0;
+    
+    // Determine primary concerns
+    const scores = {
+        anxiety: anxietyScore,
+        depression: depressionScore,
+        stress: stressScore,
+        social: socialScore
+    };
+    
+    // Get top concerns (scores above threshold)
+    const significantConcerns = Object.entries(scores)
+        .filter(([_, score]) => score >= 3)
+        .sort((a, b) => b[1] - a[1]);
+    
+    const primaryConcern = significantConcerns.length > 0 ? significantConcerns[0][0] : 'minimal';
+    
+    // Display results
+    displayResults(primaryConcern, scores, totalScore, crisisIndicator);
+}
+
+function displayResults(primaryConcern, scores, totalScore, crisisIndicator) {
+    // Hide assessment, show results
+    document.querySelector('.assessment-container').style.display = 'none';
+    document.getElementById('resultsContainer').style.display = 'block';
+    
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDescription = document.getElementById('resultDescription');
+    const scoresList = document.getElementById('scoresList');
+    const recommendationsList = document.getElementById('recommendationsList');
+    
+    let severity, severityClass, icon, title, description, recommendations;
+    
+    // Determine overall severity
+    if (totalScore <= 12) {
+        severity = 'Minimal';
+        severityClass = 'severity-low';
+    } else if (totalScore <= 24) {
+        severity = 'Mild';
+        severityClass = 'severity-moderate';
+    } else if (totalScore <= 36) {
+        severity = 'Moderate';
+        severityClass = 'severity-moderate';
+    } else {
+        severity = 'Severe';
+        severityClass = 'severity-high';
+    }
+    
+    // Handle crisis situation first
+    if (crisisIndicator) {
+        const crisisAlert = document.createElement('div');
+        crisisAlert.className = 'crisis-alert';
+        crisisAlert.innerHTML = `
+            <h5><i class="bi bi-exclamation-triangle me-2"></i>Immediate Support Needed</h5>
+            <p class="mb-2">Your responses indicate you may be having thoughts of self-harm. Please reach out for immediate support:</p>
+            <p class="mb-1"><strong>National Suicide Prevention Lifeline:</strong> 988</p>
+            <p class="mb-1"><strong>Crisis Text Line:</strong> Text HOME to 741741</p>
+            <p class="mb-0"><strong>Emergency:</strong> Call 911 or go to your nearest emergency room</p>
+        `;
+        document.querySelector('.results-card').insertBefore(crisisAlert, document.querySelector('.score-breakdown'));
+    }
+    
+    // Generate results based on primary concern
+    switch(primaryConcern) {
+        case 'anxiety':
+            icon = '😰';
+            title = `${severity} Anxiety Symptoms`;
+            description = `Your responses indicate ${severity.toLowerCase()} anxiety symptoms. You may be experiencing generalized anxiety disorder, panic disorder, or another anxiety-related condition.`;
+            recommendations = [
+                { icon: 'bi-person-check', text: 'Consult a mental health professional for anxiety-specific treatment' },
+                { icon: 'bi-lungs', text: 'Practice deep breathing and progressive muscle relaxation' },
+                { icon: 'bi-journal-text', text: 'Keep an anxiety journal to identify triggers' },
+                { icon: 'bi-activity', text: 'Regular aerobic exercise can significantly reduce anxiety' },
+                { icon: 'bi-cup-hot', text: 'Limit caffeine and alcohol consumption' }
+            ];
+            break;
+            
+        case 'depression':
+            icon = '😔';
+            title = `${severity} Depression Symptoms`;
+            description = `Your responses suggest ${severity.toLowerCase()} depression symptoms. Depression is a serious but treatable condition that affects mood, thoughts, and daily functioning.`;
+            recommendations = [
+                { icon: 'bi-heart-pulse', text: 'Seek professional help from a therapist or psychiatrist' },
+                { icon: 'bi-people', text: 'Maintain social connections even when you don\'t feel like it' },
+                { icon: 'bi-sun', text: 'Get regular sunlight exposure and consider light therapy' },
+                { icon: 'bi-clock', text: 'Establish a consistent daily routine' },
+                { icon: 'bi-heart', text: 'Engage in activities that previously brought you joy' }
+            ];
+            break;
+            
+        case 'stress':
+            icon = '😤';
+            title = `${severity} Stress Levels`;
+            description = `Your responses indicate ${severity.toLowerCase()} stress levels. Chronic stress can lead to serious health problems if not properly managed.`;
+            recommendations = [
+                { icon: 'bi-calendar-check', text: 'Learn and practice stress management techniques' },
+                { icon: 'bi-pause-circle', text: 'Take regular breaks and practice mindfulness' },
+                { icon: 'bi-list-check', text: 'Prioritize tasks and delegate when possible' },
+                { icon: 'bi-shield-check', text: 'Set healthy boundaries in all areas of life' },
+                { icon: 'bi-moon', text: 'Ensure adequate sleep and relaxation time' }
+            ];
+            break;
+            
+        case 'social':
+            icon = '😷';
+            title = `${severity} Social Anxiety Symptoms`;
+            description = `Your responses suggest ${severity.toLowerCase()} social anxiety. Social anxiety disorder can significantly impact relationships and daily activities.`;
+            recommendations = [
+                { icon: 'bi-chat-dots', text: 'Consider cognitive behavioral therapy (CBT) for social anxiety' },
+                { icon: 'bi-people-fill', text: 'Practice gradual exposure to social situations' },
+                { icon: 'bi-chat-square-text', text: 'Challenge negative thoughts about social interactions' },
+                { icon: 'bi-person-hearts', text: 'Join supportive groups or communities' },
+                { icon: 'bi-mic', text: 'Practice social skills in low-pressure environments' }
+            ];
+            break;
+            
+        default:
+            icon = '🌟';
+            title = 'Good Mental Health';
+            description = 'Your responses suggest you\'re managing your mental health well. Continue practicing good self-care and stay aware of any changes.';
+            recommendations = [
+                { icon: 'bi-check-circle', text: 'Continue your current healthy coping strategies' },
+                { icon: 'bi-arrow-up-circle', text: 'Stay engaged in meaningful activities' },
+                { icon: 'bi-people', text: 'Maintain strong social connections' },
+                { icon: 'bi-clipboard-check', text: 'Regular mental health check-ins' },
+                { icon: 'bi-heart', text: 'Practice gratitude and mindfulness' }
+            ];
+    }
+    
+    // Update result display
+    resultIcon.textContent = icon;
+    resultTitle.textContent = title;
+    resultTitle.className = `result-title ${severityClass}`;
+    resultDescription.textContent = description;
+    
+    // Generate score breakdown
+    const scoreCategories = [
+        { name: 'Anxiety', score: scores.anxiety, max: 15 },
+        { name: 'Depression', score: scores.depression, max: 12 },
+        { name: 'Stress', score: scores.stress, max: 12 },
+        { name: 'Social Anxiety', score: scores.social, max: 6 }
+    ];
+    
+    scoresList.innerHTML = scoreCategories.map(category => {
+        const percentage = (category.score / category.max * 100);
+        let scoreClass = 'severity-low';
+        if (percentage > 33) scoreClass = 'severity-moderate';
+        if (percentage > 66) scoreClass = 'severity-high';
+        
+        return `
+            <div class="score-item">
+                <span class="score-label">${category.name}</span>
+                <span class="score-value ${scoreClass}">${category.score}/${category.max}</span>
+            </div>
+        `;
+    }).join('');
+    
+    // Generate recommendations HTML
+    recommendationsList.innerHTML = recommendations.map(rec => 
+        `<div class="recommendation-item">
+            <i class="${rec.icon}"></i>
+            <span>${rec.text}</span>
+        </div>`
+    ).join('');
+    
+    // Scroll to results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartAssessment() {
+    // Reset form
+    document.getElementById('assessmentForm').reset();
+    
+    // Reset question tracking
+    currentQuestion = 1;
+    
+    // Remove all selected classes
+    document.querySelectorAll('.answer-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Hide all question cards
+    document.querySelectorAll('.question-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    
+    // Show first question
+    document.querySelector('.question-card[data-question="1"]').classList.add('active');
+    
+    // Remove any crisis alerts
+    const existingAlert = document.querySelector('.crisis-alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Hide results, show assessment
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.querySelector('.assessment-container').style.display = 'block';
+    
+    // Reset progress and navigation
+    updateProgressBar();
+    updateNavigationButtons();
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Enhanced validation and user experience functions
+function validateCurrentQuestion() {
+    const currentCard = document.querySelector(`.question-card[data-question="${currentQuestion}"]`);
+    const currentInputs = currentCard.querySelectorAll('input[type="radio"]');
+    return Array.from(currentInputs).some(input => input.checked);
+}
+
+// Keyboard navigation support
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        if (currentQuestion < totalQuestions && validateCurrentQuestion()) {
+            changeQuestion(1);
+        } else if (currentQuestion === totalQuestions && validateCurrentQuestion()) {
+            calculateResults();
+        }
+    } else if (e.key === 'ArrowLeft') {
+        if (currentQuestion > 1) {
+            changeQuestion(-1);
+        }
+    }
+    
+    // Number key navigation (1-4 for answer options)
+    if (e.key >= '1' && e.key <= '4') {
+        const currentCard = document.querySelector(`.question-card[data-question="${currentQuestion}"]`);
+        const options = currentCard.querySelectorAll('.answer-option');
+        const optionIndex = parseInt(e.key) - 1;
+        
+        if (options[optionIndex]) {
+            options[optionIndex].click();
+        }
+    }
+});
+
+// Auto-save progress functionality
+let assessmentProgress = {};
+
+function saveProgress() {
+    const form = document.getElementById('assessmentForm');
+    const formData = new FormData(form);
+    assessmentProgress = {};
+    
+    for (let [key, value] of formData.entries()) {
+        assessmentProgress[key] = value;
+    }
+}
+
+function loadProgress() {
+    for (let [key, value] of Object.entries(assessmentProgress)) {
+        const input = document.querySelector(`input[name="${key}"][value="${value}"]`);
+        if (input) {
+            input.checked = true;
+            input.closest('.answer-option').classList.add('selected');
+        }
+    }
+}
+
+// Save progress on each answer
+document.addEventListener('change', function(e) {
+    if (e.target.type === 'radio') {
+        saveProgress();
+    }
+});
+
+// Additional helper functions for mental health assessment
+function getMentalHealthInsights(scores, totalScore) {
+    const insights = [];
+    
+    // Anxiety insights
+    if (scores.anxiety >= 6) {
+        insights.push({
+            type: 'anxiety',
+            message: 'High anxiety levels detected. Consider anxiety management techniques.',
+            severity: scores.anxiety >= 9 ? 'high' : 'moderate'
+        });
+    }
+    
+    // Depression insights
+    if (scores.depression >= 5) {
+        insights.push({
+            type: 'depression',
+            message: 'Depression symptoms present. Professional support may be beneficial.',
+            severity: scores.depression >= 8 ? 'high' : 'moderate'
+        });
+    }
+    
+    // Stress insights
+    if (scores.stress >= 5) {
+        insights.push({
+            type: 'stress',
+            message: 'Elevated stress levels. Stress management strategies recommended.',
+            severity: scores.stress >= 8 ? 'high' : 'moderate'
+        });
+    }
+    
+    // Social anxiety insights
+    if (scores.social >= 3) {
+        insights.push({
+            type: 'social',
+            message: 'Social anxiety symptoms present. Consider social skills support.',
+            severity: scores.social >= 5 ? 'high' : 'moderate'
+        });
+    }
+    
+    return insights;
+}
+
+// Enhanced results display with multiple concerns
+function displayMultipleConcerns(concerns) {
+    if (concerns.length > 1) {
+        const concernsList = concerns.map(concern => 
+            `<span class="badge bg-warning me-2">${concern[0].charAt(0).toUpperCase() + concern[0].slice(1)}</span>`
+        ).join('');
+        
+        const multiConcernDiv = document.createElement('div');
+        multiConcernDiv.className = 'alert alert-info mt-3';
+        multiConcernDiv.innerHTML = `
+            <h6><i class="bi bi-info-circle me-2"></i>Multiple Areas of Concern Identified:</h6>
+            <p class="mb-0">${concernsList}</p>
+            <small class="text-muted">Consider discussing all these areas with a mental health professional.</small>
+        `;
+        
+        document.querySelector('.score-breakdown').appendChild(multiConcernDiv);
+    }
+}
+</script>
+{% endblock %}

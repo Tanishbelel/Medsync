@@ -1144,3 +1144,7 @@ def meditate(request):
 @login_required
 def clock(request):
     return render(request,'medClock.html')
+
+@login_required
+def assessment(request):
+    return render(request,'assessment.html')
